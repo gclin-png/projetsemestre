@@ -1,0 +1,2033 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TutoMotion — Administration</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  @font-face { font-family:'Glacial Indifference'; src:url('https://fonts.cdnfonts.com/s/17689/GlacialIndifference-Regular.woff') format('woff'); font-weight:400; }
+  @font-face { font-family:'Glacial Indifference'; src:url('https://fonts.cdnfonts.com/s/17689/GlacialIndifference-Bold.woff') format('woff'); font-weight:700; }
+
+  body { background: #0f172a; cursor: default; }
+  * { cursor: inherit; }
+  button, [onclick], .admin-nav-item, .membre-row, .tuto-row-admin,
+  .btn-admin, .modal-close, .quiz-del-btn, .quiz-correct-btn,
+  .quiz-option-del, .btn-add-option, .btn-add-question,
+  .img-item, .cat-check, .tool-btn, .yt-block { cursor: pointer !important; }
+  input, textarea, select, .editor-content, [contenteditable="true"] { cursor: text !important; }
+
+  .admin-layout { display:grid; grid-template-columns:240px 1fr; min-height:100vh; }
+
+  /* Sidebar */
+  .admin-sidebar {
+    background:#1e293b;
+    border-right:1px solid #334155;
+    padding:1.5rem 0;
+    position:sticky; top:0; height:100vh;
+    display:flex; flex-direction:column;
+  }
+  .admin-logo {
+    padding:0 1.5rem 1.5rem;
+    font-family:'Glacial Indifference',sans-serif;
+    font-size:1.25rem; font-weight:700; color:#f8fafc;
+    border-bottom:1px solid #334155;
+    display:flex; align-items:center; gap:.6rem;
+  }
+  .admin-logo span { color:#3b82f6; }
+  .admin-logo-badge { font-size:.65rem; background:#f59e0b; color:#fff; padding:.15rem .4rem; border-radius:4px; font-weight:700; letter-spacing:.05em; }
+  .admin-nav { padding:1rem 0; flex:1; }
+  .admin-nav-item {
+    display:flex; align-items:center; gap:.75rem;
+    padding:.7rem 1.5rem; color:#94a3b8;
+    cursor:pointer; font-size:.88rem; font-family:'Glacial Indifference',sans-serif;
+    transition:all .15s; border-left:3px solid transparent;
+  }
+  .admin-nav-item:hover { color:#f8fafc; background:rgba(255,255,255,.05); }
+  .admin-nav-item.active { color:#3b82f6; background:rgba(59,130,246,.1); border-left-color:#3b82f6; }
+  .admin-nav-item .nav-icon { font-size:1rem; width:20px; text-align:center; }
+  .admin-sidebar-footer {
+    padding:1rem 1.5rem;
+    border-top:1px solid #334155;
+  }
+  .admin-back-btn {
+    display:flex; align-items:center; gap:.5rem;
+    color:#64748b; font-size:.8rem; cursor:pointer;
+    font-family:'Glacial Indifference',sans-serif;
+    transition:color .15s;
+  }
+  .admin-back-btn:hover { color:#94a3b8; }
+
+  /* Main */
+  .admin-main { padding:2rem; overflow-y:auto; }
+  .admin-topbar {
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:2rem;
+  }
+  .admin-title { font-family:'Glacial Indifference',sans-serif; font-size:1.5rem; font-weight:700; color:#f8fafc; }
+  .admin-subtitle { font-size:.85rem; color:#64748b; margin-top:.2rem; }
+
+  /* Tabs */
+  .admin-tab { display:none; }
+  .admin-tab.active { display:block; }
+
+  /* Cards */
+  .admin-card {
+    background:#1e293b; border:1px solid #334155;
+    border-radius:12px; padding:1.5rem; margin-bottom:1.5rem;
+  }
+  .admin-card-title {
+    font-family:'Glacial Indifference',sans-serif;
+    font-size:1rem; font-weight:700; color:#f8fafc;
+    margin-bottom:1.25rem; display:flex; align-items:center; gap:.5rem;
+  }
+
+  /* Membres */
+  .membre-row {
+    display:flex; align-items:center; gap:1rem;
+    padding:.75rem 0; border-bottom:1px solid #334155;
+    cursor:pointer; transition:background .15s; border-radius:8px; padding:.75rem .5rem;
+  }
+  .membre-row:hover { background:rgba(255,255,255,.04); }
+  .membre-row:last-child { border-bottom:none; }
+  .membre-avatar {
+    width:40px; height:40px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:.85rem; color:#fff; flex-shrink:0;
+    position:relative;
+  }
+  .pastille {
+    width:11px; height:11px; border-radius:50%;
+    border:2px solid #1e293b;
+    position:absolute; bottom:0; right:0;
+  }
+  .pastille.online { background:#22c55e; }
+  .pastille.offline { background:#ef4444; }
+  .membre-info { flex:1; min-width:0; }
+  .membre-nom { font-weight:600; font-size:.9rem; color:#f1f5f9; }
+  .membre-email { font-size:.75rem; color:#64748b; margin-top:.1rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .membre-meta { display:flex; align-items:center; gap:.5rem; flex-shrink:0; }
+  .role-badge {
+    font-size:.68rem; padding:.2rem .5rem; border-radius:999px; font-weight:600;
+  }
+  .role-badge.admin { background:#fef3c7; color:#92400e; }
+  .role-badge.apprenant { background:#1e3a5f; color:#93c5fd; }
+  .role-badge.contributeur { background:#1a3a4a; color:#67e8f9; border:1px solid rgba(103,232,249,.3); }
+  .status-text { font-size:.72rem; }
+  .status-text.online { color:#22c55e; }
+  .status-text.offline { color:#ef4444; }
+
+  /* Formulaire cours */
+  .form-group { margin-bottom:1rem; }
+  .form-label { display:block; font-size:.82rem; color:#94a3b8; margin-bottom:.4rem; font-family:'Glacial Indifference',sans-serif; }
+  .form-input {
+    width:100%; padding:.65rem .9rem;
+    background:#0f172a; border:1px solid #334155; border-radius:8px;
+    color:#f1f5f9; font-size:.88rem; font-family:'Glacial Indifference',sans-serif;
+    transition:border-color .15s; box-sizing:border-box;
+  }
+  .form-input:focus { outline:none; border-color:#3b82f6; }
+  .form-textarea {
+    min-height:200px; resize:vertical; line-height:1.6;
+  }
+  .form-select { cursor:pointer; }
+
+  /* Multi-catégories */
+  .cat-checkboxes { display:flex; flex-wrap:wrap; gap:.5rem; }
+  .cat-check { display:flex; align-items:center; gap:.45rem; background:#0f172a; border:1px solid #334155; border-radius:8px; padding:.45rem .85rem; cursor:pointer; font-size:.82rem; color:#94a3b8; transition:all .15s; user-select:none; }
+  .cat-check:hover { border-color:#3b82f6; color:#f1f5f9; }
+  .cat-check input[type=checkbox] { display:none; }
+  .cat-check.checked { background:rgba(59,130,246,.15); border-color:#3b82f6; color:#93c5fd; font-weight:600; }
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  .form-error { color:#f87171; font-size:.8rem; margin-top:.5rem; }
+
+  /* Éditeur riche */
+  .editor-toolbar {
+    display:flex; align-items:center; gap:.25rem; flex-wrap:wrap;
+    background:#0f172a; border:1px solid #334155; border-bottom:none;
+    border-radius:8px 8px 0 0; padding:.5rem .75rem;
+  }
+  .tool-btn {
+    background:#1e293b; border:1px solid #334155; color:#94a3b8;
+    border-radius:5px; padding:.3rem .6rem; font-size:.8rem;
+    cursor:pointer; transition:all .15s; font-family:'Glacial Indifference',sans-serif;
+    min-width:28px; text-align:center;
+  }
+  .tool-btn:hover { background:#334155; color:#f1f5f9; }
+  .tool-btn-image { background:rgba(8,145,178,.15); border-color:rgba(8,145,178,.4); color:#67e8f9; padding:.3rem .75rem; }
+  .tool-btn-image:hover { background:rgba(8,145,178,.3); color:#fff; }
+  .tool-btn-video { background:rgba(239,68,68,.12); border-color:rgba(239,68,68,.35); color:#fca5a5; padding:.3rem .75rem; }
+  .tool-btn-video:hover { background:rgba(239,68,68,.25); color:#fff; }
+  .yt-block { display:block; position:relative; border-radius:10px; overflow:hidden; margin:.75rem 0; cursor:pointer; background:#000; max-width:100%; }
+  .yt-block img { width:100%; display:block; border-radius:10px; opacity:.85; transition:opacity .2s; }
+  .yt-block:hover img { opacity:1; }
+  .yt-play-btn { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:64px; height:44px; background:rgba(255,0,0,.9); border-radius:10px; display:flex; align-items:center; justify-content:center; transition:background .2s; pointer-events:none; }
+  .yt-block:hover .yt-play-btn { background:#ff0000; }
+  .yt-play-btn::after { content:''; border-style:solid; border-width:10px 0 10px 18px; border-color:transparent transparent transparent #fff; margin-left:3px; }
+  .yt-iframe-wrap { position:relative; padding-bottom:56.25%; height:0; border-radius:10px; overflow:hidden; margin:.75rem 0; background:#000; }
+  .yt-iframe-wrap iframe { position:absolute; top:0; left:0; width:100%; height:100%; border:none; border-radius:10px; }
+  .yt-modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.8); z-index:3000; display:flex; align-items:center; justify-content:center; }
+  .yt-modal-box { background:#1e293b; border-radius:14px; padding:1.5rem; width:90%; max-width:480px; border:1px solid #334155; }
+  .yt-modal-title { font-family:'Glacial Indifference',sans-serif; font-size:1rem; font-weight:700; color:#f8fafc; margin-bottom:1rem; }
+  .yt-modal-input { width:100%; padding:.7rem 1rem; background:#0f172a; border:1px solid #334155; border-radius:8px; color:#f1f5f9; font-size:.88rem; font-family:'Glacial Indifference',sans-serif; box-sizing:border-box; outline:none; }
+  .yt-modal-input:focus { border-color:#ef4444; }
+  .yt-modal-btns { display:flex; gap:.75rem; margin-top:1rem; }
+  .yt-modal-btn { flex:1; padding:.65rem; border-radius:8px; font-size:.88rem; font-weight:700; font-family:'Glacial Indifference',sans-serif; cursor:pointer; border:none; transition:opacity .15s; }
+  .yt-modal-btn.confirm { background:#ef4444; color:#fff; }
+  .yt-modal-btn.confirm:hover { opacity:.85; }
+  .yt-modal-btn.cancel { background:#1e293b; color:#64748b; border:1px solid #334155; }
+  .tool-sep { width:1px; height:20px; background:#334155; margin:0 .2rem; }
+  .editor-content {
+    min-height:220px; max-height:500px; overflow-y:auto;
+    background:#0f172a; border:1px solid #334155; border-radius:0 0 8px 8px;
+    padding:.85rem 1rem; color:#f1f5f9; font-size:.88rem; line-height:1.75;
+    font-family:'Glacial Indifference',sans-serif; outline:none; cursor:text;
+  }
+  .editor-content:focus { border-color:#0891b2; }
+  .editor-content:empty::before { content:attr(data-placeholder); color:#475569; pointer-events:none; display:block; }
+  .editor-content h2 { font-size:1.2rem; font-weight:700; color:#f8fafc; margin:1.25rem 0 .5rem; }
+  .editor-content h3 { font-size:1rem; font-weight:700; color:#cbd5e1; margin:1rem 0 .4rem; }
+  .editor-content p  { margin:.4rem 0; }
+  .editor-content ul, .editor-content ol { padding-left:1.5rem; margin:.4rem 0; }
+  .editor-content li { margin:.2rem 0; }
+  .editor-content img { max-width:100%; border-radius:8px; margin:.75rem 0; display:block; cursor:pointer; border:2px solid transparent; transition:border-color .15s; }
+  .editor-content img:hover { border-color:#0891b2; }
+
+  /* Upload zone */
+  .upload-drop-area {
+    border:2px dashed #334155; border-radius:10px;
+    padding:1.25rem; text-align:center; cursor:pointer;
+    transition:border-color .2s, background .2s; background:#0f172a;
+  }
+  .upload-drop-area:hover,
+  .upload-drop-area.drag-over { border-color:#3b82f6; background:rgba(59,130,246,.05); }
+  .upload-drop-area input { display:none; }
+  .upload-drop-hint { color:#64748b; font-size:.82rem; pointer-events:none; }
+  .upload-drop-hint span { display:block; font-size:1.5rem; margin-bottom:.3rem; }
+  .images-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:.6rem; margin-top:.75rem; }
+  .img-item { position:relative; border-radius:8px; overflow:hidden; aspect-ratio:4/3; background:#0f172a; border:2px solid #334155; cursor:grab; transition:border-color .2s; user-select:none; }
+  .img-item.couverture { border-color:#3b82f6; }
+  .img-item.drag-source { opacity:.4; }
+  .img-item.drag-over-target { border-color:#f59e0b; border-style:dashed; }
+  .img-item img { width:100%; height:100%; object-fit:cover; pointer-events:none; display:block; }
+  .img-item-overlay { position:absolute; inset:0; background:rgba(0,0,0,.45); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.3rem; }
+  .img-action { background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.2); color:#fff; border-radius:6px; padding:.25rem .5rem; font-size:.68rem; font-weight:600; cursor:pointer; font-family:'Glacial Indifference',sans-serif; transition:background .15s; white-space:nowrap; }
+  .img-action:hover { background:rgba(255,255,255,.25); }
+  .img-action.danger:hover { background:rgba(239,68,68,.5); }
+  .cover-badge { position:absolute; top:.35rem; left:.35rem; background:#3b82f6; color:#fff; font-size:.58rem; font-weight:700; padding:.12rem .35rem; border-radius:3px; pointer-events:none; font-family:'Glacial Indifference',sans-serif; }
+  .img-count { font-size:.72rem; color:#64748b; margin-top:.4rem; text-align:right; font-family:'Glacial Indifference',sans-serif; }
+
+  /* Tutoriels liste */
+  .tuto-admin-row {
+    display:flex; align-items:center; gap:1rem;
+    padding:.75rem .5rem; border-bottom:1px solid #334155;
+    border-radius:8px; transition:background .15s;
+  }
+  .tuto-admin-row:hover { background:rgba(255,255,255,.04); }
+  .tuto-admin-row:last-child { border-bottom:none; }
+  .tuto-admin-thumb {
+    width:44px; height:44px; border-radius:10px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.2rem; flex-shrink:0;
+  }
+  .tuto-admin-info { flex:1; min-width:0; }
+  .tuto-admin-titre { font-weight:600; font-size:.88rem; color:#f1f5f9; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .tuto-admin-meta { font-size:.72rem; color:#64748b; margin-top:.15rem; }
+  .tuto-admin-actions { display:flex; gap:.5rem; flex-shrink:0; }
+
+  .btn-admin {
+    padding:.4rem .85rem; border-radius:7px; font-size:.78rem;
+    font-family:'Glacial Indifference',sans-serif; font-weight:600;
+    cursor:pointer; border:none; transition:all .15s;
+  }
+  .btn-admin.edit { background:#1e3a5f; color:#93c5fd; }
+  .btn-admin.edit:hover { background:#2563eb; color:#fff; }
+  .btn-admin.delete { background:#3b1a1a; color:#fca5a5; }
+  .btn-admin.delete:hover { background:#dc2626; color:#fff; }
+  .btn-admin.primary { background:#3b82f6; color:#fff; }
+  .btn-admin.primary:hover { background:#2563eb; }
+  .btn-admin.success { background:#065f46; color:#6ee7b7; }
+  .btn-admin.success:hover { background:#059669; color:#fff; }
+  .btn-admin:disabled { opacity:.5; cursor:not-allowed; }
+
+  /* Questionnaire builder */
+  .quiz-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; }
+  .quiz-title { font-family:'Glacial Indifference',sans-serif; font-size:.9rem; font-weight:700; color:#f8fafc; }
+  .quiz-count { font-size:.7rem; color:#64748b; background:#0f172a; padding:.2rem .5rem; border-radius:999px; border:1px solid #334155; }
+  .quiz-question-card { background:#0f172a; border:1px solid #334155; border-radius:10px; padding:1rem; margin-bottom:.75rem; position:relative; }
+  .quiz-question-num { font-size:.68rem; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:.06em; margin-bottom:.45rem; }
+  .quiz-question-input { width:100%; padding:.55rem .8rem; background:#1e293b; border:1px solid #334155; border-radius:7px; color:#f1f5f9; font-size:.82rem; margin-bottom:.55rem; font-family:'Glacial Indifference',sans-serif; box-sizing:border-box; outline:none; }
+  .quiz-question-input:focus { border-color:#0891b2; }
+  .quiz-type-row { display:flex; align-items:center; gap:.4rem; flex-wrap:wrap; margin-bottom:.45rem; }
+  .quiz-type-btn { font-size:.7rem; padding:.25rem .55rem; border-radius:5px; border:1px solid #334155; background:#1e293b; color:#64748b; cursor:pointer; font-family:'Glacial Indifference',sans-serif; font-weight:600; transition:all .15s; }
+  .quiz-type-btn.active-texte { background:rgba(8,145,178,.15); border-color:#0891b2; color:#67e8f9; }
+  .quiz-type-btn.active-qcm   { background:rgba(139,92,246,.15); border-color:#8b5cf6; color:#c4b5fd; }
+  .quiz-options-area { margin-top:.45rem; }
+  .quiz-option-row { display:flex; gap:.35rem; margin-bottom:.3rem; align-items:center; }
+  .quiz-option-input { flex:1; padding:.45rem .7rem; background:#1e293b; border:1px solid #334155; border-radius:6px; color:#f1f5f9; font-size:.8rem; font-family:'Glacial Indifference',sans-serif; outline:none; }
+  .quiz-option-input:focus { border-color:#8b5cf6; }
+  .quiz-option-del { width:24px; height:24px; border-radius:4px; border:none; background:#3b1a1a; color:#fca5a5; cursor:pointer; font-size:.75rem; flex-shrink:0; }
+  .quiz-option-del:hover { background:#dc2626; color:#fff; }
+  .btn-add-option { font-size:.7rem; color:#8b5cf6; background:none; border:1px dashed #4c1d95; border-radius:5px; padding:.25rem .55rem; cursor:pointer; margin-top:.2rem; font-family:'Glacial Indifference',sans-serif; transition:all .15s; }
+  .btn-add-option:hover { background:rgba(139,92,246,.1); }
+  .quiz-correct-btn { width:26px; height:26px; border-radius:4px; border:1px solid #334155; background:#1e293b; cursor:pointer; font-size:.8rem; flex-shrink:0; transition:all .15s; }
+  .quiz-correct-btn.correct { background:rgba(34,197,94,.15); border-color:#22c55e; }
+  .quiz-correct-btn:hover { border-color:#22c55e; }
+  .quiz-multiple-badge { font-size:.7rem; font-weight:600; padding:.2rem .5rem; border-radius:999px; background:#1e293b; border:1px solid #334155; color:#64748b; font-family:'Glacial Indifference',sans-serif; }
+  .quiz-multiple-badge.active { background:rgba(139,92,246,.15); border-color:#8b5cf6; color:#c4b5fd; }
+  .quiz-del-btn { position:absolute; top:.7rem; right:.7rem; width:24px; height:24px; border-radius:4px; border:none; background:#3b1a1a; color:#fca5a5; cursor:pointer; font-size:.75rem; }
+  .quiz-del-btn:hover { background:#dc2626; color:#fff; }
+  .btn-add-question { width:100%; padding:.6rem; border-radius:8px; background:rgba(8,145,178,.08); border:1px dashed rgba(8,145,178,.35); color:#67e8f9; font-size:.82rem; font-weight:600; cursor:pointer; font-family:'Glacial Indifference',sans-serif; transition:all .15s; }
+  .btn-add-question:hover { background:rgba(8,145,178,.18); }
+  .quiz-minimum-note { font-size:.7rem; color:#f59e0b; margin-top:.35rem; }
+
+  /* Messages contact */
+  .message-card { background:#0f172a; border:1px solid #334155; border-radius:12px; padding:1.25rem; margin-bottom:.85rem; transition:border-color .15s; }
+  .message-card.non-lu { border-left:3px solid #3b82f6; }
+  .message-card-header { display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; margin-bottom:.75rem; }
+  .message-card-meta { flex:1; }
+  .message-card-nom { font-family:'Glacial Indifference',sans-serif; font-size:.95rem; font-weight:700; color:#f8fafc; }
+  .message-card-email { font-size:.78rem; color:#64748b; margin-top:.1rem; }
+  .message-card-date { font-size:.72rem; color:#475569; white-space:nowrap; }
+  .message-card-sujet { font-size:.82rem; font-weight:600; color:#93c5fd; margin-bottom:.5rem; }
+  .message-card-body { font-size:.85rem; color:#94a3b8; line-height:1.6; white-space:pre-wrap; }
+  .message-card-img { max-width:200px; border-radius:8px; margin-top:.75rem; cursor:pointer; }
+  .message-card-actions { display:flex; gap:.5rem; margin-top:.85rem; }
+  .badge-non-lu { display:inline-block; background:rgba(59,130,246,.15); color:#93c5fd; font-size:.65rem; font-weight:700; padding:.15rem .45rem; border-radius:4px; margin-left:.4rem; }
+  .messages-empty { text-align:center; padding:3rem; color:#475569; font-family:'Glacial Indifference',sans-serif; }
+  /* Boutons rôle modal */
+  .modal-role-btn {
+    background:#0f172a; border:1px solid #334155; color:#94a3b8;
+    font-size:.75rem; padding:.5rem .4rem; border-radius:8px;
+    transition:all .15s; text-align:center;
+  }
+  .modal-role-btn:hover { border-color:#3b82f6; color:#f8fafc; background:#1e293b; }
+  .modal-role-btn.actif-apprenant { background:rgba(59,130,246,.15); border-color:#3b82f6; color:#93c5fd; font-weight:700; }
+  .modal-role-btn.actif-contributeur { background:rgba(103,232,249,.1); border-color:#67e8f9; color:#67e8f9; font-weight:700; }
+  .modal-role-btn.actif-admin { background:rgba(245,158,11,.15); border-color:#f59e0b; color:#fcd34d; font-weight:700; }
+
+  /* Modal profil membre */
+  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:1000; align-items:center; justify-content:center; }
+  .modal-overlay.actif { display:flex; }
+  .modal-box {
+    background:#1e293b; border:1px solid #334155; border-radius:16px;
+    padding:2rem; width:100%; max-width:420px; position:relative;
+  }
+  .modal-close {
+    position:absolute; top:1rem; right:1rem;
+    background:none; border:none; color:#64748b;
+    font-size:1.1rem; cursor:pointer; transition:color .15s;
+  }
+  .modal-close:hover { color:#f8fafc; }
+  .profil-avatar-big {
+    width:72px; height:72px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:1.5rem; color:#fff; margin:0 auto 1rem;
+    position:relative;
+  }
+  .profil-nom { font-family:'Glacial Indifference',sans-serif; font-size:1.2rem; font-weight:700; color:#f8fafc; text-align:center; }
+  .profil-detail { font-size:.82rem; color:#64748b; text-align:center; margin-top:.25rem; }
+  .profil-stats {
+    display:grid; grid-template-columns:1fr 1fr;
+    gap:.75rem; margin:1.25rem 0;
+  }
+  .profil-stat {
+    background:#0f172a; border-radius:10px; padding:.85rem;
+    text-align:center;
+  }
+  .profil-stat-num { font-size:1.4rem; font-weight:700; color:#3b82f6; font-family:'Glacial Indifference',sans-serif; }
+  .profil-stat-label { font-size:.7rem; color:#64748b; margin-top:.2rem; }
+
+  /* Toast */
+  .toast-admin {
+    position:fixed; bottom:1.5rem; right:1.5rem;
+    background:#1e293b; border:1px solid #334155; border-radius:10px;
+    padding:.85rem 1.25rem; font-size:.85rem; color:#f1f5f9;
+    font-family:'Glacial Indifference',sans-serif;
+    transform:translateY(100px); opacity:0;
+    transition:all .3s; z-index:2000;
+  }
+  .toast-admin.visible { transform:translateY(0); opacity:1; }
+  .toast-admin.succes { border-left:4px solid #22c55e; }
+  .toast-admin.erreur { border-left:4px solid #ef4444; }
+
+  /* Stats top */
+  .admin-stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-bottom:1.5rem; }
+  .admin-stat-card {
+    background:#1e293b; border:1px solid #334155; border-radius:12px;
+    padding:1.25rem; text-align:center;
+  }
+  .admin-stat-num { font-size:2rem; font-weight:700; color:#3b82f6; font-family:'Glacial Indifference',sans-serif; }
+  .admin-stat-label { font-size:.78rem; color:#64748b; margin-top:.25rem; }
+
+  .section-divider { border:none; border-top:1px solid #334155; margin:1.5rem 0; }
+
+  /* Sidebar scrollable */
+  .admin-nav { padding:1rem 0; flex:1; overflow-y:auto; }
+
+  /* Project tab styles */
+  .proj-card {
+    background:#0f172a; border:1px solid #334155; border-radius:12px;
+    padding:1.5rem; margin-bottom:1.25rem;
+  }
+  .proj-card-title {
+    font-family:'Glacial Indifference',sans-serif;
+    font-size:.95rem; font-weight:700; color:#f8fafc;
+    margin-bottom:1rem; display:flex; align-items:center; gap:.5rem;
+  }
+  .proj-section-header {
+    display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem;
+  }
+  .proj-section-icon {
+    width:48px; height:48px; border-radius:12px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.4rem; flex-shrink:0; background:#1e3a5f;
+  }
+  .proj-section-icon.green { background:#065f46; }
+  .proj-section-icon.amber { background:#78350f; }
+  .proj-section-title { font-family:'Glacial Indifference',sans-serif; font-size:1.2rem; font-weight:700; color:#f8fafc; }
+  .proj-section-subtitle { font-size:.82rem; color:#64748b; margin-top:.2rem; }
+  .proj-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; }
+  @media(max-width:900px){ .proj-grid-2 { grid-template-columns:1fr; } }
+
+  /* Personas */
+  .persona-card { background:#0f172a; border:1px solid #334155; border-radius:12px; padding:1.5rem; }
+  .persona-card.apprenant { border-top:3px solid #3b82f6; }
+  .persona-card.contributeur { border-top:3px solid #f59e0b; }
+  .persona-avatar { width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.6rem; margin-bottom:.75rem; }
+  .persona-avatar.blue { background:rgba(59,130,246,.15); }
+  .persona-avatar.amber { background:rgba(245,158,11,.15); }
+  .persona-name { font-family:'Glacial Indifference',sans-serif; font-size:1.1rem; font-weight:700; color:#f8fafc; }
+  .persona-role { font-size:.8rem; color:#64748b; margin-bottom:1rem; }
+  .persona-row { margin-bottom:.75rem; }
+  .persona-label { font-size:.7rem; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:.05em; margin-bottom:.2rem; }
+  .persona-value { font-size:.82rem; color:#cbd5e1; line-height:1.5; }
+  .persona-tags { display:flex; flex-wrap:wrap; gap:.4rem; margin-top:1rem; }
+  .tag { font-size:.7rem; padding:.2rem .55rem; border-radius:999px; font-weight:600; }
+  .tag-blue { background:rgba(59,130,246,.15); color:#93c5fd; border:1px solid rgba(59,130,246,.3); }
+  .tag-amber { background:rgba(245,158,11,.15); color:#fcd34d; border:1px solid rgba(245,158,11,.3); }
+  .tag-slate { background:#1e293b; color:#94a3b8; border:1px solid #334155; }
+
+  /* Timeline (parcours) */
+  .timeline { position:relative; padding-left:2rem; }
+  .timeline::before { content:''; position:absolute; left:.45rem; top:.5rem; bottom:.5rem; width:2px; background:#334155; }
+  .timeline-item { position:relative; margin-bottom:1.75rem; }
+  .timeline-dot { width:14px; height:14px; border-radius:50%; position:absolute; left:-1.74rem; top:.35rem; border:2px solid #0f172a; }
+  .timeline-time { font-size:.68rem; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:.07em; margin-bottom:.2rem; }
+  .timeline-title { font-family:'Glacial Indifference',sans-serif; font-size:.95rem; font-weight:700; color:#f8fafc; margin-bottom:.35rem; }
+  .timeline-desc { font-size:.82rem; color:#94a3b8; line-height:1.55; margin-bottom:.5rem; }
+  .timeline-tips { display:flex; flex-direction:column; gap:.3rem; }
+  .timeline-tip { font-size:.78rem; color:#64748b; background:#1e293b; border-radius:6px; padding:.4rem .7rem; display:flex; gap:.4rem; }
+  .timeline-tip span { color:#94a3b8; }
+
+  /* Zoning */
+  .zoning-mockup { background:#0f172a; border:1px solid #334155; border-radius:12px; padding:1.25rem; display:flex; flex-direction:column; gap:.6rem; }
+  .zone { border-radius:8px; padding:.75rem; position:relative; }
+  .zone-header { background:rgba(59,130,246,.12); border:1px solid rgba(59,130,246,.25); }
+  .zone-hero { background:rgba(139,92,246,.12); border:1px solid rgba(139,92,246,.25); min-height:80px; }
+  .zone-filters { background:rgba(245,158,11,.1); border:1px solid rgba(245,158,11,.2); }
+  .zone-main { background:rgba(16,185,129,.08); border:1px solid rgba(16,185,129,.2); min-height:100px; }
+  .zone-footer { background:#1e293b; border:1px solid #334155; }
+  .zone-label { font-size:.6rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:#475569; margin-bottom:.4rem; }
+  .zone-content { font-size:.75rem; color:#94a3b8; }
+  .zone-desc { font-size:.65rem; color:#475569; margin-top:.3rem; font-style:italic; }
+  .mock-nav { display:flex; align-items:center; gap:.5rem; }
+  .mock-logo { width:60px; height:10px; background:#3b82f6; border-radius:3px; }
+  .mock-search { flex:1; height:10px; background:#1e293b; border-radius:3px; }
+  .mock-btns { display:flex; gap:.3rem; }
+  .mock-btn { font-size:.6rem; padding:.15rem .4rem; border-radius:3px; font-weight:600; }
+  .mock-btn.outline { background:transparent; border:1px solid #3b82f6; color:#3b82f6; }
+  .mock-btn.fill { background:#3b82f6; color:#fff; border:1px solid #3b82f6; }
+  .mock-hero-text .mock-h1 { font-size:.72rem; font-weight:700; color:#f8fafc; line-height:1.3; margin-bottom:.3rem; }
+  .mock-hero-text .mock-sub { font-size:.6rem; color:#94a3b8; margin-bottom:.4rem; }
+  .mock-hero-text .mock-cta { display:inline-block; background:#3b82f6; color:#fff; font-size:.6rem; padding:.2rem .5rem; border-radius:4px; }
+  .mock-filters { display:flex; gap:.3rem; flex-wrap:wrap; }
+  .mock-filter { font-size:.6rem; padding:.15rem .4rem; border-radius:999px; font-weight:600; }
+  .mock-filter.active { background:#3b82f6; color:#fff; }
+  .mock-filter.inactive { background:#1e293b; color:#64748b; border:1px solid #334155; }
+  .mock-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:.4rem; }
+  .mock-card { background:#1e293b; border-radius:4px; padding:.4rem; }
+  .mock-card-img { font-size:1rem; text-align:center; margin-bottom:.2rem; }
+  .mock-card-title { font-size:.6rem; font-weight:700; color:#f8fafc; }
+  .mock-card-meta { font-size:.55rem; color:#64748b; }
+
+  /* Social Media */
+  .network-choice { background:#0f172a; border:1px solid rgba(131,58,180,.3); border-radius:12px; padding:1.25rem; display:flex; gap:1rem; align-items:flex-start; margin-bottom:1.5rem; }
+  .network-icon { font-size:2rem; flex-shrink:0; }
+  .network-title { font-family:'Glacial Indifference',sans-serif; font-size:1rem; font-weight:700; color:#f8fafc; margin-bottom:.5rem; }
+  .network-args { display:flex; flex-direction:column; gap:.35rem; }
+  .network-arg { font-size:.82rem; color:#94a3b8; }
+  .calendar-table { width:100%; border-collapse:collapse; font-family:'Glacial Indifference',sans-serif; }
+  .calendar-table th { background:#1e293b; color:#64748b; font-size:.75rem; padding:.6rem 1rem; text-align:left; }
+  .calendar-table td { padding:.55rem 1rem; border-bottom:1px solid #1e293b; font-size:.82rem; color:#cbd5e1; background:#0f172a; }
+  .calendar-table tr:hover td { background:#1e293b; }
+
+  /* Calendrier graphique */
+  .cal-week-col { display:flex; flex-direction:column; gap:.6rem; }
+  .cal-week-header {
+    background:#1e293b; border:1px solid #334155; border-radius:10px;
+    padding:.6rem 1rem; display:flex; align-items:center; justify-content:space-between;
+    position:sticky; top:0;
+  }
+  .cal-week-label { font-family:'Glacial Indifference',sans-serif; font-size:.9rem; font-weight:700; color:#f8fafc; }
+  .cal-week-count { font-size:.7rem; color:#64748b; background:#0f172a; padding:.15rem .45rem; border-radius:999px; }
+  .cal-card {
+    border-radius:10px; padding:.75rem; border-left:3px solid transparent;
+    background:#0f172a; border-top:1px solid #1e293b; border-right:1px solid #1e293b; border-bottom:1px solid #1e293b;
+    transition:transform .15s, box-shadow .15s; cursor:default;
+  }
+  .cal-card:hover { transform:translateY(-2px); box-shadow:0 4px 16px rgba(0,0,0,.3); }
+  .cal-card.f-reel   { border-left-color:#f87171; }
+  .cal-card.f-carrousel { border-left-color:#93c5fd; }
+  .cal-card.f-visuel { border-left-color:#c4b5fd; }
+  .cal-card.f-texte  { border-left-color:#6ee7b7; }
+  .cal-card.f-story  { border-left-color:#fcd34d; }
+  .cal-card-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:.4rem; gap:.4rem; }
+  .cal-card-num { font-size:.65rem; font-weight:700; color:#475569; min-width:18px; }
+  .cal-card-theme { font-size:.78rem; font-weight:600; color:#e2e8f0; line-height:1.35; flex:1; }
+  .cal-card-obj { font-size:.62rem; color:#64748b; margin-top:.35rem; }
+  @media(max-width:900px){ #calendarGrid { grid-template-columns:repeat(2,1fr) !important; } }
+  @media(max-width:580px){ #calendarGrid { grid-template-columns:1fr !important; } }
+  .pub-num { width:24px; height:24px; background:#1e293b; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.72rem; font-weight:700; color:#64748b; }
+  .format-badge { display:inline-block; padding:.15rem .45rem; border-radius:4px; font-size:.7rem; font-weight:600; }
+  .f-reel { background:rgba(239,68,68,.15); color:#f87171; }
+  .f-carrousel { background:rgba(59,130,246,.15); color:#93c5fd; }
+  .f-visuel { background:rgba(139,92,246,.15); color:#c4b5fd; }
+  .f-texte { background:rgba(16,185,129,.15); color:#6ee7b7; }
+  .f-story { background:rgba(245,158,11,.15); color:#fcd34d; }
+  .objectif-badge { background:#1e293b; color:#94a3b8; font-size:.7rem; padding:.15rem .45rem; border-radius:4px; }
+
+  /* Audit SEO */
+  .audit-category { background:#0f172a; border:1px solid #334155; border-radius:12px; overflow:hidden; margin-bottom:1.25rem; }
+  .audit-header { display:flex; gap:1rem; align-items:center; padding:1rem 1.25rem; }
+  .audit-icon { font-size:1.5rem; }
+  .audit-title { font-family:'Glacial Indifference',sans-serif; font-size:.95rem; font-weight:700; color:#f8fafc; }
+  .audit-subtitle { font-size:.75rem; color:#64748b; margin-top:.1rem; }
+  .audit-items { list-style:none; padding:0; margin:0; }
+  .audit-item { display:flex; align-items:flex-start; gap:.75rem; padding:.75rem 1.25rem; border-top:1px solid #1e293b; }
+  .audit-item:hover { background:#1e293b; }
+  .audit-item-icon { font-size:.9rem; flex-shrink:0; margin-top:.05rem; }
+  .audit-item-text { flex:1; font-size:.82rem; color:#94a3b8; line-height:1.45; }
+  .audit-priority { font-size:.7rem; font-weight:600; white-space:nowrap; padding:.15rem .4rem; border-radius:4px; flex-shrink:0; }
+  .p-high { background:rgba(239,68,68,.1); color:#f87171; }
+  .p-med  { background:rgba(245,158,11,.1); color:#fcd34d; }
+  .p-low  { background:rgba(16,185,129,.1); color:#6ee7b7; }
+
+  /* Publications */
+  .pub-preview { background:#0f172a; border:1px solid #334155; border-radius:12px; overflow:hidden; }
+  .pub-visual { position:relative; min-height:200px; display:flex; align-items:center; justify-content:center; padding:1.5rem; color:#fff; }
+  .long-post { background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%); border-bottom:1px solid #334155; }
+  .flash { background:linear-gradient(135deg,#1d4ed8,#7c3aed); border-bottom:1px solid rgba(255,255,255,.1); }
+  .reel { background:linear-gradient(135deg,#7c3aed,#ec4899); border-bottom:1px solid rgba(255,255,255,.1); }
+  .infographie { background:linear-gradient(135deg,#0f172a,#1e293b); border-bottom:1px solid #334155; color:#f8fafc; }
+  .mock-post-title { font-size:.9rem; font-weight:700; color:#f8fafc; line-height:1.3; margin-bottom:.4rem; }
+  .mock-post-body { font-size:.75rem; color:#94a3b8; line-height:1.45; margin-bottom:.5rem; }
+  .mock-post-tag { font-size:.68rem; color:#3b82f6; }
+  .pub-body { padding:1rem 1.25rem; }
+  .pub-type { font-size:.7rem; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:.07em; margin-bottom:.25rem; }
+  .pub-name { font-family:'Glacial Indifference',sans-serif; font-size:.95rem; font-weight:700; color:#f8fafc; margin-bottom:.35rem; }
+  .pub-desc { font-size:.8rem; color:#94a3b8; line-height:1.5; }
+</style>
+</head>
+<body>
+
+<div class="admin-layout">
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="admin-logo">
+      <span>⚡ TutoMotion</span>
+      <span class="admin-logo-badge">ADMIN</span>
+    </div>
+    <nav class="admin-nav">
+      <div class="admin-nav-item active" onclick="showTab('membres', this)">
+        <span class="nav-icon">👥</span> Membres
+      </div>
+      <div class="admin-nav-item" onclick="showTab('tutoriels', this)">
+        <span class="nav-icon">📚</span> Tutoriels
+      </div>
+      <div class="admin-nav-item" style="margin-top:.5rem;padding-top:.5rem;border-top:1px solid #334155;pointer-events:none;font-size:.7rem;color:#475569;letter-spacing:.07em;text-transform:uppercase">
+        Projet
+      </div>
+      <div class="admin-nav-item" onclick="showTab('personas', this)">
+        <span class="nav-icon">👤</span> Personas
+      </div>
+      <div class="admin-nav-item" onclick="showTab('parcours', this)">
+        <span class="nav-icon">🗺️</span> Parcours utilisateur
+      </div>
+      <div class="admin-nav-item" onclick="showTab('zoning', this)">
+        <span class="nav-icon">📐</span> Zoning
+      </div>
+      <div class="admin-nav-item" onclick="showTab('social', this)">
+        <span class="nav-icon">📱</span> Social Media
+      </div>
+      <div class="admin-nav-item" onclick="showTab('seo', this)">
+        <span class="nav-icon">🔍</span> Audit SEO
+      </div>
+      <div class="admin-nav-item" onclick="showTab('publications', this)">
+        <span class="nav-icon">🖼️</span> Publications
+      </div>
+      <div class="admin-nav-item" onclick="showTab('messages', this)" id="navMessages">
+        <span class="nav-icon">✉️</span> Messages <span id="badgeMessages" style="display:none;background:#ef4444;color:#fff;font-size:.6rem;font-weight:700;padding:.1rem .35rem;border-radius:999px;margin-left:.3rem"></span>
+      </div>
+    </nav>
+    <div class="admin-sidebar-footer">
+      <div class="admin-back-btn" onclick="window.location.href='/'">
+        ← Retour au site
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="admin-main">
+
+    <!-- TAB : Membres -->
+    <div id="tab-membres" class="admin-tab active">
+      <div class="admin-topbar">
+        <div>
+          <div class="admin-title">👥 Membres</div>
+          <div class="admin-subtitle">Utilisateurs inscrits sur TutoMotion</div>
+        </div>
+        <button class="btn-admin primary" onclick="chargerMembres()">↺ Actualiser</button>
+      </div>
+
+      <div class="admin-stats-row" id="statsRow">
+        <div class="admin-stat-card"><div class="admin-stat-num" id="statTotal">—</div><div class="admin-stat-label">Membres total</div></div>
+        <div class="admin-stat-card"><div class="admin-stat-num" id="statOnline">—</div><div class="admin-stat-label">En ligne</div></div>
+        <div class="admin-stat-card"><div class="admin-stat-num" id="statAdmins">—</div><div class="admin-stat-label">Admins</div></div>
+      </div>
+
+      <div class="admin-card">
+        <div class="admin-card-title">🔴 En ligne maintenant</div>
+        <div id="listeOnline"><div style="color:#64748b;font-size:.85rem">Chargement…</div></div>
+      </div>
+
+      <div class="admin-card">
+        <div class="admin-card-title">👤 Tous les membres</div>
+        <div id="listeMembres"><div style="color:#64748b;font-size:.85rem">Chargement…</div></div>
+      </div>
+    </div>
+
+    <!-- TAB : Tutoriels -->
+    <div id="tab-tutoriels" class="admin-tab">
+      <div class="admin-topbar">
+        <div>
+          <div class="admin-title">📚 Tutoriels</div>
+          <div class="admin-subtitle">Gérer les cours publiés</div>
+        </div>
+        <button class="btn-admin primary" onclick="window.location.href='/creer-cours'">➕ Nouveau cours</button>
+      </div>
+      <div class="admin-card">
+        <div id="listeTutoriels"><div style="color:#64748b;font-size:.85rem">Chargement…</div></div>
+      </div>
+    </div>
+
+    <!-- TAB : Nouveau cours (inline dans tutoriels) -->
+    <div id="tab-nouveau" class="admin-tab">
+      <div class="admin-topbar">
+        <div>
+          <div class="admin-title" id="formTitreHeader">➕ Nouveau cours</div>
+          <div class="admin-subtitle" id="formSousTitre">Créer un nouveau tutoriel</div>
+        </div>
+        <button class="btn-admin edit" onclick="showTab('tutoriels', document.querySelector('[onclick*=tutoriels]'))">← Retour</button>
+      </div>
+
+      <div class="admin-card">
+        <input type="hidden" id="editTutoId" value="">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Titre *</label>
+            <input class="form-input" type="text" id="fTitre" placeholder="Ex : Introduction à TypeScript">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Catégories * <span style="color:#475569;font-weight:400">(plusieurs possibles)</span></label>
+            <div class="cat-checkboxes" id="fCategories">
+              <label class="cat-check"><input type="checkbox" value="Motion Design"> 🎬 Motion Design</label>
+              <label class="cat-check"><input type="checkbox" value="Montage Vidéo"> 🎞️ Montage Vidéo</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Auteur *</label>
+            <input class="form-input" type="text" id="fAuteur" placeholder="Ex : Léa Martin">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Durée (min)</label>
+              <input class="form-input" type="number" id="fDuree" value="10" min="1">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Emoji</label>
+              <input class="form-input" type="text" id="fEmoji" value="🎬" maxlength="4">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Images du cours <span style="color:#475569;font-weight:400">(glisser pour réordonner · première image = couverture)</span></label>
+          <div class="upload-drop-area" id="dropArea" onclick="document.getElementById('fImages').click()">
+            <input type="file" id="fImages" accept="image/*" multiple onchange="ajouterFichiers(this.files)">
+            <div class="upload-drop-hint">
+              <span>🖼️</span>
+              Cliquez ou glissez des images ici
+              <div style="font-size:.72rem;margin-top:.3rem">PNG, JPG, WebP · max 10 Mo · plusieurs fichiers acceptés</div>
+            </div>
+          </div>
+          <div class="images-grid" id="imagesGrid"></div>
+          <div class="img-count" id="imgCount" style="display:none"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Phrase d'accroche <span style="color:#475569;font-weight:400">(visible sans connexion — 1-2 phrases max)</span></label>
+          <textarea class="form-input" id="fAccroche" rows="3" placeholder="Ex : Découvre comment créer des animations fluides sur After Effects…" style="resize:vertical;line-height:1.65;font-family:'Glacial Indifference',sans-serif"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Contenu du cours</label>
+          <div class="editor-toolbar" id="editorToolbar">
+            <button type="button" class="tool-btn" onclick="formatDoc('bold')"><b>B</b></button>
+            <button type="button" class="tool-btn" onclick="formatDoc('italic')"><i>I</i></button>
+            <button type="button" class="tool-btn" onclick="formatDoc('underline')"><u>U</u></button>
+            <div class="tool-sep"></div>
+            <button type="button" class="tool-btn" onclick="insererTitre('h2')">H2</button>
+            <button type="button" class="tool-btn" onclick="insererTitre('h3')">H3</button>
+            <div class="tool-sep"></div>
+            <button type="button" class="tool-btn" onclick="formatDoc('insertUnorderedList')">☰</button>
+            <button type="button" class="tool-btn" onclick="formatDoc('insertOrderedList')">1.</button>
+            <div class="tool-sep"></div>
+            <button type="button" class="tool-btn tool-btn-image" onclick="document.getElementById('editorImageInput').click()">🖼️ Image</button>
+            <input type="file" id="editorImageInput" accept="image/*" multiple style="display:none" onchange="insererImages(this.files)">
+            <div class="tool-sep"></div>
+            <button type="button" class="tool-btn tool-btn-video" onclick="ouvrirModalYoutube()">▶ YouTube</button>
+          </div>
+          <div class="editor-content" id="fContenu" contenteditable="true"
+            data-placeholder="Rédigez le contenu du cours ici... Utilisez la barre d'outils pour mettre en forme et insérer des images.">
+          </div>
+        </div>
+
+        <div class="form-error" id="formErreur"></div>
+
+        <!-- Questionnaire -->
+        <div style="border-top:1px solid #334155;margin-top:1.25rem;padding-top:1.25rem">
+          <div class="quiz-header">
+            <div>
+              <div class="quiz-title">🧠 Questionnaire de validation</div>
+              <div style="font-size:.72rem;color:#64748b;margin-top:.2rem">Min. 5 questions pour valider le cours</div>
+            </div>
+            <span class="quiz-count" id="quizCount">0 question</span>
+          </div>
+          <div id="quizBuilder"></div>
+          <button type="button" class="btn-add-question" onclick="ajouterQuestion()">+ Ajouter une question</button>
+          <div class="quiz-minimum-note" id="quizNote"></div>
+        </div>
+        <div style="display:flex;gap:.75rem;margin-top:.5rem">
+          <button class="btn-admin primary" id="formSubmitBtn" onclick="soumettreFormulaire()" style="padding:.65rem 1.5rem">💾 Enregistrer</button>
+          <button class="btn-admin edit" onclick="resetFormulaire()">✕ Annuler</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB : Personas -->
+    <div id="tab-personas" class="admin-tab">
+      <div class="admin-topbar">
+        <div>
+          <div class="admin-title">👤 Personas utilisateurs</div>
+          <div class="admin-subtitle">Étape 2 — Deux profils types représentant les utilisateurs cibles</div>
+        </div>
+      </div>
+      <div class="proj-grid-2">
+        <div class="persona-card apprenant">
+          <div class="persona-avatar blue">🎓</div>
+          <div class="persona-name">Lucas Bertin</div>
+          <div class="persona-role">L'Apprenant · 20 ans · Étudiant en Design Graphique</div>
+          <div class="persona-row"><div class="persona-label">📍 Contexte</div><div class="persona-value">En 2ème année à l'école de design de Rouen. Passe 3h/jour sur son ordi, principalement sur YouTube et Pinterest pour apprendre.</div></div>
+          <div class="persona-row"><div class="persona-label">🎯 Besoins</div><div class="persona-value">Trouver des ressources rapides et fiables pour monter en compétence sur des logiciels spécifiques (Figma, Adobe Suite).</div></div>
+          <div class="persona-row"><div class="persona-label">😤 Frustrations</div><div class="persona-value">Tutoriels trop longs ou mal structurés. Impossible de reprendre là où il s'est arrêté. Contenu non indexé = introuvable.</div></div>
+          <div class="persona-row"><div class="persona-label">✅ Objectifs sur le site</div><div class="persona-value">Suivre sa progression, retrouver facilement les tutoriels consultés, noter et commenter les contenus.</div></div>
+          <div class="persona-row"><div class="persona-label">📱 Équipements</div><div class="persona-value">MacBook Air, iPhone 13, bonne connexion en résidence étudiante.</div></div>
+          <div class="persona-tags">
+            <span class="tag tag-blue">Accès Connecté</span>
+            <span class="tag tag-slate">Mobile-first</span>
+            <span class="tag tag-slate">Apprenant</span>
+          </div>
+        </div>
+        <div class="persona-card contributeur">
+          <div class="persona-avatar amber">💼</div>
+          <div class="persona-name">Léa Martin</div>
+          <div class="persona-role">La Contributrice · 24 ans · Alternante Design Graphique</div>
+          <div class="persona-row"><div class="persona-label">📍 Contexte</div><div class="persona-value">En alternance dans une agence web normande. Développe en React/Node.js et souhaite valoriser ses apprentissages du semestre.</div></div>
+          <div class="persona-row"><div class="persona-label">🎯 Besoins</div><div class="persona-value">Centraliser ses créations pour constituer un portfolio en ligne. Avoir une interface d'admin simple pour gérer ses contenus.</div></div>
+          <div class="persona-row"><div class="persona-label">😤 Frustrations</div><div class="persona-value">Les plateformes où publier est complexe ou demande trop de configuration. Elle veut écrire, pas configurer.</div></div>
+          <div class="persona-row"><div class="persona-label">✅ Objectifs sur le site</div><div class="persona-value">Ajouter, modifier ou supprimer du contenu simplement via une interface sécurisée. Voir les statistiques de ses tutoriels.</div></div>
+          <div class="persona-row"><div class="persona-label">📱 Équipements</div><div class="persona-value">PC Windows + second écran, Firefox Developer Edition, connexion fibre en agence.</div></div>
+          <div class="persona-tags">
+            <span class="tag tag-amber">Accès Admin</span>
+            <span class="tag tag-slate">Contributrice</span>
+            <span class="tag tag-slate">Portfolio</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB : Parcours utilisateur -->
+    <div id="tab-parcours" class="admin-tab">
+      <div class="admin-topbar">
+        <div>
+          <div class="admin-title">🗺️ Parcours utilisateur</div>
+          <div class="admin-subtitle">"S'inscrire et suivre un tutoriel" — Le chemin complet de l'arrivée à l'engagement</div>
+        </div>
+      </div>
+      <div class="admin-card" style="max-width:680px">
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:#3b82f6"></div>
+            <div class="timeline-time">ÉTAPE 1</div>
+            <div class="timeline-title">🏠 Arrivée sur la page d'accueil publique</div>
+            <div class="timeline-desc">L'utilisateur découvre TutoMotion via Google, un lien Instagram ou une recommandation. Il voit les tutoriels en aperçu, sans être connecté.</div>
+            <div class="timeline-tips"><div class="timeline-tip">🔑 <span>Point clé UI : le Hero est visible immédiatement, le CTA "Explorer" est au-dessus de la ligne de flottaison.</span></div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:#7c3aed"></div>
+            <div class="timeline-time">ÉTAPE 2</div>
+            <div class="timeline-title">🔎 Découverte et navigation</div>
+            <div class="timeline-desc">Il parcourt la grille de tutoriels, filtre par catégorie (Design, Dev, Marketing) ou utilise la barre de recherche.</div>
+            <div class="timeline-tips"><div class="timeline-tip">🔑 <span>Point clé UI : les cartes tutoriel affichent le titre, la durée et l'auteur. Un badge "🔒 Connexion requise" apparaît sur le contenu complet.</span></div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:#f59e0b"></div>
+            <div class="timeline-time">ÉTAPE 3</div>
+            <div class="timeline-title">🚪 Déclencheur d'inscription</div>
+            <div class="timeline-desc">En cliquant sur un tutoriel, une modale ou une section invite l'utilisateur à s'inscrire ou se connecter pour accéder au contenu complet.</div>
+            <div class="timeline-tips"><div class="timeline-tip">🔑 <span>Point clé UX : ne pas bloquer l'accès brutalement — montrer le début du tutoriel, puis afficher le "gate" d'inscription.</span></div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:#22c55e"></div>
+            <div class="timeline-time">ÉTAPE 4</div>
+            <div class="timeline-title">✍️ Formulaire d'inscription</div>
+            <div class="timeline-desc">L'utilisateur remplit le formulaire : Prénom, Email, Mot de passe. Validation côté client (JS) puis côté serveur.</div>
+            <div class="timeline-tips">
+              <div class="timeline-tip">🔑 <span>Point clé UX : formulaire court (3 champs max), feedback d'erreur immédiat, bouton CTA clair "Créer mon compte".</span></div>
+              <div class="timeline-tip">🔒 <span>Sécurité : hashage du mot de passe (bcrypt), protection CSRF, RGPD (case opt-in newsletter).</span></div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:#3b82f6"></div>
+            <div class="timeline-time">ÉTAPE 5</div>
+            <div class="timeline-title">✅ Connexion & Accès complet</div>
+            <div class="timeline-desc">Une fois connecté, il accède au tutoriel complet. Le tutoriel s'ajoute automatiquement à son historique dans son tableau de bord.</div>
+            <div class="timeline-tips"><div class="timeline-tip">🔑 <span>Point clé UI : le header affiche maintenant son avatar, un bouton "Mon tableau de bord" et une notification de bienvenue.</span></div></div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:#22c55e"></div>
+            <div class="timeline-time">ÉTAPE 6</div>
+            <div class="timeline-title">💡 Engagement & Rétention</div>
+            <div class="timeline-desc">Il peut laisser un commentaire, noter le tutoriel (⭐), l'ajouter à ses favoris, et voir les tutoriels similaires recommandés.</div>
+            <div class="timeline-tips"><div class="timeline-tip">📈 <span>KPI à suivre : taux de conversion visite → inscription, taux d'engagement (commentaires, notes), tutoriels par session.</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB : Zoning -->
+    <div id="tab-zoning" class="admin-tab">
+      <div class="admin-topbar">
+        <div>
+          <div class="admin-title">📐 Zoning — Page d'accueil</div>
+          <div class="admin-subtitle">Structure des blocs de la page principale, avant le design final</div>
+        </div>
+      </div>
+      <div class="proj-grid-2" style="align-items:start">
+        <div>
+          <div style="font-family:'Glacial Indifference',sans-serif;font-size:1rem;font-weight:700;color:#f8fafc;margin-bottom:1rem">Maquette de zoning</div>
+          <div class="zoning-mockup">
+            <div class="zone zone-header">
+              <div class="zone-label">HEADER</div>
+              <div class="zone-content">
+                <div class="mock-nav">
+                  <div class="mock-logo"></div>
+                  <div class="mock-search"></div>
+                  <div class="mock-btns">
+                    <div class="mock-btn outline">Connexion</div>
+                    <div class="mock-btn fill">S'inscrire</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="zone zone-hero">
+              <div class="zone-label">HERO</div>
+              <div class="zone-content">
+                <div class="mock-hero-text">
+                  <div class="mock-h1">Apprenez le web,<br>étape par étape.</div>
+                  <div class="mock-sub">Des tutoriels créés par des étudiants, pour des étudiants.</div>
+                  <div class="mock-cta">Explorer les tutoriels →</div>
+                </div>
+              </div>
+              <div class="zone-desc">Zone d'accroche principale</div>
+            </div>
+            <div class="zone zone-filters">
+              <div class="zone-label">FILTRES</div>
+              <div class="zone-content">
+                <div class="mock-filters">
+                  <div class="mock-filter active">Tous</div>
+                  <div class="mock-filter inactive">Design</div>
+                  <div class="mock-filter inactive">Dev</div>
+                  <div class="mock-filter inactive">Marketing</div>
+                </div>
+              </div>
+            </div>
+            <div class="zone zone-main">
+              <div class="zone-label">CONTENU</div>
+              <div class="zone-content">
+                <div class="mock-grid">
+                  <div class="mock-card"><div class="mock-card-img">🖌️</div><div class="mock-card-title">API REST Node.js</div><div class="mock-card-meta">⏱ 45min · Léa M.</div></div>
+                  <div class="mock-card"><div class="mock-card-img">🎨</div><div class="mock-card-title">Figma avancé</div><div class="mock-card-meta">⏱ 30min · Alice P.</div></div>
+                  <div class="mock-card"><div class="mock-card-img">🔍</div><div class="mock-card-title">Audit SEO</div><div class="mock-card-meta">⏱ 20min · Tom R.</div></div>
+                </div>
+              </div>
+            </div>
+            <div class="zone zone-footer">
+              <div class="zone-label">FOOTER</div>
+              <div class="zone-content" style="color:rgba(255,255,255,.7);font-size:.75rem">
+                Travail pédagogique sans objectifs commerciaux · NWS 2025 · Mentions légales · RGPD
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div style="font-family:'Glacial Indifference',sans-serif;font-size:1rem;font-weight:700;color:#f8fafc;margin-bottom:1rem">Détail des zones</div>
+          <div style="display:flex;flex-direction:column;gap:1rem">
+            <div class="admin-card"><div class="admin-card-title">📌 Header — Navigation principale</div><p style="font-size:.85rem;color:#64748b">Logo à gauche · Barre de recherche au centre · Boutons "Connexion / Inscription" à droite. Sticky en haut de page, fond semi-transparent.</p></div>
+            <div class="admin-card"><div class="admin-card-title">🦸 Hero Section — Accroche</div><p style="font-size:.85rem;color:#64748b">Titre principal H1, sous-titre descriptif, bouton CTA primaire et secondaire. Fond sombre dégradé pour contraste et impact visuel fort.</p></div>
+            <div class="admin-card"><div class="admin-card-title">🏷️ Filtres / Catégories</div><p style="font-size:.85rem;color:#64748b">Barre horizontale de filtres pills. Tri par catégorie : Design, Dev, Marketing, UX/UI, SEO. Filtre actif mis en surbrillance (bleu).</p></div>
+            <div class="admin-card"><div class="admin-card-title">📚 Grille de tutoriels</div><p style="font-size:.85rem;color:#64748b">Grille 3 colonnes de cartes. Chaque carte : miniature, catégorie, titre, durée, auteur. Badge 🔒 pour contenu réservé aux connectés.</p></div>
+            <div class="admin-card"><div class="admin-card-title">⚙️ Éléments Admin (si connecté)</div><p style="font-size:.85rem;color:#64748b">Bouton "➕ Ajouter un tutoriel" en haut de la grille. Icônes ✏️ Modifier / 🗑️ Supprimer sur chaque carte pour les admins.</p></div>
+            <div class="admin-card"><div class="admin-card-title">🔗 Footer</div><p style="font-size:.85rem;color:#64748b">Mention légale pédagogique obligatoire, liens réseaux sociaux, RGPD. Fond sombre pour délimiter visuellement la page.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB : Social Media -->
+    <div id="tab-social" class="admin-tab">
+      <div class="admin-topbar">
+        <div>
+          <div class="admin-title">📱 Stratégie Social Media</div>
+          <div class="admin-subtitle">Étape 3 — Réseau choisi, calendrier éditorial des 30 publications et formats réalisés</div>
+        </div>
+      </div>
+      <div class="network-choice">
+        <div class="network-icon">📸</div>
+        <div>
+          <div class="network-title">Instagram — Le choix retenu</div>
+          <div class="network-args">
+            <div class="network-arg">✅ Pertinence visuelle : idéal pour valoriser les chartes graphiques via Reels et Carrousels</div>
+            <div class="network-arg">✅ Cible parfaite : correspond au profil étudiant 18-25 ans (Personas Lucas & Léa)</div>
+            <div class="network-arg">✅ Interactivité : Stories, sondages, questions → feedback direct de la communauté</div>
+            <div class="network-arg">✅ 4 formats natifs : Image, Reel, Carrousel, Story — 4 livrables couverts</div>
+          </div>
+        </div>
+      </div>
+      <div style="font-family:'Glacial Indifference',sans-serif;font-size:1rem;font-weight:700;color:#f8fafc;margin-bottom:1.25rem">📅 Calendrier éditorial — 30 publications</div>
+
+      <!-- Légende formats -->
+      <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.5rem">
+        <span class="format-badge f-reel">🎬 Reel</span>
+        <span class="format-badge f-carrousel">📊 Carrousel</span>
+        <span class="format-badge f-visuel">🖼️ Visuel</span>
+        <span class="format-badge f-texte">✍️ Texte</span>
+        <span class="format-badge f-story">💫 Story</span>
+      </div>
+
+      <!-- Grille calendrier -->
+      <div id="calendarGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;align-items:start"></div>
+    </div>
+
+    <!-- TAB : Audit SEO -->
+    <div id="tab-seo" class="admin-tab">
+      <div class="admin-topbar">
+        <div>
+          <div class="admin-title">🔍 Audit SEO — TutoMotion.fr</div>
+          <div class="admin-subtitle">Structure complète de l'audit de référencement naturel à mener sur la plateforme</div>
+        </div>
+      </div>
+      <div id="adminAuditContent"></div>
+    </div>
+
+    <!-- TAB : Publications -->
+    <div id="tab-publications" class="admin-tab">
+      <div class="admin-topbar">
+        <div>
+          <div class="admin-title">🖼️ Les 4 Publications Réalisées</div>
+          <div class="admin-subtitle">4 formats Instagram distincts constituant les livrables visuels du projet</div>
+        </div>
+      </div>
+      <div class="proj-grid-2">
+        <div class="pub-preview">
+          <div class="pub-visual long-post">
+            <div style="position:absolute;top:1rem;left:1rem;font-size:.65rem;opacity:.5">POST LONG</div>
+            <div style="width:100%">
+              <div style="font-size:.65rem;opacity:.6;margin-bottom:.5rem;letter-spacing:.1em">TUTOLAB.FR · GENÈSE DU PROJET</div>
+              <div class="mock-post-title">Comment TutoMotion est né d'une frustration étudiante 💡</div>
+              <div class="mock-post-body">Il y a 6 mois, on cherchait des ressources pour notre cours de dev web. Entre YouTube sans structure et forums illisibles, on a décidé de créer notre propre espace...</div>
+              <div class="mock-post-tag">#TutoMotion #NWS2025 #ApprendreLeDev #WebSchool</div>
+            </div>
+          </div>
+          <div class="pub-body">
+            <div class="pub-type">Publication Longue</div>
+            <div class="pub-name">La Genèse du Projet</div>
+            <div class="pub-desc">Post détaillé racontant l'origine de TutoMotion, l'importance du partage de connaissances entre étudiants. Format storytelling avec accroche émotionnelle.</div>
+          </div>
+        </div>
+        <div class="pub-preview">
+          <div class="pub-visual flash">
+            <div style="position:absolute;top:1rem;left:1rem;font-size:.65rem;opacity:.5">FLASH INFO</div>
+            <div style="text-align:center">
+              <div style="font-size:2.5rem;margin-bottom:.5rem">🚀</div>
+              <div style="font-size:1.1rem;font-weight:800;line-height:1.3;margin-bottom:.5rem">TutoMotion est en ligne !</div>
+              <div style="font-size:.75rem;opacity:.8;margin-bottom:1rem">Des tutoriels web créés par des étudiants,<br>pour des étudiants.</div>
+              <div style="background:rgba(255,255,255,.2);border-radius:8px;padding:.4rem .8rem;font-size:.7rem;font-weight:700">🔗 Lien en bio → tutomotion.fr</div>
+            </div>
+          </div>
+          <div class="pub-body">
+            <div class="pub-type">Publication Courte — Flash Info</div>
+            <div class="pub-name">Annonce de lancement</div>
+            <div class="pub-desc">Post court et percutant annonçant la mise en ligne officielle du site. Visuel accrocheur, CTA "Lien en bio", hashtags viraux.</div>
+          </div>
+        </div>
+        <div class="pub-preview">
+          <div class="pub-visual reel" style="flex-direction:column;gap:.75rem">
+            <div style="position:absolute;top:1rem;left:1rem;font-size:.65rem;opacity:.5">REEL · 30s</div>
+            <div style="font-size:2rem">🎬</div>
+            <div style="font-weight:800;font-size:1rem;text-align:center">Découvrez l'interface<br>TutoMotion en 30 sec</div>
+            <div style="background:rgba(0,0,0,.2);border-radius:8px;padding:.5rem 1rem;font-size:.72rem;text-align:center">
+              ▶ 00:00 — Page d'accueil<br>▶ 00:08 — Navigation tutoriels<br>▶ 00:15 — Inscription<br>▶ 00:22 — Tableau de bord
+            </div>
+          </div>
+          <div class="pub-body">
+            <div class="pub-type">Vidéo — Reel Instagram</div>
+            <div class="pub-name">Visite guidée du site</div>
+            <div class="pub-desc">Montage rapide type Reel (30 sec) montrant la navigation fluide sur TutoMotion : accueil → tutoriel → inscription → dashboard utilisateur.</div>
+          </div>
+        </div>
+        <div class="pub-preview">
+          <div class="pub-visual infographie">
+            <div style="position:absolute;top:1rem;left:1rem;font-size:.65rem;opacity:.5">INFOGRAPHIE</div>
+            <div style="width:100%">
+              <div style="font-size:.65rem;font-weight:700;letter-spacing:.1em;margin-bottom:.5rem;opacity:.7">CHARTE GRAPHIQUE TUTOLAB</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-bottom:.75rem">
+                <div style="background:#3B82F6;border-radius:6px;padding:.4rem;font-size:.65rem;font-weight:700">#3B82F6<br>Bleu primaire</div>
+                <div style="background:#10B981;border-radius:6px;padding:.4rem;font-size:.65rem;font-weight:700">#10B981<br>Vert succès</div>
+                <div style="background:#1E293B;border-radius:6px;padding:.4rem;font-size:.65rem;font-weight:700">#1E293B<br>Ardoise</div>
+                <div style="background:rgba(255,255,255,.2);border-radius:6px;padding:.4rem;font-size:.65rem;font-weight:700">#F8FAFC<br>Fond clair</div>
+              </div>
+              <div style="font-size:.68rem;opacity:.75">Typo : Plus Jakarta Sans · JetBrains Mono</div>
+            </div>
+          </div>
+          <div class="pub-body">
+            <div class="pub-type">Visuel — Infographie Carrousel</div>
+            <div class="pub-name">Identité visuelle TutoMotion</div>
+            <div class="pub-desc">Planche de tendances présentant la charte graphique complète : palette couleurs, typographies, logo, iconographie. Format carrousel 4 slides.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB : Messages -->
+    <div id="tab-messages" class="admin-tab">
+      <div class="admin-topbar">
+        <div>
+          <div class="admin-title">✉️ Messages de contact</div>
+          <div class="admin-subtitle">Messages reçus via le formulaire de contact</div>
+        </div>
+        <button class="btn-admin edit" onclick="chargerMessages()">↺ Actualiser</button>
+      </div>
+      <div id="messagesListe"></div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Modal profil membre -->
+<div class="modal-overlay" id="modalProfil" onclick="fermerModalProfil()">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="fermerModalProfil()">✕</button>
+    <div class="profil-avatar-big" id="modalAvatar">?</div>
+    <div class="profil-nom" id="modalNom">—</div>
+    <div class="profil-detail" id="modalEmail">—</div>
+    <div class="profil-stats">
+      <div class="profil-stat">
+        <div class="profil-stat-num" id="modalCours">0</div>
+        <div class="profil-stat-label">Cours complétés</div>
+      </div>
+      <div class="profil-stat">
+        <div class="profil-stat-num" id="modalRole">—</div>
+        <div class="profil-stat-label">Rôle actuel</div>
+      </div>
+    </div>
+    <!-- Sélecteur de rôle -->
+    <div style="margin-bottom:.75rem">
+      <div style="font-size:.72rem;color:#64748b;text-transform:uppercase;letter-spacing:.07em;font-family:'Glacial Indifference',sans-serif;margin-bottom:.5rem">Changer le rôle</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem">
+        <button class="btn-admin modal-role-btn" id="btnRoleApprenant" onclick="changerRoleModal('apprenant')">🎓 Apprenant</button>
+        <button class="btn-admin modal-role-btn" id="btnRoleContributeur" onclick="changerRoleModal('contributeur')">✏️ Contributeur</button>
+        <button class="btn-admin modal-role-btn" id="btnRoleAdmin" onclick="changerRoleModal('admin')">🛡️ Admin</button>
+      </div>
+    </div>
+    <button class="btn-admin delete" onclick="supprimerMembreModal()" style="width:100%">🗑️ Supprimer le compte</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast-admin" id="toastAdmin"></div>
+
+<script>
+// ── État ──────────────────────────────────────────────────────────────────────
+var membreEnCours = null;
+
+// ── Vérification accès admin ──────────────────────────────────────────────────
+async function verifierAcces() {
+  var res  = await fetch('/api/moi');
+  var data = await res.json();
+  if (!data.connecte || data.utilisateur.role !== 'admin') {
+    window.location.href = '/';
+  }
+}
+
+// ── Messages contact ──────────────────────────────────────────────────────────
+async function chargerMessages() {
+  var liste = document.getElementById('messagesListe');
+  if (!liste) return;
+  liste.innerHTML = '<div class="messages-empty">Chargement…</div>';
+  try {
+    var res  = await fetch('/api/admin/messages');
+    var data = await res.json();
+    if (!data.succes) { liste.innerHTML = '<div class="messages-empty">Erreur de chargement.</div>'; return; }
+    var msgs = data.messages;
+
+    // Badge non-lus
+    var nonLus = msgs.filter(function(m){ return !m.lu; }).length;
+    var badge  = document.getElementById('badgeMessages');
+    if (badge) { badge.style.display = nonLus > 0 ? '' : 'none'; badge.textContent = nonLus; }
+
+    if (msgs.length === 0) { liste.innerHTML = '<div class="messages-empty">📭 Aucun message reçu pour l\'instant.</div>'; return; }
+
+    liste.innerHTML = msgs.map(function(m) {
+      var date = new Date(m.envoye_le).toLocaleDateString('fr-FR', {day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
+      var imgHtml = m.image_url ? '<br><img src="' + m.image_url + '" class="message-card-img" onclick="window.open(this.src)">' : '';
+      var nonLuBadge = !m.lu ? '<span class="badge-non-lu">Nouveau</span>' : '';
+      return '<div class="message-card' + (!m.lu ? ' non-lu' : '') + '" id="msg_' + m.id + '">'
+        + '<div class="message-card-header">'
+        + '<div class="message-card-meta">'
+        + '<div class="message-card-nom">' + m.nom + nonLuBadge + '</div>'
+        + '<div class="message-card-email">' + m.email + '</div>'
+        + '</div>'
+        + '<div class="message-card-date">🗓 ' + date + '</div>'
+        + '</div>'
+        + '<div class="message-card-sujet">📌 ' + m.sujet + '</div>'
+        + '<div class="message-card-body">' + m.message + imgHtml + '</div>'
+        + '<div class="message-card-actions">'
+        + (!m.lu ? '<button class="btn-admin edit" onclick="marquerLu(' + m.id + ')">✅ Marquer comme lu</button>' : '<span style="font-size:.75rem;color:#22c55e">✅ Lu</span>')
+        + '<button class="btn-admin delete" onclick="supprimerMessage(' + m.id + ')">🗑️ Supprimer</button>'
+        + '<a class="btn-admin edit" href="mailto:' + m.email + '?subject=Re: ' + encodeURIComponent(m.sujet) + '" style="text-decoration:none">↩️ Répondre</a>'
+        + '</div></div>';
+    }).join('');
+  } catch(e) { liste.innerHTML = '<div class="messages-empty">Erreur serveur.</div>'; }
+}
+
+async function marquerLu(mid) {
+  await fetch('/api/admin/messages/' + mid + '/lu', {method:'PUT'});
+  chargerMessages();
+}
+
+async function supprimerMessage(mid) {
+  if (!confirm('Supprimer ce message ?')) return;
+  var res  = await fetch('/api/admin/messages/' + mid, {method:'DELETE'});
+  var data = await res.json();
+  if (data.succes) chargerMessages();
+  else toast(data.message, 'erreur');
+}
+
+// ── Navigation ────────────────────────────────────────────────────────────────
+function showTab(name, el) {
+  document.querySelectorAll('.admin-tab').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.admin-nav-item').forEach(function(n) { n.classList.remove('active'); });
+  var tabEl = document.getElementById('tab-' + name);
+  if (tabEl) tabEl.classList.add('active');
+  if (el) el.classList.add('active');
+  if (name === 'membres') chargerMembres();
+  if (name === 'tutoriels') chargerTutoriels();
+  if (name === 'messages') chargerMessages();
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function toast(msg, type) {
+  var t = document.getElementById('toastAdmin');
+  t.textContent = msg;
+  t.className = 'toast-admin visible ' + (type || 'succes');
+  setTimeout(function() { t.classList.remove('visible'); }, 3500);
+}
+
+// ── Membres ───────────────────────────────────────────────────────────────────
+async function chargerMembres() {
+  try {
+    var res  = await fetch('/api/admin/membres');
+    var data = await res.json();
+    if (!data.succes) { toast(data.message, 'erreur'); return; }
+
+    var membres = data.membres;
+    var online  = membres.filter(function(m) { return m.en_ligne; });
+    var admins  = membres.filter(function(m) { return m.role === 'admin'; });
+
+    document.getElementById('statTotal').textContent  = membres.length;
+    document.getElementById('statOnline').textContent = online.length;
+    document.getElementById('statAdmins').textContent = admins.length;
+
+    var listeOnline = document.getElementById('listeOnline');
+    if (online.length === 0) {
+      listeOnline.innerHTML = '<div style="color:#64748b;font-size:.85rem">Personne en ligne actuellement.</div>';
+    } else {
+      listeOnline.innerHTML = online.map(function(m) { return renderMembre(m); }).join('');
+    }
+
+    var listeTous = document.getElementById('listeMembres');
+    if (membres.length === 0) {
+      listeTous.innerHTML = '<div style="color:#64748b;font-size:.85rem">Aucun membre.</div>';
+    } else {
+      listeTous.innerHTML = membres.map(function(m) { return renderMembre(m); }).join('');
+    }
+  } catch(e) {
+    toast('Erreur de chargement des membres.', 'erreur');
+  }
+}
+
+function renderMembre(m) {
+  var initiales = m.nom.split(' ').map(function(x) { return x[0]; }).join('').toUpperCase().slice(0,2);
+  var bg = m.role === 'admin'
+    ? 'linear-gradient(135deg,#f59e0b,#d97706)'
+    : m.role === 'contributeur'
+      ? 'linear-gradient(135deg,#0891b2,#0e7490)'
+      : '#2563eb';
+  var avatarInner = m.avatar_url
+    ? '<img src="' + m.avatar_url + '" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
+    : initiales;
+  var avatarStyle = m.avatar_url ? 'background:none' : 'background:' + bg;
+  var statusClass = m.en_ligne ? 'online' : 'offline';
+  var statusText  = m.en_ligne ? '🟢 En ligne' : '🔴 Hors ligne';
+  var roleLabel   = m.role === 'admin' ? '🛡️ Admin' : m.role === 'contributeur' ? '✏️ Contributeur' : '🎓 Apprenant';
+  var dateStr     = new Date(m.cree_le).toLocaleDateString('fr-FR', {day:'numeric',month:'short',year:'numeric'});
+
+  return '<div class="membre-row" onclick="ouvrirProfilMembre(' + m.id + ')">'
+    + '<div class="membre-avatar" style="' + avatarStyle + '">' + avatarInner
+    + '<div class="pastille ' + statusClass + '"></div></div>'
+    + '<div class="membre-info">'
+    + '<div class="membre-nom">' + m.nom + '</div>'
+    + '<div class="membre-email">' + m.email + ' · Inscrit le ' + dateStr + '</div>'
+    + '</div>'
+    + '<div class="membre-meta">'
+    + '<span class="role-badge ' + m.role + '">' + roleLabel + '</span>'
+    + '<span class="status-text ' + statusClass + '">' + statusText + '</span>'
+    + '</div></div>';
+}
+
+async function ouvrirProfilMembre(uid) {
+  try {
+    var res  = await fetch('/api/admin/membres/' + uid);
+    var data = await res.json();
+    if (!data.succes) { toast(data.message, 'erreur'); return; }
+    var m = data.membre;
+    membreEnCours = m;
+
+    var initiales = m.nom.split(' ').map(function(x) { return x[0]; }).join('').toUpperCase().slice(0,2);
+    var bg = m.role === 'admin'
+      ? 'linear-gradient(135deg,#f59e0b,#d97706)'
+      : m.role === 'contributeur'
+        ? 'linear-gradient(135deg,#0891b2,#0e7490)'
+        : '#2563eb';
+    var avatarEl  = document.getElementById('modalAvatar');
+    if (m.avatar_url) {
+      avatarEl.innerHTML = '<img src="' + m.avatar_url + '" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+      avatarEl.style.background = 'none';
+    } else {
+      avatarEl.textContent = initiales;
+      avatarEl.style.background = bg;
+    }
+
+    var pastille = document.createElement('div');
+    pastille.className = 'pastille ' + (m.en_ligne ? 'online' : 'offline');
+    pastille.style.cssText = 'position:absolute;bottom:2px;right:2px;width:14px;height:14px;border-width:3px';
+    var oldP = avatarEl.querySelector('.pastille');
+    if (oldP) oldP.remove();
+    avatarEl.appendChild(pastille);
+
+    document.getElementById('modalNom').textContent   = m.nom;
+    document.getElementById('modalEmail').textContent = m.email + ' · ' + (m.en_ligne ? '🟢 En ligne' : '🔴 Hors ligne');
+    document.getElementById('modalCours').textContent = m.cours_completes;
+    var roleLabel = m.role === 'admin' ? '🛡️ Admin' : m.role === 'contributeur' ? '✏️ Contributeur' : '🎓 Apprenant';
+    document.getElementById('modalRole').textContent  = roleLabel;
+
+    // Mettre en surbrillance le bouton du rôle actuel
+    ['apprenant','contributeur','admin'].forEach(function(r) {
+      var btn = document.getElementById('btnRole' + r.charAt(0).toUpperCase() + r.slice(1));
+      if (btn) btn.className = 'btn-admin modal-role-btn' + (m.role === r ? ' actif-' + r : '');
+    });
+
+    document.getElementById('modalProfil').classList.add('actif');
+  } catch(e) {
+    toast('Erreur lors du chargement du profil.', 'erreur');
+  }
+}
+
+function fermerModalProfil() {
+  document.getElementById('modalProfil').classList.remove('actif');
+  membreEnCours = null;
+}
+
+async function changerRoleModal(nouveauRole) {
+  if (!membreEnCours) return;
+  if (membreEnCours.role === nouveauRole) return; // déjà ce rôle
+  try {
+    var res  = await fetch('/api/admin/utilisateurs/' + membreEnCours.id + '/role', {
+      method: 'PUT',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({role: nouveauRole})
+    });
+    var data = await res.json();
+    if (data.succes) {
+      toast(data.message, 'succes');
+      fermerModalProfil();
+      chargerMembres();
+    } else {
+      toast(data.message, 'erreur');
+    }
+  } catch(e) { toast('Erreur serveur.', 'erreur'); }
+}
+
+async function supprimerMembreModal() {
+  if (!membreEnCours) return;
+  if (!confirm('Supprimer le compte de ' + membreEnCours.nom + ' ? Cette action est irréversible.')) return;
+  try {
+    var res  = await fetch('/api/admin/membres/' + membreEnCours.id, {method:'DELETE'});
+    var data = await res.json();
+    if (data.succes) {
+      toast(data.message, 'succes');
+      fermerModalProfil();
+      chargerMembres();
+    } else {
+      toast(data.message, 'erreur');
+    }
+  } catch(e) { toast('Erreur serveur.', 'erreur'); }
+}
+
+// ── Tutoriels ─────────────────────────────────────────────────────────────────
+async function chargerTutoriels() {
+  try {
+    var res  = await fetch('/api/tutoriels');
+    var data = await res.json();
+    if (!data.succes) { toast(data.message, 'erreur'); return; }
+
+    var liste = document.getElementById('listeTutoriels');
+    if (data.tutoriels.length === 0) {
+      liste.innerHTML = '<div style="color:#64748b;font-size:.85rem">Aucun tutoriel.</div>';
+      return;
+    }
+
+    var themeColors = {motion1:'#1e3a5f',motion2:'#1a3a2a',motion3:'#2d1f3d',motion4:'#3a2a1a',motion5:'#1a2d3a'};
+
+    liste.innerHTML = data.tutoriels.map(function(t) {
+      var bg = themeColors[t.theme_class] || '#1e293b';
+      return '<div class="tuto-admin-row">'
+        + '<div class="tuto-admin-thumb" style="background:' + bg + '">' + t.emoji + '</div>'
+        + '<div class="tuto-admin-info">'
+        + '<div class="tuto-admin-titre">' + t.titre + '</div>'
+        + '<div class="tuto-admin-meta">' + t.categorie + ' · ' + t.auteur + ' · ⏱ ' + t.duree_min + ' min</div>'
+        + '</div>'
+        + '<div class="tuto-admin-actions">'
+        + '<button class="btn-admin edit" onclick="editerTutoriel(' + t.id + ')">✏️ Modifier</button>'
+        + '<button class="btn-admin delete" onclick="supprimerTutoriel(' + t.id + ', \'' + t.titre.replace(/'/g,"\\'").slice(0,30) + '\')">🗑️</button>'
+        + '</div></div>';
+    }).join('');
+  } catch(e) { toast('Erreur de chargement.', 'erreur'); }
+}
+
+async function editerTutoriel(tid) {
+  try {
+    var res  = await fetch('/api/tutoriels/' + tid);
+    var data = await res.json();
+    if (!data.succes) { toast(data.message, 'erreur'); return; }
+    var t = data.tutoriel;
+
+    document.getElementById('editTutoId').value    = t.id;
+    document.getElementById('fTitre').value        = t.titre;
+    setCategories(t.categorie);
+    document.getElementById('fAuteur').value       = t.auteur;
+    document.getElementById('fDuree').value        = t.duree_min;
+    document.getElementById('fEmoji').value        = t.emoji;
+    document.getElementById('fContenu').innerHTML = t.contenu || '';
+    document.getElementById('fAccroche').value    = t.accroche || '';
+    chargerQuiz(t.id);
+
+    imagesPendantes  = [];
+    imagesSupprimer  = [];
+    imagesExistantes = (t.images || []).map(function(img){ return Object.assign({}, img); });
+    renderGrid();
+
+    document.getElementById('formTitreHeader').textContent = '✏️ Modifier le cours';
+    document.getElementById('formSousTitre').textContent   = t.titre;
+    document.getElementById('formSubmitBtn').textContent   = '💾 Enregistrer les modifications';
+
+    showTab('nouveau', document.querySelector('[onclick*=nouveau]'));
+    initCatCheckboxes();
+  } catch(e) { toast('Erreur de chargement.', 'erreur'); }
+}
+
+async function supprimerTutoriel(tid, titre) {
+  if (!confirm('Supprimer "' + titre + '" ? Cette action est irréversible.')) return;
+  try {
+    var res  = await fetch('/api/admin/tutoriels/' + tid, {method:'DELETE'});
+    var data = await res.json();
+    if (data.succes) { toast(data.message, 'succes'); chargerTutoriels(); }
+    else toast(data.message, 'erreur');
+  } catch(e) { toast('Erreur serveur.', 'erreur'); }
+}
+
+// ── Formulaire cours ──────────────────────────────────────────────────────────
+var imagesPendantes  = [];
+var imagesExistantes = [];
+var imagesSupprimer  = [];
+var dragSrcIndex = null;
+var dragSrcType  = null;
+
+function initDragDrop() {
+  var area = document.getElementById('dropArea');
+  if (!area) return;
+  area.addEventListener('dragover',  function(e){ e.preventDefault(); area.classList.add('drag-over'); });
+  area.addEventListener('dragleave', function(){ area.classList.remove('drag-over'); });
+  area.addEventListener('drop', function(e){
+    e.preventDefault(); area.classList.remove('drag-over');
+    ajouterFichiers(e.dataTransfer.files);
+  });
+}
+
+function ajouterFichiers(files) {
+  Array.from(files).forEach(function(file) {
+    if (!file.type.startsWith('image/')) return;
+    var id  = 'new_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+    var url = URL.createObjectURL(file);
+    imagesPendantes.push({id: id, file: file, previewUrl: url});
+  });
+  document.getElementById('fImages').value = '';
+  renderGrid();
+}
+
+function renderGrid() {
+  var grid  = document.getElementById('imagesGrid');
+  var count = document.getElementById('imgCount');
+  if (!grid) return;
+  var total = imagesExistantes.length + imagesPendantes.length;
+  if (total === 0) { grid.innerHTML = ''; if(count) count.style.display = 'none'; return; }
+  if(count){ count.style.display = ''; count.textContent = total + ' image' + (total > 1 ? 's' : '') + ' · glissez pour réordonner'; }
+  var html = '';
+  imagesExistantes.forEach(function(img, i) {
+    var isCover = img.est_couverture || (i === 0 && !imagesExistantes.some(function(x){ return x.est_couverture; }) && imagesPendantes.length === 0);
+    html += '<div class="img-item' + (isCover ? ' couverture' : '') + '" draggable="true"'
+      + ' data-type="existing" data-index="' + i + '"'
+      + ' ondragstart="onDragStart(event,\'existing\',' + i + ')" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event,\'existing\',' + i + ')" ondragend="onDragEnd()">'
+      + '<img src="' + img.url + '">'
+      + (isCover ? '<div class="cover-badge">Couverture</div>' : '')
+      + '<div class="img-item-overlay">'
+      + (!isCover ? '<button class="img-action" onclick="setCouverture(\'existing\',' + i + ')">⭐ Couverture</button>' : '')
+      + '<button class="img-action danger" onclick="supprimerImageExistante(' + i + ')">🗑️ Retirer</button>'
+      + '</div></div>';
+  });
+  imagesPendantes.forEach(function(img, i) {
+    var isCover = imagesExistantes.length === 0 && i === 0;
+    html += '<div class="img-item' + (isCover ? ' couverture' : '') + '" draggable="true"'
+      + ' data-type="new" data-index="' + i + '"'
+      + ' ondragstart="onDragStart(event,\'new\',' + i + ')" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event,\'new\',' + i + ')" ondragend="onDragEnd()">'
+      + '<img src="' + img.previewUrl + '">'
+      + (isCover ? '<div class="cover-badge">Couverture</div>' : '')
+      + '<div class="img-item-overlay">'
+      + (!isCover ? '<button class="img-action" onclick="setCouverture(\'new\',' + i + ')">⭐ Couverture</button>' : '')
+      + '<button class="img-action danger" onclick="supprimerImagePendante(' + i + ')">🗑️ Retirer</button>'
+      + '</div></div>';
+  });
+  grid.innerHTML = html;
+}
+
+function onDragStart(e, type, index) { dragSrcType = type; dragSrcIndex = index; setTimeout(function(){ e.target.classList.add('drag-source'); }, 0); }
+function onDragOver(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over-target'); }
+function onDragLeave(e) { e.currentTarget.classList.remove('drag-over-target'); }
+function onDragEnd() { document.querySelectorAll('.img-item').forEach(function(el){ el.classList.remove('drag-source','drag-over-target'); }); }
+function onDrop(e, targetType, targetIndex) {
+  e.preventDefault(); e.currentTarget.classList.remove('drag-over-target');
+  if (dragSrcType === null) return;
+  if (dragSrcType === 'existing' && targetType === 'existing') { var m = imagesExistantes.splice(dragSrcIndex, 1)[0]; imagesExistantes.splice(targetIndex, 0, m); }
+  else if (dragSrcType === 'new' && targetType === 'new') { var m = imagesPendantes.splice(dragSrcIndex, 1)[0]; imagesPendantes.splice(targetIndex, 0, m); }
+  dragSrcType = dragSrcIndex = null; renderGrid();
+}
+function setCouverture(type, index) {
+  if (type === 'existing') { imagesExistantes.forEach(function(img, i){ img.est_couverture = (i === index) ? 1 : 0; }); }
+  else { var m = imagesPendantes.splice(index, 1)[0]; imagesPendantes.unshift(m); imagesExistantes.forEach(function(img){ img.est_couverture = 0; }); }
+  renderGrid();
+}
+function supprimerImagePendante(index) { URL.revokeObjectURL(imagesPendantes[index].previewUrl); imagesPendantes.splice(index, 1); renderGrid(); }
+function supprimerImageExistante(index) {
+  var img = imagesExistantes[index];
+  imagesSupprimer.push(img.id);
+  imagesExistantes.splice(index, 1);
+  if (img.est_couverture && imagesExistantes.length > 0) imagesExistantes[0].est_couverture = 1;
+  renderGrid();
+}
+
+// ── Questionnaire builder ─────────────────────────────────────────────────────
+var quizQuestions = [];
+
+function ajouterQuestion(data) {
+  var q = data || { id: 'q_' + Date.now(), question: '', options: ['', ''], correctes: [], multiple: false };
+  quizQuestions.push(q);
+  renderQuiz();
+}
+function supprimerQuestion(idx) { quizQuestions.splice(idx, 1); renderQuiz(); }
+function toggleMultiple(idx) {
+  quizQuestions[idx].multiple = !quizQuestions[idx].multiple;
+  quizQuestions[idx].correctes = [];
+  renderQuiz();
+}
+function ajouterOption(idx) { quizQuestions[idx].options.push(''); renderQuiz(); }
+function supprimerOption(qIdx, oIdx) {
+  if (quizQuestions[qIdx].options.length <= 2) return;
+  quizQuestions[qIdx].correctes = quizQuestions[qIdx].correctes
+    .filter(function(c){ return c !== oIdx; })
+    .map(function(c){ return c > oIdx ? c - 1 : c; });
+  quizQuestions[qIdx].options.splice(oIdx, 1);
+  renderQuiz();
+}
+function toggleCorrect(qIdx, oIdx) {
+  var q = quizQuestions[qIdx];
+  if (q.multiple) {
+    var pos = q.correctes.indexOf(oIdx);
+    if (pos === -1) q.correctes.push(oIdx); else q.correctes.splice(pos, 1);
+  } else {
+    q.correctes = [oIdx];
+  }
+  renderQuiz();
+}
+
+function renderQuiz() {
+  var builder = document.getElementById('quizBuilder');
+  var count   = document.getElementById('quizCount');
+  var note    = document.getElementById('quizNote');
+  if (!builder) return;
+  count.textContent = quizQuestions.length + ' question' + (quizQuestions.length > 1 ? 's' : '');
+  count.style.background = quizQuestions.length >= 5 ? 'rgba(34,197,94,.15)' : '#0f172a';
+  count.style.color      = quizQuestions.length >= 5 ? '#86efac' : '#64748b';
+  if (note) note.textContent = quizQuestions.length > 0 && quizQuestions.length < 5 ? '⚠️ Encore ' + (5 - quizQuestions.length) + ' question(s) requise(s).' : '';
+
+  builder.innerHTML = quizQuestions.map(function(q, i) {
+    var optionsHtml = '<div class="quiz-options-area">'
+      + '<div style="font-size:.68rem;color:#64748b;margin-bottom:.3rem">Options — cochez la/les bonne(s) réponse(s) ✅ :</div>'
+      + q.options.map(function(opt, oi) {
+        var isCorrect = q.correctes.indexOf(oi) !== -1;
+        return '<div class="quiz-option-row">'
+          + '<button type="button" class="quiz-correct-btn' + (isCorrect ? ' correct' : '') + '" onclick="toggleCorrect(' + i + ',' + oi + ')">' + (isCorrect ? '✅' : '⬜') + '</button>'
+          + '<input class="quiz-option-input" type="text" placeholder="Option ' + (oi+1) + '" value="' + opt.replace(/"/g,'&quot;') + '" onchange="quizQuestions[' + i + '].options[' + oi + ']=this.value">'
+          + '<button type="button" class="quiz-option-del" onclick="supprimerOption(' + i + ',' + oi + ')">✕</button>'
+          + '</div>';
+      }).join('')
+      + '<button type="button" class="btn-add-option" onclick="ajouterOption(' + i + ')">+ Option</button></div>';
+
+    var multipleLabel = q.multiple
+      ? '<span class="quiz-multiple-badge active">☑️ Réponses multiples</span>'
+      : '<span class="quiz-multiple-badge">Réponse unique</span>';
+
+    return '<div class="quiz-question-card">'
+      + '<button type="button" class="quiz-del-btn" onclick="supprimerQuestion(' + i + ')">🗑️</button>'
+      + '<div class="quiz-question-num">Question ' + (i+1) + '</div>'
+      + '<input class="quiz-question-input" type="text" placeholder="Énoncé…" value="' + q.question.replace(/"/g,'&quot;') + '" onchange="quizQuestions[' + i + '].question=this.value">'
+      + '<div class="quiz-type-row">' + multipleLabel
+      + '<button type="button" class="quiz-type-btn" onclick="toggleMultiple(' + i + ')">' + (q.multiple ? '→ Réponse unique' : '→ Réponses multiples') + '</button>'
+      + '</div>' + optionsHtml + '</div>';
+  }).join('');
+}
+
+function getQuizData() {
+  return quizQuestions.map(function(q) {
+    return {
+      question: q.question.trim(), type: 'qcm',
+      options: q.options.filter(function(o){ return o.trim(); }).join('||'),
+      reponses_correctes: q.correctes.join(','),
+      multiple: q.multiple ? 1 : 0
+    };
+  }).filter(function(q){ return q.question; });
+}
+
+function resetQuiz() { quizQuestions = []; renderQuiz(); }
+
+async function chargerQuiz(tid) {
+  try {
+    var res  = await fetch('/api/tutoriels/' + tid + '/questionnaire');
+    var data = await res.json();
+    quizQuestions = (data.questions || []).map(function(q) {
+      var opts = (q.options || '').split('||').filter(function(o){ return o; });
+      if (opts.length < 2) opts = ['', ''];
+      var correctes = (q.reponses_correctes || '').split(',')
+        .filter(function(c){ return c !== ''; })
+        .map(function(c){ return parseInt(c); });
+      return { id: q.id, question: q.question, options: opts, correctes: correctes, multiple: q.multiple === 1 };
+    });
+    renderQuiz();
+  } catch(e) {}
+}
+
+// ── Catégories multi-sélection ────────────────────────────────────────────────
+function getCategories() {
+  var checked = [];
+  document.querySelectorAll('#fCategories .cat-check.checked').forEach(function(el) {
+    checked.push(el.querySelector('input').value);
+  });
+  return checked.join(',');
+}
+function setCategories(categorie) {
+  var vals = (categorie || '').split(',').map(function(c){ return c.trim(); });
+  document.querySelectorAll('#fCategories .cat-check').forEach(function(el) {
+    el.classList.toggle('checked', vals.indexOf(el.querySelector('input').value) !== -1);
+  });
+}
+function resetCategories() {
+  document.querySelectorAll('#fCategories .cat-check').forEach(function(el){ el.classList.remove('checked'); });
+}
+function initCatCheckboxes() {
+  // Utilise la délégation sur le document pour éviter les doublons
+  // (appelé plusieurs fois sans problème)
+}
+
+// Délégation globale pour les cat-check — fonctionne même si le DOM n'est pas visible
+document.addEventListener('click', function(e) {
+  // Ignorer les clics sur l'input (le label les déclenche en double)
+  if (e.target.tagName === 'INPUT') return;
+  var check = e.target.closest('.cat-check');
+  if (check && check.closest('#fCategories')) {
+    e.preventDefault();
+    check.classList.toggle('checked');
+  }
+});
+
+function resetFormulaire() {
+  document.getElementById('editTutoId').value    = '';
+  document.getElementById('fTitre').value        = '';
+  document.getElementById('fAuteur').value       = '';
+  document.getElementById('fDuree').value        = '10';
+  document.getElementById('fEmoji').value        = '🎬';
+  document.getElementById('fContenu').innerHTML  = '';
+  document.getElementById('fAccroche').value     = '';
+  document.getElementById('fImages').value       = '';
+  editorImageFiles = {};
+  resetCategories();
+  resetQuiz();
+  imagesPendantes  = [];
+  imagesExistantes = [];
+  imagesSupprimer  = [];
+  renderGrid();
+  document.getElementById('formTitreHeader').textContent  = '➕ Nouveau cours';
+  document.getElementById('formSousTitre').textContent    = 'Créer un nouveau tutoriel';
+  document.getElementById('formSubmitBtn').textContent    = '💾 Enregistrer';
+  document.getElementById('formErreur').textContent       = '';
+}
+var editorImageFiles = {};
+
+function formatDoc(cmd) {
+  document.getElementById('fContenu').focus();
+  document.execCommand(cmd, false, null);
+}
+function insererTitre(tag) {
+  document.getElementById('fContenu').focus();
+  document.execCommand('formatBlock', false, tag);
+}
+function insererImages(files) {
+  var editor = document.getElementById('fContenu');
+  editor.focus();
+  Array.from(files).forEach(function(file) {
+    if (!file.type.startsWith('image/')) return;
+    var id = 'edimg_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var img = document.createElement('img');
+      img.src = e.target.result;
+      img.dataset.pendingId = id;
+      img.onclick = function() { this.style.borderColor = this.style.borderColor === 'rgb(8, 145, 178)' ? 'transparent' : 'rgb(8, 145, 178)'; };
+      var sel = window.getSelection();
+      if (sel && sel.rangeCount) {
+        var range = sel.getRangeAt(0);
+        range.collapse(false);
+        range.insertNode(img);
+        range.setStartAfter(img);
+        range.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(range);
+      } else { editor.appendChild(img); }
+      editorImageFiles[id] = file;
+    };
+    reader.readAsDataURL(file);
+  });
+  document.getElementById('editorImageInput').value = '';
+}
+
+// Lecture YouTube inline dans l'éditeur
+document.addEventListener('click', function(e) {
+  var block = e.target.closest('.yt-block');
+  if (!block) return;
+  e.preventDefault();
+  var vid = block.dataset.ytid;
+  if (!vid) return;
+  var wrap = document.createElement('div');
+  wrap.className = 'yt-iframe-wrap';
+  wrap.dataset.ytid = vid;
+  wrap.contentEditable = 'false';
+  wrap.innerHTML = '<iframe src="https://www.youtube.com/embed/' + vid + '?autoplay=1&rel=0" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
+  block.replaceWith(wrap);
+});
+
+async function uploadEditorImages(contenuHtml) {
+  var div = document.createElement('div');
+  div.innerHTML = contenuHtml;
+  // Normaliser les iframes en blocs miniature avant sauvegarde
+  div.querySelectorAll('.yt-iframe-wrap').forEach(function(wrap) {
+    var vid = wrap.dataset.ytid;
+    if (!vid) return;
+    var thumb = 'https://img.youtube.com/vi/' + vid + '/hqdefault.jpg';
+    var a = document.createElement('a');
+    a.href = 'https://www.youtube.com/watch?v=' + vid;
+    a.className = 'yt-block'; a.dataset.ytid = vid; a.contentEditable = 'false';
+    a.innerHTML = '<img src="' + thumb + '" alt="Vidéo YouTube"><div class="yt-play-btn"></div>';
+    wrap.replaceWith(a);
+  });
+  var imgs = div.querySelectorAll('img[data-pending-id]');
+  for (var i = 0; i < imgs.length; i++) {
+    var img  = imgs[i];
+    var id   = img.dataset.pendingId;
+    var file = editorImageFiles[id];
+    if (!file) continue;
+    var fd = new FormData();
+    fd.append('image', file);
+    try {
+      var res  = await fetch('/api/upload-image', {method:'POST', body: fd});
+      var data = await res.json();
+      if (data.succes) { img.src = data.url; img.removeAttribute('data-pending-id'); delete editorImageFiles[id]; }
+    } catch(e) {}
+  }
+  return div.innerHTML;
+}
+
+async function soumettreFormulaire() {
+  var titre     = document.getElementById('fTitre').value.trim();
+  var categorie = getCategories();
+  var auteur    = document.getElementById('fAuteur').value.trim();
+  var duree     = document.getElementById('fDuree').value;
+  var emoji     = document.getElementById('fEmoji').value.trim() || '🎬';
+  var editId    = document.getElementById('editTutoId').value;
+  var errEl     = document.getElementById('formErreur');
+  var btn       = document.getElementById('formSubmitBtn');
+
+  errEl.textContent = '';
+  if (!titre || !auteur) { errEl.textContent = 'Titre et auteur sont requis.'; return; }
+  if (!categorie) { errEl.textContent = 'Sélectionnez au moins une catégorie.'; return; }
+
+  var quizData = getQuizData();
+  if (quizData.length < 5) { errEl.textContent = 'Le questionnaire doit comporter au moins 5 questions.'; return; }
+  for (var qi = 0; qi < quizData.length; qi++) {
+    if (quizData[qi].options.split('||').filter(function(o){ return o.trim(); }).length < 2) {
+      errEl.textContent = 'La question ' + (qi+1) + ' doit avoir au moins 2 options.'; return;
+    }
+    if (!quizData[qi].reponses_correctes) {
+      errEl.textContent = 'Indiquez la bonne réponse pour la question ' + (qi+1) + '.'; return;
+    }
+  }
+
+  btn.disabled = true; btn.textContent = '⏳ Enregistrement…';
+
+  try {
+    var contenu  = await uploadEditorImages(document.getElementById('fContenu').innerHTML);
+    var formData = new FormData();
+    formData.append('titre', titre); formData.append('categorie', categorie);
+    formData.append('auteur', auteur); formData.append('duree_min', duree);
+    formData.append('emoji', emoji); formData.append('contenu', contenu);
+    formData.append('accroche', document.getElementById('fAccroche').value.trim());
+
+    // Nouvelles images couverture
+    imagesPendantes.forEach(function(img){ formData.append('images[]', img.file); });
+
+    var url    = editId ? '/api/admin/tutoriels/' + editId : '/api/admin/tutoriels';
+    var method = editId ? 'PUT' : 'POST';
+    var res    = await fetch(url, {method: method, body: formData});
+    var data   = await res.json();
+    if (!data.succes) { errEl.textContent = data.message; return; }
+
+    var tid = data.tutoriel.id;
+
+    // Supprimer images retirées
+    for (var i = 0; i < imagesSupprimer.length; i++) {
+      await fetch('/api/contributeur/tutoriels/' + tid + '/images/' + imagesSupprimer[i], {method:'DELETE'});
+    }
+    // Mettre à jour couverture
+    var couv = imagesExistantes.find(function(img){ return img.est_couverture; });
+    if (couv) {
+      await fetch('/api/contributeur/tutoriels/' + tid + '/images/couverture', {
+        method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({image_id: couv.id})
+      });
+    }
+    // Réordonner
+    if (imagesExistantes.length > 1) {
+      await fetch('/api/contributeur/tutoriels/' + tid + '/images/ordre', {
+        method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ordre: imagesExistantes.map(function(img){ return img.id; })})
+      });
+    }
+
+    toast(data.message, 'succes');
+
+    // Sauvegarder le questionnaire
+    await fetch('/api/tutoriels/' + tid + '/questionnaire', {
+      method: 'PUT',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({questions: quizData})
+    });
+
+    resetFormulaire();
+    showTab('tutoriels', document.querySelector('[onclick*=tutoriels]'));
+  } catch(e) {
+    errEl.textContent = 'Erreur serveur.';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = editId ? '💾 Enregistrer les modifications' : '💾 Enregistrer';
+  }
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', async function() {
+  await verifierAcces();
+  var urlParams = new URLSearchParams(window.location.search);
+  var tabParam  = urlParams.get('tab');
+  if (tabParam) {
+    var navItem = document.querySelector('[onclick*="' + tabParam + '"]');
+    showTab(tabParam, navItem || null);
+  } else {
+    chargerMembres();
+  }
+  initDragDrop();
+  initCatCheckboxes();
+  renderQuiz();
+  initCalendar();
+  initAuditSEO();
+  chargerMessages(); // pour le badge non-lus
+  fetch('/api/heartbeat', {method:'POST'});
+  setInterval(function() { fetch('/api/heartbeat', {method:'POST'}); }, 30000);
+});
+
+// ── Calendrier Social Media ────────────────────────────────────────────────────
+function initCalendar() {
+  var calendar = [
+    // Semaine 1 — Lancement & Motion Design bases
+    {s:'S1', theme:'Teasing mystère : "Quelque chose se met en mouvement…"', format:'visuel', obj:'Notoriété'},
+    {s:'S1', theme:'Reveal : TutoMotion est en ligne ! 🚀', format:'visuel', obj:'Notoriété'},
+    {s:'S1', theme:'Reel : Visite guidée de TutoMotion en 30s', format:'reel', obj:'Découverte'},
+    {s:'S1', theme:'Carrousel : C\'est quoi le Motion Design ? Les bases en 5 slides', format:'carrousel', obj:'Pédagogie'},
+    {s:'S1', theme:'Story : sondage "Tu utilises After Effects depuis combien de temps ?"', format:'story', obj:'Engagement'},
+    {s:'S1', theme:'Post long : Pourquoi le Motion Design est partout en 2025', format:'texte', obj:'Confiance'},
+    {s:'S1', theme:'Story : "Quel logiciel tu utilises pour animer ?"', format:'story', obj:'Interaction'},
+    // Semaine 2 — Tutos Motion & Montage
+    {s:'S2', theme:'Reel : Créer une animation de texte sur After Effects en 60s', format:'reel', obj:'Valeur'},
+    {s:'S2', theme:'Carrousel : Les 5 erreurs de débutants sur After Effects', format:'carrousel', obj:'Pédagogie'},
+    {s:'S2', theme:'Reel : Transition Whip Pan sur Premiere Pro — tuto express', format:'reel', obj:'Valeur'},
+    {s:'S2', theme:'Infographie : Charte graphique TutoMotion — couleurs & typos', format:'visuel', obj:'Branding'},
+    {s:'S2', theme:'Carrousel : After Effects vs Premiere Pro — quand utiliser lequel ?', format:'carrousel', obj:'Pédagogie'},
+    {s:'S2', theme:'Story : Quiz "Tu reconnais ces effets Motion Design ?"', format:'story', obj:'Interaction'},
+    {s:'S2', theme:'Post : Les raccourcis After Effects qui changent la vie', format:'texte', obj:'Valeur'},
+    // Semaine 3 — UX, Graphic Design & Montage avancé
+    {s:'S3', theme:'Reel : Animer un logo from scratch sur After Effects', format:'reel', obj:'Valeur'},
+    {s:'S3', theme:'Carrousel : Les principes d\'animation Disney appliqués au Motion Design', format:'carrousel', obj:'Pédagogie'},
+    {s:'S3', theme:'Reel : Intégrer du Motion Design dans un montage vidéo', format:'reel', obj:'Valeur'},
+    {s:'S3', theme:'Post long : UX et Motion Design — quand l\'animation améliore l\'expérience', format:'texte', obj:'Pédagogie'},
+    {s:'S3', theme:'Carrousel : Créer une identité visuelle cohérente — les bases du Design Graphique', format:'carrousel', obj:'Valeur'},
+    {s:'S3', theme:'Story : "Behind the scenes — comment on crée un tuto TutoMotion ?"', format:'story', obj:'Authenticité'},
+    {s:'S3', theme:'Visuel : Avant/Après — un montage sans et avec Motion Design', format:'visuel', obj:'Impact'},
+    // Semaine 4 — Communauté & Bilan
+    {s:'S4', theme:'Reel : Créer un générique de film avec After Effects', format:'reel', obj:'Valeur'},
+    {s:'S4', theme:'Carrousel : Top 5 plugins After Effects gratuits en 2025', format:'carrousel', obj:'Valeur'},
+    {s:'S4', theme:'Post : UX Motion — les micro-animations qui font la différence', format:'texte', obj:'Pédagogie'},
+    {s:'S4', theme:'Story : Sondage "Quel type de tuto tu veux voir en priorité ?"', format:'story', obj:'Interaction'},
+    {s:'S4', theme:'Infographie : Roadmap Motion Design 2025 — du débutant au pro', format:'visuel', obj:'Valeur'},
+    {s:'S4', theme:'Carrousel : Design Graphique + Motion — le duo gagnant', format:'carrousel', obj:'Pédagogie'},
+    {s:'S4', theme:'Reel : Timelapse — création d\'un tuto TutoMotion de A à Z', format:'reel', obj:'Authenticité'},
+    {s:'S4', theme:'Post long : Bilan du projet — ce qu\'on a appris en créant TutoMotion', format:'texte', obj:'Clôture'},
+  ];
+
+  var formatEmoji = { reel:'🎬', carrousel:'📊', visuel:'🖼️', texte:'✍️', story:'💫' };
+  var formatLabel = { reel:'Reel', carrousel:'Carrousel', visuel:'Visuel', texte:'Texte', story:'Story' };
+  var semaines    = ['S1','S2','S3','S4'];
+  var sLabels     = { S1:'Semaine 1', S2:'Semaine 2', S3:'Semaine 3', S4:'Semaine 4' };
+  var grid = document.getElementById('calendarGrid');
+  if (!grid) return;
+
+  var globalIndex = 0;
+  semaines.forEach(function(s) {
+    var posts = calendar.filter(function(p){ return p.s === s; });
+    var col = document.createElement('div');
+    col.className = 'cal-week-col';
+
+    // Header semaine
+    col.innerHTML = '<div class="cal-week-header">'
+      + '<span class="cal-week-label">📅 ' + sLabels[s] + '</span>'
+      + '<span class="cal-week-count">' + posts.length + ' posts</span>'
+      + '</div>';
+
+    // Cartes
+    posts.forEach(function(p) {
+      globalIndex++;
+      var badge = '<span class="format-badge f-' + p.format + '">'
+        + (formatEmoji[p.format] || '') + ' ' + (formatLabel[p.format] || p.format) + '</span>';
+      col.innerHTML += '<div class="cal-card f-' + p.format + '">'
+        + '<div class="cal-card-top">'
+        + '<span class="cal-card-num">#' + globalIndex + '</span>'
+        + badge
+        + '</div>'
+        + '<div class="cal-card-theme">' + p.theme + '</div>'
+        + '<div class="cal-card-obj">🎯 ' + p.obj + '</div>'
+        + '</div>';
+    });
+
+    grid.appendChild(col);
+  });
+}
+
+// ── Audit SEO ─────────────────────────────────────────────────────────────────
+function initAuditSEO() {
+  var auditSections = [
+    {
+      icon:'⚡', title:'Audit Technique', sub:'Performance, accessibilité et infrastructure',
+      color:'rgba(59,130,246,.1)', items:[
+        {i:'📱', txt:'Responsive Design : test sur mobile, tablette, desktop (Chrome DevTools)', p:'p-high'},
+        {i:'🔒', txt:'HTTPS : certificat SSL valide sur tutomotion.fr', p:'p-high'},
+        {i:'⚡', txt:'Vitesse de chargement : Lighthouse score > 85 (PageSpeed Insights)', p:'p-high'},
+        {i:'🗜️', txt:'Compression des images (WebP), minification CSS/JS', p:'p-med'},
+        {i:'♿', txt:'Accessibilité : contraste WCAG AA, attributs alt sur images', p:'p-med'},
+        {i:'🔗', txt:'Vérification des liens cassés (404)', p:'p-med'},
+        {i:'🗺️', txt:'Sitemap XML généré et soumis à Google Search Console', p:'p-low'},
+      ]
+    },
+    {
+      icon:'🏷️', title:'SEO On-Page', sub:'Optimisation des balises et du contenu',
+      color:'rgba(16,185,129,.1)', items:[
+        {i:'📝', txt:'Balises Title uniques et optimisées (50-60 caractères) sur chaque page', p:'p-high'},
+        {i:'📄', txt:'Meta descriptions rédigées (150-160 car.) avec mots-clés et CTA', p:'p-high'},
+        {i:'🔤', txt:'Structure H1 > H2 > H3 cohérente sur chaque page de tutoriel', p:'p-high'},
+        {i:'🔑', txt:'Mots-clés ciblés : "tutoriels web school", "apprendre développement web", "ressources design étudiant"', p:'p-med'},
+        {i:'🔗', txt:'Maillage interne : liens entre tutoriels de même catégorie', p:'p-med'},
+        {i:'📸', txt:'Attributs alt descriptifs sur toutes les images', p:'p-med'},
+        {i:'🌐', txt:'URLs courtes, lisibles et incluant le mot-clé (ex: /tutoriels/css-grid)', p:'p-low'},
+      ]
+    },
+    {
+      icon:'📊', title:'Contenu & Stratégie', sub:'Qualité et pertinence du contenu éditorial',
+      color:'rgba(245,158,11,.1)', items:[
+        {i:'📚', txt:'Contenu original, structuré avec intro / corps / conclusion sur chaque tuto', p:'p-high'},
+        {i:'🏷️', txt:'Système de tags cohérent (CSS, JavaScript, Figma, SEO…)', p:'p-med'},
+        {i:'🔍', txt:'Recherche de mots-clés longue traîne : "comment apprendre React gratuitement"', p:'p-med'},
+        {i:'🔄', txt:'Fréquence de publication : minimum 2 nouveaux tutoriels / semaine au lancement', p:'p-med'},
+        {i:'💬', txt:'Commentaires indexables et de qualité (éviter le spam)', p:'p-low'},
+        {i:'📈', txt:'Suivi des positions via Google Search Console (0→100 premiers jours)', p:'p-low'},
+      ]
+    },
+    {
+      icon:'🏆', title:'Benchmark — Étude concurrentielle', sub:'OpenClassrooms vs Grafikart vs TutoMotion',
+      color:'rgba(255,255,255,.03)', items:[
+        {i:'🧭', txt:'OpenClassrooms : navigation par parcours / métiers vs TutoMotion : navigation libre par tags', p:'p-med'},
+        {i:'🔍', txt:'OpenClassrooms se positionne sur "formation développeur web" — TutoMotion vise "tuto rapide dev web"', p:'p-med'},
+        {i:'📱', txt:'Grafikart : présence Instagram faible (1 post/semaine) — opportunité à saisir pour TutoMotion', p:'p-low'},
+        {i:'⭐', txt:'Différenciateur TutoMotion : contenu 100% étudiant, court, sans abonnement payant', p:'p-med'},
+      ]
+    }
+  ];
+
+  var div = document.getElementById('adminAuditContent');
+  if (!div) return;
+  auditSections.forEach(function(sec) {
+    var items = sec.items.map(function(it) {
+      var label = it.p === 'p-high' ? '🔴 Prioritaire' : it.p === 'p-med' ? '🟡 Important' : '🟢 Optionnel';
+      return '<li class="audit-item">'
+        + '<span class="audit-item-icon">' + it.i + '</span>'
+        + '<span class="audit-item-text">' + it.txt + '</span>'
+        + '<span class="audit-priority ' + it.p + '">' + label + '</span>'
+        + '</li>';
+    }).join('');
+    div.innerHTML += '<div class="audit-category">'
+      + '<div class="audit-header" style="background:' + sec.color + '">'
+      + '<div class="audit-icon">' + sec.icon + '</div>'
+      + '<div><div class="audit-title">' + sec.title + '</div><div class="audit-subtitle">' + sec.sub + '</div></div>'
+      + '</div>'
+      + '<ul class="audit-items">' + items + '</ul>'
+      + '</div>';
+  });
+}
+</script>
+
+<!-- Modal YouTube -->
+<div id="ytModalOverlay" class="yt-modal-overlay" style="display:none" onclick="fermerModalYoutube()">
+  <div class="yt-modal-box" onclick="event.stopPropagation()">
+    <div class="yt-modal-title">▶ Insérer une vidéo YouTube</div>
+    <input class="yt-modal-input" id="ytUrlInput" type="text" placeholder="https://www.youtube.com/watch?v=... ou youtu.be/..."
+      onkeydown="if(event.key==='Enter') confirmerYoutube()">
+    <div class="yt-modal-btns">
+      <button class="yt-modal-btn cancel" onclick="fermerModalYoutube()">Annuler</button>
+      <button class="yt-modal-btn confirm" onclick="confirmerYoutube()">Insérer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── YouTube ───────────────────────────────────────────────────────────────────
+var ytSavedRange = null;
+
+function extraireYoutubeId(url) {
+  var m = url.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
+function ouvrirModalYoutube() {
+  var sel = window.getSelection();
+  if (sel && sel.rangeCount) ytSavedRange = sel.getRangeAt(0).cloneRange();
+  document.getElementById('ytUrlInput').value = '';
+  document.getElementById('ytUrlInput').style.borderColor = '';
+  document.getElementById('ytModalOverlay').style.display = 'flex';
+  setTimeout(function(){ document.getElementById('ytUrlInput').focus(); }, 50);
+}
+function fermerModalYoutube() {
+  document.getElementById('ytModalOverlay').style.display = 'none';
+}
+function confirmerYoutube() {
+  var url = document.getElementById('ytUrlInput').value.trim();
+  var vid = extraireYoutubeId(url);
+  if (!vid) {
+    document.getElementById('ytUrlInput').style.borderColor = '#ef4444';
+    document.getElementById('ytUrlInput').placeholder = 'URL YouTube invalide — réessayez';
+    return;
+  }
+  fermerModalYoutube();
+  insererBlocYoutube(vid);
+}
+function insererBlocYoutube(vid) {
+  var editor = document.getElementById('fContenu');
+  var thumb  = 'https://img.youtube.com/vi/' + vid + '/hqdefault.jpg';
+  var html   = '<a href="https://www.youtube.com/watch?v=' + vid + '" target="_blank" class="yt-block" data-ytid="' + vid + '" contenteditable="false">'
+    + '<img src="' + thumb + '" alt="Vidéo YouTube">'
+    + '<div class="yt-play-btn"></div>'
+    + '</a><p><br></p>';
+  editor.focus();
+  editor.insertAdjacentHTML('beforeend', html);
+  editor.scrollTop = editor.scrollHeight;
+  ytSavedRange = null;
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TutoMotion — Cours</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  @font-face { font-family:'Glacial Indifference'; src:url('https://fonts.cdnfonts.com/s/17689/GlacialIndifference-Regular.woff') format('woff'); font-weight:400; }
+  @font-face { font-family:'Glacial Indifference'; src:url('https://fonts.cdnfonts.com/s/17689/GlacialIndifference-Bold.woff') format('woff'); font-weight:700; }
+
+  .cours-hero {
+    width:100%; min-height:280px;
+    display:flex; align-items:flex-end;
+    padding:2.5rem;
+    position:relative;
+    overflow:hidden;
+    box-sizing:border-box;
+  }
+  .cours-hero-bg {
+    position:absolute; inset:0;
+    background:linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    z-index:0;
+  }
+  .cours-hero-img {
+    position:absolute; inset:0;
+    width:100%; height:100%; object-fit:cover;
+    z-index:1; opacity:.35;
+  }
+  .cours-hero-overlay {
+    position:absolute; inset:0;
+    background:linear-gradient(to top, rgba(15,23,42,.95) 0%, rgba(15,23,42,.4) 100%);
+    z-index:2;
+  }
+  .cours-hero-content { position:relative; z-index:3; max-width:760px; }
+  .cours-cat-badge {
+    display:inline-block;
+    background:rgba(59,130,246,.2); border:1px solid rgba(59,130,246,.4);
+    color:#93c5fd; font-size:.75rem; font-weight:600;
+    padding:.3rem .8rem; border-radius:999px; margin-bottom:.75rem;
+    font-family:'Glacial Indifference',sans-serif;
+  }
+  .cours-titre {
+    font-family:'Glacial Indifference',sans-serif;
+    font-size:2rem; font-weight:700; color:#f8fafc; line-height:1.2;
+    margin-bottom:.75rem;
+  }
+  .cours-meta-row {
+    display:flex; align-items:center; gap:1.25rem;
+    flex-wrap:wrap;
+  }
+  .cours-meta-item { font-size:.82rem; color:#94a3b8; display:flex; align-items:center; gap:.35rem; }
+
+  .cours-body { max-width:760px; margin:0 auto; padding:2.5rem 1.5rem; }
+
+  .cours-content {
+    font-size:1rem; color:#cbd5e1; line-height:1.85;
+    font-family:'Glacial Indifference',sans-serif;
+  }
+  .cours-content:empty::before {
+    content: 'Ce cours ne contient pas encore de contenu rédigé.';
+    color:#475569; font-style:italic;
+  }
+  .cours-content h2 { font-size:1.4rem; font-weight:700; color:#f8fafc; margin:1.5rem 0 .6rem; }
+  .cours-content h3 { font-size:1.1rem; font-weight:700; color:#cbd5e1; margin:1.25rem 0 .5rem; }
+  .cours-content p  { margin:.5rem 0; }
+  .cours-content ul, .cours-content ol { padding-left:1.5rem; margin:.5rem 0; }
+  .cours-content li { margin:.3rem 0; }
+  .cours-content img { max-width:100%; border-radius:10px; margin:1rem 0; display:block; }
+
+  /* Accroche + CTA non-connecté */
+  .cours-accroche {
+    font-size:1.1rem; color:#cbd5e1; line-height:1.8;
+    font-family:'Glacial Indifference',sans-serif;
+    font-style:italic; margin-bottom:2rem;
+    padding-bottom:2rem; border-bottom:1px solid #1e293b;
+  }
+  .cours-gate {
+    background:linear-gradient(135deg, #0f172a, #1e293b);
+    border:1px solid #334155; border-radius:16px;
+    padding:2.5rem; text-align:center; margin-top:1rem;
+  }
+  .cours-gate-icon { font-size:2.5rem; margin-bottom:1rem; }
+  .cours-gate-title {
+    font-family:'Glacial Indifference',sans-serif;
+    font-size:1.3rem; font-weight:700; color:#f8fafc; margin-bottom:.5rem;
+  }
+  .cours-gate-sub { font-size:.9rem; color:#64748b; margin-bottom:1.75rem; }
+  .cours-gate-btns { display:flex; gap:.75rem; justify-content:center; flex-wrap:wrap; }
+  .btn-gate-primary {
+    background:linear-gradient(135deg,#3b82f6,#2563eb);
+    color:#fff; border:none; border-radius:10px;
+    padding:.75rem 1.75rem; font-size:.95rem; font-weight:700;
+    font-family:'Glacial Indifference',sans-serif; cursor:pointer;
+    transition:opacity .15s; text-decoration:none; display:inline-block;
+  }
+  .btn-gate-primary:hover { opacity:.88; }
+  .btn-gate-secondary {
+    background:transparent; color:#64748b;
+    border:1px solid #334155; border-radius:10px;
+    padding:.75rem 1.75rem; font-size:.95rem; font-weight:700;
+    font-family:'Glacial Indifference',sans-serif; cursor:pointer;
+    transition:all .15s; text-decoration:none; display:inline-block;
+  }
+  .btn-gate-secondary:hover { border-color:#64748b; color:#94a3b8; }
+
+  /* Questionnaire en bas du cours */
+  .quiz-section { margin-top:3rem; border-top:1px solid #1e293b; padding-top:2rem; }
+  .quiz-section-title { font-family:'Glacial Indifference',sans-serif; font-size:1.2rem; font-weight:700; color:#f8fafc; margin-bottom:.4rem; }
+  .quiz-section-sub { font-size:.85rem; color:#64748b; margin-bottom:2rem; }
+  .quiz-q { margin-bottom:1.75rem; }
+  .quiz-q-label { font-family:'Glacial Indifference',sans-serif; font-size:.92rem; font-weight:700; color:#e2e8f0; margin-bottom:.75rem; display:block; }
+  .quiz-q-num { color:#3b82f6; margin-right:.4rem; }
+  .quiz-textarea { width:100%; min-height:110px; padding:.75rem 1rem; background:#1e293b; border:1px solid #334155; border-radius:9px; color:#f1f5f9; font-size:.88rem; line-height:1.65; resize:vertical; font-family:'Glacial Indifference',sans-serif; box-sizing:border-box; outline:none; transition:border-color .15s; }
+  .quiz-textarea:focus { border-color:#3b82f6; }
+  .quiz-options { display:flex; flex-direction:column; gap:.5rem; }
+  .quiz-option-label { display:flex; align-items:center; gap:.75rem; background:#1e293b; border:1px solid #334155; border-radius:9px; padding:.65rem 1rem; cursor:pointer; transition:all .15s; font-size:.88rem; color:#e2e8f0; }
+  .quiz-option-label:hover { border-color:#3b82f6; color:#f8fafc; background:#263548; }
+  .quiz-option-label input[type=radio] { display:none; }
+  .quiz-option-label.selected { background:rgba(59,130,246,.15); border-color:#3b82f6; color:#f8fafc; }
+  .quiz-option-label .radio-dot { width:16px; height:16px; border-radius:50%; border:2px solid #334155; flex-shrink:0; transition:all .15s; display:flex; align-items:center; justify-content:center; }
+  .quiz-option-label.selected .radio-dot { border-color:#3b82f6; background:#3b82f6; }
+  .quiz-option-label.selected .radio-dot::after { content:''; width:6px; height:6px; background:#fff; border-radius:50%; }
+  /* Carré pour réponses multiples */
+  .quiz-option-label .radio-dot[style*="border-radius:3px"] { border-radius:3px !important; }
+  .quiz-option-label.selected .radio-dot[style*="border-radius:3px"]::after { border-radius:1px; width:8px; height:6px; background:none; border-left:2px solid #fff; border-bottom:2px solid #fff; transform:rotate(-45deg) translate(1px,-1px); border-radius:0; }
+  .scroll-hint { background:#1e293b; border:1px solid #334155; border-radius:10px; padding:1.25rem; text-align:center; margin-bottom:1.5rem; font-family:'Glacial Indifference',sans-serif; }
+  .scroll-hint-title { font-size:.9rem; font-weight:700; color:#f8fafc; margin-bottom:.3rem; }
+  .scroll-hint-sub { font-size:.78rem; color:#64748b; }
+  .scroll-progress { height:4px; background:#334155; border-radius:2px; margin-top:.75rem; overflow:hidden; }
+  .scroll-progress-bar { height:100%; background:linear-gradient(90deg,#3b82f6,#8b5cf6); border-radius:2px; transition:width .3s; width:0%; }
+  .btn-quiz-submit { width:100%; padding:.9rem; border-radius:10px; background:linear-gradient(135deg,#22c55e,#16a34a); color:#fff; font-size:1rem; font-weight:700; font-family:'Glacial Indifference',sans-serif; border:none; cursor:pointer; transition:opacity .15s; margin-top:1rem; }
+  .btn-quiz-submit:hover { opacity:.88; }
+  .btn-quiz-submit:disabled { opacity:.5; cursor:not-allowed; }
+  .quiz-success { background:rgba(34,197,94,.08); border:1px solid rgba(34,197,94,.3); border-radius:12px; padding:2rem; text-align:center; margin-top:2rem; }
+  .quiz-success-icon { font-size:2.5rem; margin-bottom:.75rem; }
+  .quiz-success-title { font-family:'Glacial Indifference',sans-serif; font-size:1.2rem; font-weight:700; color:#86efac; margin-bottom:.4rem; }
+  .quiz-success-sub { font-size:.85rem; color:#64748b; }
+
+  /* Blocs YouTube */
+  .yt-block { display:block; position:relative; border-radius:10px; overflow:hidden; margin:1rem 0; cursor:pointer; background:#000; }
+  .yt-block img { width:100%; display:block; opacity:.85; transition:opacity .2s; }
+  .yt-block:hover img { opacity:1; }
+  .yt-play-btn { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:64px; height:44px; background:rgba(255,0,0,.9); border-radius:10px; display:flex; align-items:center; justify-content:center; transition:background .2s; pointer-events:none; }
+  .yt-block:hover .yt-play-btn { background:#ff0000; }
+  .yt-play-btn::after { content:''; border-style:solid; border-width:10px 0 10px 18px; border-color:transparent transparent transparent #fff; margin-left:3px; }
+  .yt-iframe-wrap { position:relative; padding-bottom:56.25%; height:0; border-radius:10px; overflow:hidden; margin:1rem 0; background:#000; }
+  .yt-iframe-wrap iframe { position:absolute; top:0; left:0; width:100%; height:100%; border:none; border-radius:10px; }
+  .yt-iframe-wrap { position:relative; padding-bottom:56.25%; height:0; border-radius:10px; overflow:hidden; margin:1rem 0; background:#000; }
+  .yt-iframe-wrap iframe { position:absolute; top:0; left:0; width:100%; height:100%; border:none; border-radius:10px; }
+
+  .cours-image {
+    width:100%; border-radius:12px;
+    margin-bottom:2rem; max-height:420px; object-fit:cover;
+  }
+
+  .back-btn {
+    display:inline-flex; align-items:center; gap:.5rem;
+    color:#64748b; font-size:.85rem; cursor:pointer;
+    font-family:'Glacial Indifference',sans-serif;
+    margin-bottom:1.5rem; transition:color .15s;
+    background:none; border:none; padding:0;
+  }
+  .back-btn:hover { color:#94a3b8; }
+
+  .cours-skeleton {
+    background:#1e293b; border-radius:8px;
+    animation:pulse 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+  .cours-erreur {
+    text-align:center; padding:4rem 2rem;
+    font-family:'Glacial Indifference',sans-serif; color:#64748b;
+  }
+  .cours-erreur-icon { font-size:3rem; margin-bottom:1rem; }
+</style>
+</head>
+<body>
+
+<!-- Nav simplifiée -->
+<nav>
+  <div class="nav-inner">
+    <a class="logo" href="/">
+      <div class="logo-icon">⚡</div>
+      Tuto<span>Lab</span>
+    </a>
+    <div class="nav-actions" id="navActions"></div>
+  </div>
+</nav>
+
+<!-- Hero du cours -->
+<div class="cours-hero" id="coursHero">
+  <div class="cours-hero-bg"></div>
+  <div class="cours-hero-overlay"></div>
+  <div class="cours-hero-content">
+    <div class="cours-skeleton" style="width:120px;height:24px;border-radius:999px;margin-bottom:.75rem"></div>
+    <div class="cours-skeleton" style="width:80%;height:36px;margin-bottom:.5rem;border-radius:8px"></div>
+    <div class="cours-skeleton" style="width:50%;height:36px;margin-bottom:.75rem;border-radius:8px"></div>
+    <div style="display:flex;gap:1rem">
+      <div class="cours-skeleton" style="width:80px;height:18px;border-radius:4px"></div>
+      <div class="cours-skeleton" style="width:80px;height:18px;border-radius:4px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Corps -->
+<div class="cours-body" id="coursBody">
+  <button class="back-btn" onclick="window.history.back()">← Retour</button>
+  <div id="coursContenu">
+    <div class="cours-skeleton" style="height:200px;border-radius:12px;margin-bottom:2rem"></div>
+    <div class="cours-skeleton" style="height:16px;margin-bottom:.75rem;border-radius:4px"></div>
+    <div class="cours-skeleton" style="height:16px;width:90%;margin-bottom:.75rem;border-radius:4px"></div>
+    <div class="cours-skeleton" style="height:16px;width:75%;margin-bottom:.75rem;border-radius:4px"></div>
+  </div>
+  <div id="quizSection"></div>
+</div>
+
+<script>
+async function chargerCours() {
+  var params = new URLSearchParams(window.location.search);
+  var id     = params.get('id');
+
+  if (!id) {
+    afficherErreur('Aucun cours spécifié.');
+    return;
+  }
+
+  try {
+    var res  = await fetch('/api/tutoriels/' + id);
+    var data = await res.json();
+
+    if (!data.succes) { afficherErreur('Cours introuvable.'); return; }
+    var t = data.tutoriel;
+
+    // Titre de la page
+    document.title = 'TutoMotion — ' + t.titre;
+
+    // Hero
+    var hero = document.getElementById('coursHero');
+    hero.innerHTML = '';
+    if (t.image_url) {
+      hero.innerHTML += '<img src="' + t.image_url + '" class="cours-hero-img" alt="' + t.titre + '">';
+    } else {
+      hero.innerHTML += '<div class="cours-hero-bg"></div>';
+    }
+    hero.innerHTML += '<div class="cours-hero-overlay"></div>'
+      + '<div class="cours-hero-content">'
+      + '<div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.75rem">'
+      + (t.categorie || '').split(',').map(function(c){ return '<div class="cours-cat-badge">' + t.emoji + ' ' + c.trim() + '</div>'; }).join('')
+      + '</div>'
+      + '<div class="cours-titre">' + t.titre + '</div>'
+      + '<div class="cours-meta-row">'
+      + '<span class="cours-meta-item">👤 ' + t.auteur + '</span>'
+      + '<span class="cours-meta-item">⏱ ' + t.duree_min + ' min</span>'
+      + '<span class="cours-meta-item">📅 ' + new Date(t.cree_le).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}) + '</span>'
+      + '</div></div>';
+
+    // Contenu
+    var contenuEl = document.getElementById('coursContenu');
+    var html = '';
+    if (t.image_url) {
+      html += '<img src="' + t.image_url + '" class="cours-image" alt="' + t.titre + '">';
+    }
+
+    if (data.connecte) {
+      // Utilisateur connecté : contenu complet
+      html += '<div class="cours-content">' + (t.contenu || '') + '</div>';
+    } else {
+      // Non connecté : accroche + CTA
+      if (t.accroche) {
+        html += '<div class="cours-accroche">' + t.accroche + '</div>';
+      }
+      html += '<div class="cours-gate">'
+        + '<div class="cours-gate-icon">🔒</div>'
+        + '<div class="cours-gate-title">Accès réservé aux membres</div>'
+        + '<div class="cours-gate-sub">Crée un compte gratuit pour accéder au cours complet, suivre ta progression et débloquer tous les tutoriels TutoMotion.</div>'
+        + '<div class="cours-gate-btns">'
+        + '<a href="/" class="btn-gate-primary" onclick="sessionStorage.setItem(\'openModal\',\'inscription\')">🚀 Créer un compte gratuit</a>'
+        + '<a href="/" class="btn-gate-secondary" onclick="sessionStorage.setItem(\'openModal\',\'connexion\')">Se connecter</a>'
+        + '</div></div>';
+    }
+    contenuEl.innerHTML = html;
+
+    // Charger le questionnaire si connecté
+    chargerQuestionnaire(id, data.connecte);
+
+  } catch(e) {
+    afficherErreur('Erreur lors du chargement du cours.');
+  }
+}
+
+function afficherErreur(msg) {
+  document.getElementById('coursHero').innerHTML = '<div class="cours-hero-bg"></div><div class="cours-hero-overlay"></div>';
+  document.getElementById('coursContenu').innerHTML = '<div class="cours-erreur"><div class="cours-erreur-icon">😕</div><div>' + msg + '</div><br><a href="/" style="color:#3b82f6">← Retour à l\'accueil</a></div>';
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+async function chargerNav() {
+  try {
+    var res  = await fetch('/api/moi');
+    var data = await res.json();
+    var nav  = document.getElementById('navActions');
+    if (data.connecte) {
+      var initiales = data.utilisateur.nom.split(' ').map(function(m){return m[0];}).join('').toUpperCase().slice(0,2);
+      nav.innerHTML = '<div class="nav-user" onclick="window.location.href=\'/\'">'
+        + '<div class="nav-avatar">' + initiales + '</div>'
+        + '<span class="nav-user-nom">' + data.utilisateur.nom.split(' ')[0] + '</span>'
+        + '</div>';
+      if (data.utilisateur.role === 'admin') {
+        nav.innerHTML += '<a href="/admin" class="btn btn-ghost" style="text-decoration:none">🛡️ Admin</a>';
+      }
+    } else {
+      nav.innerHTML = '<a href="/" class="btn btn-ghost" style="text-decoration:none">Connexion</a>';
+    }
+  } catch(e) {}
+}
+
+// ── Questionnaire ─────────────────────────────────────────────────────────────
+var coursId        = null;
+var quizQuestions  = [];
+var quizReponses   = {};  // question_id -> valeur
+var coursComplete  = false;
+
+async function chargerQuestionnaire(tid, estConnecte) {
+  if (!estConnecte) return;
+  coursId = tid;
+
+  // Vérifier si déjà complété
+  try {
+    var resH = await fetch('/api/moi');
+    var dataH = await resH.json();
+    if (dataH.connecte) {
+      var deja = (dataH.historique || []).find(function(h){ return h.id == tid && h.statut === 'termine'; });
+      if (deja) { afficherSuccesDejaFait(); return; }
+    }
+  } catch(e) {}
+
+  try {
+    var res  = await fetch('/api/tutoriels/' + tid + '/questionnaire');
+    var data = await res.json();
+    if (!data.succes || !data.questions || data.questions.length === 0) return;
+    quizQuestions = data.questions;
+    // Afficher directement le questionnaire, sans scroll gate
+    afficherQuiz();
+  } catch(e) {}
+}
+
+function afficherQuiz() {
+  var section = document.getElementById('quizSection');
+  if (!section) return;
+
+  var html = '<div class="quiz-section">'
+    + '<div class="quiz-section-title">🧠 Questionnaire de validation</div>'
+    + '<div class="quiz-section-sub">Répondez à toutes les questions — il faut <strong>75%</strong> de bonnes réponses pour valider le cours.</div>';
+
+  quizQuestions.forEach(function(q, i) {
+    var opts = (q.options || '').split('||').filter(function(o){ return o.trim(); });
+    var isMultiple = q.multiple === 1;
+    var multipleBadge = isMultiple
+      ? '<span style="display:inline-block;margin-left:.5rem;font-size:.68rem;font-weight:700;padding:.15rem .45rem;border-radius:999px;background:rgba(139,92,246,.15);border:1px solid #8b5cf6;color:#c4b5fd;vertical-align:middle">☑️ Plusieurs réponses</span>'
+      : '';
+
+    html += '<div class="quiz-q" data-qid="' + q.id + '">'
+      + '<label class="quiz-q-label"><span class="quiz-q-num">' + (i+1) + '.</span> ' + q.question + multipleBadge + '</label>'
+      + '<div class="quiz-options">';
+
+    opts.forEach(function(opt, oi) {
+      var inputId = 'opt_' + q.id + '_' + oi;
+      if (isMultiple) {
+        html += '<label class="quiz-option-label" id="' + inputId + '" onclick="toggleCheckOption(' + q.id + ',' + oi + ',\'' + inputId + '\')">'
+          + '<div class="radio-dot" style="border-radius:3px"></div>'
+          + opt + '</label>';
+      } else {
+        html += '<label class="quiz-option-label" id="' + inputId + '" onclick="selectOption(' + q.id + ',' + oi + ',\'' + inputId + '\')">'
+          + '<div class="radio-dot"></div>'
+          + opt + '</label>';
+      }
+    });
+
+    html += '</div></div>';
+  });
+
+  html += '<div id="quizErreur" style="color:#f87171;font-size:.82rem;margin-top:.5rem"></div>'
+    + '<button class="btn-quiz-submit" id="btnQuizSubmit" onclick="soumettreQuiz()">✅ Valider le questionnaire</button>'
+    + '</div>';
+
+  section.innerHTML = html;
+  section.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function selectOption(qid, oIdx, labelId) {
+  // Réponse unique — stocker l'index
+  quizReponses[qid] = String(oIdx);
+  document.querySelectorAll('[id^="opt_' + qid + '_"]').forEach(function(el){
+    el.classList.remove('selected');
+  });
+  document.getElementById(labelId).classList.add('selected');
+}
+
+function toggleCheckOption(qid, oIdx, labelId) {
+  // Réponses multiples — stocker indices séparés par virgule
+  var current = quizReponses[qid] ? quizReponses[qid].split(',').filter(function(v){ return v !== ''; }) : [];
+  var pos = current.indexOf(String(oIdx));
+  if (pos === -1) current.push(String(oIdx));
+  else current.splice(pos, 1);
+  quizReponses[qid] = current.sort().join(',');
+  var label = document.getElementById(labelId);
+  if (pos === -1) label.classList.add('selected');
+  else label.classList.remove('selected');
+}
+
+async function soumettreQuiz() {
+  var errEl = document.getElementById('quizErreur');
+  var btn   = document.getElementById('btnQuizSubmit');
+  errEl.textContent = '';
+
+  for (var i = 0; i < quizQuestions.length; i++) {
+    var qid = quizQuestions[i].id;
+    var rep = quizReponses[qid];
+    if (rep === undefined || rep === null || rep === '') {
+      errEl.textContent = 'Répondez à toutes les questions (question ' + (i+1) + ' manquante).';
+      return;
+    }
+  }
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Envoi en cours…';
+
+  try {
+    var reponses = quizQuestions.map(function(q) {
+      return { question_id: q.id, reponse: quizReponses[q.id] };
+    });
+
+    var res  = await fetch('/api/tutoriels/' + coursId + '/soumettre', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({reponses: reponses})
+    });
+    var data = await res.json();
+
+    if (data.valide) {
+      afficherSucces(data.score, data.correct, data.total);
+    } else {
+      afficherEchec(data.score, data.correct, data.total);
+    }
+  } catch(e) {
+    errEl.textContent = 'Erreur serveur.';
+    btn.disabled = false;
+    btn.textContent = '✅ Valider le questionnaire';
+  }
+}
+
+function afficherSuccesDejaFait() {
+  var section = document.getElementById('quizSection');
+  if (!section) return;
+  section.innerHTML = '<div class="quiz-success">'
+    + '<div class="quiz-success-icon">✅</div>'
+    + '<div class="quiz-success-title">Cours déjà complété !</div>'
+    + '<div class="quiz-success-sub">Ce cours est dans votre historique. Retrouvez votre progression sur votre profil.</div>'
+    + '</div>';
+}
+
+function afficherSucces(score, correct, total) {
+  var section = document.getElementById('quizSection');
+  if (!section) return;
+  section.innerHTML = '<div class="quiz-success">'
+    + '<div class="quiz-success-icon">🎉</div>'
+    + '<div class="quiz-success-title">Cours validé ! ' + score + '% de bonnes réponses</div>'
+    + '<div class="quiz-success-sub">' + correct + ' / ' + total + ' questions correctes — Ce cours a été ajouté à votre historique.</div>'
+    + '</div>';
+}
+
+function afficherEchec(score, correct, total) {
+  var section = document.getElementById('quizSection');
+  if (!section) return;
+  section.innerHTML = '<div class="quiz-section">'
+    + '<div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:12px;padding:1.5rem;text-align:center;margin-bottom:1.5rem">'
+    + '<div style="font-size:2rem;margin-bottom:.5rem">😞</div>'
+    + '<div style="font-family:\'Glacial Indifference\',sans-serif;font-size:1.1rem;font-weight:700;color:#fca5a5;margin-bottom:.4rem">Score insuffisant : ' + score + '%</div>'
+    + '<div style="font-size:.85rem;color:#64748b">' + correct + '/' + total + ' correctes — Il faut 75% pour valider. Réessayez !</div>'
+    + '</div>'
+    + '<button class="btn-quiz-submit" onclick="relancerQuiz()" style="background:linear-gradient(135deg,#3b82f6,#2563eb)">🔄 Réessayer</button>'
+    + '</div>';
+}
+
+function relancerQuiz() {
+  quizReponses = {};
+  scrollUnlocked = true;
+  afficherQuiz();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  chargerNav();
+  chargerCours();
+});
+
+document.addEventListener('click', function(e) {
+  var block = e.target.closest('.yt-block');
+  if (!block) return;
+  e.preventDefault();
+  var vid = block.dataset.ytid;
+  if (!vid) return;
+  var wrap = document.createElement('div');
+  wrap.className = 'yt-iframe-wrap';
+  wrap.innerHTML = '<iframe src="https://www.youtube.com/embed/' + vid + '?autoplay=1&rel=0" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
+  block.replaceWith(wrap);
+});
+
+// Délégation : transformer miniature en iframe au clic
+document.addEventListener('click', function(e) {
+  var block = e.target.closest('.yt-block');
+  if (!block) return;
+  e.preventDefault();
+  var vid = block.dataset.ytid;
+  if (!vid) return;
+  var wrap = document.createElement('div');
+  wrap.className = 'yt-iframe-wrap';
+  wrap.innerHTML = '<iframe src="https://www.youtube.com/embed/' + vid + '?autoplay=1&rel=0" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
+  block.replaceWith(wrap);
+});
+</script>
+
+</body>
+</html>

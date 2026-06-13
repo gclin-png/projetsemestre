@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TutoMotion — Créer un cours</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  @font-face { font-family:'Glacial Indifference'; src:url('https://fonts.cdnfonts.com/s/17689/GlacialIndifference-Regular.woff') format('woff'); font-weight:400; }
+  @font-face { font-family:'Glacial Indifference'; src:url('https://fonts.cdnfonts.com/s/17689/GlacialIndifference-Bold.woff') format('woff'); font-weight:700; }
+
+  body { background:#0f172a; min-height:100vh; }
+
+  .page-wrapper {
+    max-width:760px; margin:0 auto; padding:2rem 1.5rem 4rem;
+  }
+
+  .page-header {
+    margin-bottom:2rem;
+  }
+  .page-header-top {
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:.5rem;
+  }
+  .page-title {
+    font-family:'Glacial Indifference',sans-serif;
+    font-size:1.6rem; font-weight:700; color:#f8fafc;
+  }
+  .page-subtitle { font-size:.85rem; color:#64748b; }
+
+  /* Role badge inline */
+  .role-pill {
+    display:inline-flex; align-items:center; gap:.4rem;
+    font-size:.75rem; font-weight:700; padding:.3rem .75rem;
+    border-radius:999px; font-family:'Glacial Indifference',sans-serif;
+  }
+  .role-pill.contributeur { background:rgba(8,145,178,.15); border:1px solid rgba(8,145,178,.4); color:#67e8f9; }
+  .role-pill.admin        { background:rgba(245,158,11,.15); border:1px solid rgba(245,158,11,.4); color:#fcd34d; }
+
+  /* Card */
+  .form-card {
+    background:#1e293b; border:1px solid #334155; border-radius:14px; padding:2rem;
+  }
+
+  /* Form elements */
+  .form-group { margin-bottom:1.1rem; }
+  .form-label {
+    display:block; font-size:.82rem; color:#94a3b8;
+    margin-bottom:.4rem; font-family:'Glacial Indifference',sans-serif;
+  }
+  .form-input {
+    width:100%; padding:.7rem 1rem;
+    background:#0f172a; border:1px solid #334155; border-radius:8px;
+    color:#f1f5f9; font-size:.88rem; font-family:'Glacial Indifference',sans-serif;
+    transition:border-color .15s; box-sizing:border-box;
+  }
+  .form-input:focus { outline:none; border-color:#0891b2; }
+  .form-textarea { min-height:220px; resize:vertical; line-height:1.65; }
+  .form-select   { cursor:pointer; }
+
+  /* Multi-catégories */
+  .cat-checkboxes { display:flex; flex-wrap:wrap; gap:.5rem; }
+  .cat-check {
+    display:flex; align-items:center; gap:.45rem;
+    background:#0f172a; border:1px solid #334155; border-radius:8px;
+    padding:.45rem .85rem; cursor:pointer; font-size:.85rem; color:#94a3b8;
+    transition:all .15s; user-select:none;
+  }
+  .cat-check:hover { border-color:#0891b2; color:#f1f5f9; }
+  .cat-check input[type=checkbox] { display:none; }
+  .cat-check.checked { background:rgba(8,145,178,.15); border-color:#0891b2; color:#67e8f9; font-weight:600; }
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  @media(max-width:600px){ .form-row { grid-template-columns:1fr; } }
+
+  /* Multi-image upload */
+  .upload-drop-area {
+    border:2px dashed #334155; border-radius:10px;
+    padding:1.5rem; text-align:center; cursor:pointer;
+    transition:border-color .2s, background .2s; background:#0f172a;
+    position:relative;
+  }
+  .upload-drop-area:hover,
+  .upload-drop-area.drag-over { border-color:#0891b2; background:rgba(8,145,178,.06); }
+  .upload-drop-area input { display:none; }
+  .upload-drop-hint { color:#64748b; font-size:.85rem; pointer-events:none; }
+  .upload-drop-hint span { display:block; font-size:1.8rem; margin-bottom:.4rem; }
+
+  /* Image grid */
+  .images-grid {
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(140px, 1fr));
+    gap:.75rem; margin-top:1rem;
+  }
+  .img-item {
+    position:relative; border-radius:10px; overflow:hidden;
+    aspect-ratio:4/3; background:#0f172a; border:2px solid #334155;
+    cursor:grab; transition:border-color .2s, transform .15s;
+    user-select:none;
+  }
+  .img-item:active { cursor:grabbing; }
+  .img-item.couverture { border-color:#0891b2; }
+  .img-item.drag-source { opacity:.4; transform:scale(.97); }
+  .img-item.drag-over-target { border-color:#f59e0b; border-style:dashed; }
+  .img-item img {
+    width:100%; height:100%; object-fit:cover; pointer-events:none; display:block;
+  }
+  .img-item-overlay {
+    position:absolute; inset:0; background:rgba(0,0,0,.45);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.35rem;
+  }
+  .img-action {
+    background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.2);
+    color:#fff; border-radius:6px; padding:.3rem .6rem;
+    font-size:.7rem; font-weight:600; cursor:pointer;
+    font-family:'Glacial Indifference',sans-serif; transition:background .15s;
+    white-space:nowrap;
+  }
+  .img-action:hover { background:rgba(255,255,255,.25); }
+  .img-action.danger:hover { background:rgba(239,68,68,.5); }
+  .cover-badge {
+    position:absolute; top:.4rem; left:.4rem;
+    background:#0891b2; color:#fff; font-size:.6rem; font-weight:700;
+    padding:.15rem .4rem; border-radius:4px; pointer-events:none;
+    font-family:'Glacial Indifference',sans-serif;
+  }
+  .img-count {
+    font-size:.75rem; color:#64748b; margin-top:.5rem; text-align:right;
+    font-family:'Glacial Indifference',sans-serif;
+  }
+  .images-empty { color:#475569; font-size:.82rem; font-style:italic; margin-top:.5rem; }
+
+  /* Buttons */
+  .btn-submit {
+    width:100%; padding:.8rem; border-radius:10px;
+    background:linear-gradient(135deg,#0891b2,#0e7490);
+    color:#fff; font-size:.95rem; font-weight:700;
+    font-family:'Glacial Indifference',sans-serif;
+    border:none; cursor:pointer; transition:opacity .15s;
+    margin-top:.75rem;
+  }
+  .btn-submit:hover { opacity:.88; }
+  .btn-submit:disabled { opacity:.5; cursor:not-allowed; }
+
+  /* Questionnaire builder */
+  .quiz-builder { margin-top:.5rem; }
+  .quiz-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; }
+  .quiz-title { font-family:'Glacial Indifference',sans-serif; font-size:.95rem; font-weight:700; color:#f8fafc; }
+  .quiz-count { font-size:.72rem; color:#64748b; background:#0f172a; padding:.2rem .5rem; border-radius:999px; }
+  .quiz-question-card {
+    background:#0f172a; border:1px solid #334155; border-radius:10px;
+    padding:1rem; margin-bottom:.75rem; position:relative;
+  }
+  .quiz-question-num { font-size:.7rem; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:.06em; margin-bottom:.5rem; }
+  .quiz-question-input {
+    width:100%; padding:.6rem .85rem; background:#1e293b; border:1px solid #334155;
+    border-radius:7px; color:#f1f5f9; font-size:.85rem; margin-bottom:.6rem;
+    font-family:'Glacial Indifference',sans-serif; box-sizing:border-box; outline:none;
+  }
+  .quiz-question-input:focus { border-color:#0891b2; }
+  .quiz-type-row { display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; margin-bottom:.5rem; }
+  .quiz-type-btn { font-size:.72rem; padding:.3rem .65rem; border-radius:6px; border:1px solid #334155; background:#1e293b; color:#64748b; cursor:pointer; font-family:'Glacial Indifference',sans-serif; font-weight:600; transition:all .15s; }
+  .quiz-type-btn.active-texte { background:rgba(8,145,178,.15); border-color:#0891b2; color:#67e8f9; }
+  .quiz-type-btn.active-qcm   { background:rgba(139,92,246,.15); border-color:#8b5cf6; color:#c4b5fd; }
+  .quiz-options-area { margin-top:.5rem; }
+  .quiz-option-row { display:flex; gap:.4rem; margin-bottom:.35rem; align-items:center; }
+  .quiz-option-input { flex:1; padding:.5rem .75rem; background:#1e293b; border:1px solid #334155; border-radius:6px; color:#f1f5f9; font-size:.82rem; font-family:'Glacial Indifference',sans-serif; outline:none; }
+  .quiz-option-input:focus { border-color:#8b5cf6; }
+  .quiz-option-del { width:26px; height:26px; border-radius:5px; border:none; background:#3b1a1a; color:#fca5a5; cursor:pointer; font-size:.8rem; flex-shrink:0; }
+  .quiz-option-del:hover { background:#dc2626; color:#fff; }
+  .btn-add-option { font-size:.72rem; color:#8b5cf6; background:none; border:1px dashed #4c1d95; border-radius:6px; padding:.3rem .65rem; cursor:pointer; margin-top:.25rem; font-family:'Glacial Indifference',sans-serif; transition:all .15s; }
+  .btn-add-option:hover { background:rgba(139,92,246,.1); }
+  .quiz-correct-btn { width:28px; height:28px; border-radius:5px; border:1px solid #334155; background:#1e293b; cursor:pointer; font-size:.85rem; flex-shrink:0; transition:all .15s; }
+  .quiz-correct-btn.correct { background:rgba(34,197,94,.15); border-color:#22c55e; }
+  .quiz-correct-btn:hover { border-color:#22c55e; }
+  .quiz-multiple-badge { font-size:.72rem; font-weight:600; padding:.25rem .6rem; border-radius:999px; background:#1e293b; border:1px solid #334155; color:#64748b; font-family:'Glacial Indifference',sans-serif; }
+  .quiz-multiple-badge.active { background:rgba(139,92,246,.15); border-color:#8b5cf6; color:#c4b5fd; }
+  .quiz-del-btn { position:absolute; top:.75rem; right:.75rem; width:26px; height:26px; border-radius:5px; border:none; background:#3b1a1a; color:#fca5a5; cursor:pointer; font-size:.8rem; }
+  .quiz-del-btn:hover { background:#dc2626; color:#fff; }
+  .btn-add-question { width:100%; padding:.65rem; border-radius:8px; background:rgba(8,145,178,.1); border:1px dashed rgba(8,145,178,.4); color:#67e8f9; font-size:.85rem; font-weight:600; cursor:pointer; font-family:'Glacial Indifference',sans-serif; transition:all .15s; margin-top:.25rem; }
+  .btn-add-question:hover { background:rgba(8,145,178,.2); }
+  .quiz-minimum-note { font-size:.72rem; color:#475569; margin-top:.4rem; font-style:italic; }
+
+  .btn-secondary {
+    display:inline-flex; align-items:center; gap:.4rem;
+    background:none; border:1px solid #334155; color:#64748b;
+    border-radius:8px; padding:.5rem 1rem; font-size:.82rem;
+    font-family:'Glacial Indifference',sans-serif; cursor:pointer;
+    transition:all .15s;
+  }
+  .btn-secondary:hover { border-color:#64748b; color:#94a3b8; }
+
+  .form-error { color:#f87171; font-size:.82rem; margin-top:.5rem; }
+
+  /* Éditeur riche */
+  .editor-toolbar {
+    display:flex; align-items:center; gap:.25rem; flex-wrap:wrap;
+    background:#0f172a; border:1px solid #334155; border-bottom:none;
+    border-radius:8px 8px 0 0; padding:.5rem .75rem;
+  }
+  .tool-btn {
+    background:#1e293b; border:1px solid #334155; color:#94a3b8;
+    border-radius:5px; padding:.3rem .6rem; font-size:.8rem;
+    cursor:pointer; transition:all .15s; font-family:'Glacial Indifference',sans-serif;
+    min-width:28px; text-align:center;
+  }
+  .tool-btn:hover { background:#334155; color:#f1f5f9; }
+  .tool-btn-image { background:rgba(8,145,178,.15); border-color:rgba(8,145,178,.4); color:#67e8f9; padding:.3rem .75rem; }
+  .tool-btn-image:hover { background:rgba(8,145,178,.3); color:#fff; }
+  .tool-btn-video { background:rgba(239,68,68,.12); border-color:rgba(239,68,68,.35); color:#fca5a5; padding:.3rem .75rem; }
+  .tool-btn-video:hover { background:rgba(239,68,68,.25); color:#fff; }
+
+  /* Bloc vidéo YouTube inline */
+  .yt-block {
+    display:block; position:relative; border-radius:10px; overflow:hidden;
+    margin:.75rem 0; cursor:pointer; background:#000; max-width:100%;
+  }
+  .yt-block img { width:100%; display:block; border-radius:10px; opacity:.85; transition:opacity .2s; }
+  .yt-block:hover img { opacity:1; }
+  .yt-play-btn {
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    width:64px; height:44px; background:rgba(255,0,0,.9); border-radius:10px;
+    display:flex; align-items:center; justify-content:center;
+    transition:background .2s; pointer-events:none;
+  }
+  .yt-block:hover .yt-play-btn { background:#ff0000; }
+  .yt-play-btn::after { content:''; border-style:solid; border-width:10px 0 10px 18px; border-color:transparent transparent transparent #fff; margin-left:3px; }
+  .yt-iframe-wrap { position:relative; padding-bottom:56.25%; height:0; border-radius:10px; overflow:hidden; margin:.75rem 0; background:#000; }
+  .yt-iframe-wrap iframe { position:absolute; top:0; left:0; width:100%; height:100%; border:none; border-radius:10px; }
+  .yt-title { position:absolute; bottom:0; left:0; right:0; padding:.5rem .75rem; background:linear-gradient(to top, rgba(0,0,0,.8), transparent); color:#fff; font-size:.8rem; font-family:'Glacial Indifference',sans-serif; border-radius:0 0 10px 10px; }
+
+  /* Modal vidéo */
+  .yt-modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.8); z-index:3000; display:flex; align-items:center; justify-content:center; }
+  .yt-modal-box { background:#1e293b; border-radius:14px; padding:1.5rem; width:90%; max-width:480px; border:1px solid #334155; }
+  .yt-modal-title { font-family:'Glacial Indifference',sans-serif; font-size:1rem; font-weight:700; color:#f8fafc; margin-bottom:1rem; }
+  .yt-modal-input { width:100%; padding:.7rem 1rem; background:#0f172a; border:1px solid #334155; border-radius:8px; color:#f1f5f9; font-size:.88rem; font-family:'Glacial Indifference',sans-serif; box-sizing:border-box; outline:none; }
+  .yt-modal-input:focus { border-color:#ef4444; }
+  .yt-modal-btns { display:flex; gap:.75rem; margin-top:1rem; }
+  .yt-modal-btn { flex:1; padding:.65rem; border-radius:8px; font-size:.88rem; font-weight:700; font-family:'Glacial Indifference',sans-serif; cursor:pointer; border:none; transition:opacity .15s; }
+  .yt-modal-btn.confirm { background:#ef4444; color:#fff; }
+  .yt-modal-btn.confirm:hover { opacity:.85; }
+  .yt-modal-btn.cancel { background:#1e293b; color:#64748b; border:1px solid #334155; }
+  .yt-modal-btn.cancel:hover { color:#94a3b8; }
+  .tool-sep { width:1px; height:20px; background:#334155; margin:0 .2rem; }
+  .editor-content {
+    min-height:260px; max-height:600px; overflow-y:auto;
+    background:#0f172a; border:1px solid #334155; border-radius:0 0 8px 8px;
+    padding:.85rem 1rem; color:#f1f5f9; font-size:.9rem; line-height:1.75;
+    font-family:'Glacial Indifference',sans-serif;
+    outline:none; cursor:text;
+  }
+  .editor-content:focus { border-color:#0891b2; }
+  .editor-content:empty::before {
+    content: attr(data-placeholder);
+    color:#475569; pointer-events:none; display:block;
+  }
+  .editor-content h2 { font-size:1.3rem; font-weight:700; color:#f8fafc; margin:1.25rem 0 .5rem; }
+  .editor-content h3 { font-size:1.05rem; font-weight:700; color:#cbd5e1; margin:1rem 0 .4rem; }
+  .editor-content p  { margin:.4rem 0; }
+  .editor-content ul, .editor-content ol { padding-left:1.5rem; margin:.4rem 0; }
+  .editor-content li { margin:.2rem 0; }
+  .editor-content img {
+    max-width:100%; border-radius:8px; margin:.75rem 0;
+    display:block; cursor:pointer; border:2px solid transparent;
+    transition:border-color .15s;
+  }
+  .editor-content img:hover { border-color:#0891b2; }
+  .editor-content img.selected { border-color:#0891b2; }
+
+  /* Mes cours section */
+  .mes-cours-header {
+    font-family:'Glacial Indifference',sans-serif;
+    font-size:1rem; font-weight:700; color:#f8fafc;
+    margin:2.5rem 0 1rem; display:flex; align-items:center; gap:.5rem;
+  }
+  .tuto-row {
+    display:flex; align-items:center; gap:1rem;
+    padding:.75rem .5rem; border-bottom:1px solid #1e293b;
+    border-radius:8px; transition:background .15s;
+  }
+  .tuto-row:last-child { border-bottom:none; }
+  .tuto-row:hover { background:rgba(255,255,255,.03); }
+  .tuto-thumb-sm {
+    width:40px; height:40px; border-radius:8px;
+    display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0;
+  }
+  .tuto-info { flex:1; min-width:0; }
+  .tuto-titre { font-weight:600; font-size:.88rem; color:#f1f5f9; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .tuto-meta-sm { font-size:.72rem; color:#64748b; margin-top:.1rem; }
+  .tuto-actions { display:flex; gap:.4rem; flex-shrink:0; }
+  .btn-sm {
+    padding:.35rem .7rem; border-radius:6px; font-size:.75rem;
+    font-family:'Glacial Indifference',sans-serif; font-weight:600;
+    cursor:pointer; border:none; transition:all .15s;
+  }
+  .btn-sm.edit   { background:#1e3a5f; color:#93c5fd; }
+  .btn-sm.edit:hover { background:#2563eb; color:#fff; }
+  .btn-sm.delete { background:#3b1a1a; color:#fca5a5; }
+  .btn-sm.delete:hover { background:#dc2626; color:#fff; }
+
+  .empty-state {
+    text-align:center; padding:2.5rem 1rem;
+    font-family:'Glacial Indifference',sans-serif; color:#475569; font-size:.88rem;
+  }
+
+  /* Toast */
+  .toast-c {
+    position:fixed; bottom:1.5rem; right:1.5rem;
+    background:#1e293b; border:1px solid #334155; border-radius:10px;
+    padding:.85rem 1.25rem; font-size:.85rem; color:#f1f5f9;
+    font-family:'Glacial Indifference',sans-serif;
+    transform:translateY(100px); opacity:0; transition:all .3s; z-index:2000;
+  }
+  .toast-c.visible  { transform:translateY(0); opacity:1; }
+  .toast-c.succes   { border-left:4px solid #22c55e; }
+  .toast-c.erreur   { border-left:4px solid #ef4444; }
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-inner">
+    <a class="logo" href="/">
+      <div class="logo-icon">⚡</div>
+      Tuto<span>Motion</span>
+    </a>
+    <div class="nav-actions" id="navActions"></div>
+  </div>
+</nav>
+
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="page-header-top">
+      <div class="page-title" id="formTitle">➕ Nouveau cours</div>
+      <span class="role-pill" id="rolePill" style="display:none"></span>
+    </div>
+    <div class="page-subtitle" id="formSubtitle">Partagez votre savoir avec la communauté TutoMotion</div>
+  </div>
+
+  <!-- Formulaire -->
+  <div class="form-card">
+    <input type="hidden" id="editTutoId" value="">
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Titre *</label>
+        <input class="form-input" type="text" id="fTitre" placeholder="Ex : Introduction à TypeScript">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Catégories * <span style="color:#475569;font-weight:400">(plusieurs possibles)</span></label>
+        <div class="cat-checkboxes" id="fCategories">
+          <label class="cat-check"><input type="checkbox" value="Motion Design"> 🎬 Motion Design</label>
+          <label class="cat-check"><input type="checkbox" value="Montage Vidéo"> 🎞️ Montage Vidéo</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Auteur *</label>
+        <input class="form-input" type="text" id="fAuteur" placeholder="Ex : Léa Martin">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Durée (min)</label>
+          <input class="form-input" type="number" id="fDuree" value="10" min="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Emoji</label>
+          <input class="form-input" type="text" id="fEmoji" value="🎬" maxlength="4">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Images du cours <span style="color:#475569;font-weight:400">(glisser pour réordonner · première image = couverture)</span></label>
+      <div class="upload-drop-area" id="dropArea" onclick="document.getElementById('fImages').click()">
+        <input type="file" id="fImages" accept="image/*" multiple onchange="ajouterFichiers(this.files)">
+        <div class="upload-drop-hint">
+          <span>🖼️</span>
+          Cliquez ou glissez des images ici
+          <div style="font-size:.72rem;margin-top:.3rem">PNG, JPG, WebP · max 10 Mo · plusieurs fichiers acceptés</div>
+        </div>
+      </div>
+      <div class="images-grid" id="imagesGrid"></div>
+      <div class="img-count" id="imgCount" style="display:none"></div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Phrase d'accroche <span style="color:#475569;font-weight:400">(visible sans connexion — 1-2 phrases max)</span></label>
+      <textarea class="form-input" id="fAccroche" rows="3" placeholder="Ex : Découvre comment créer des animations fluides sur After Effects et donner vie à tes projets Motion Design…" style="resize:vertical;line-height:1.65;font-family:'Glacial Indifference',sans-serif"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Contenu du cours</label>
+      <div class="editor-toolbar" id="editorToolbar">
+        <button type="button" class="tool-btn" onclick="formatDoc('bold')" title="Gras"><b>B</b></button>
+        <button type="button" class="tool-btn" onclick="formatDoc('italic')" title="Italique"><i>I</i></button>
+        <button type="button" class="tool-btn" onclick="formatDoc('underline')" title="Souligné"><u>U</u></button>
+        <div class="tool-sep"></div>
+        <button type="button" class="tool-btn" onclick="insererTitre('h2')" title="Titre">H2</button>
+        <button type="button" class="tool-btn" onclick="insererTitre('h3')" title="Sous-titre">H3</button>
+        <div class="tool-sep"></div>
+        <button type="button" class="tool-btn" onclick="formatDoc('insertUnorderedList')" title="Liste">☰</button>
+        <button type="button" class="tool-btn" onclick="formatDoc('insertOrderedList')" title="Liste numérotée">1.</button>
+        <div class="tool-sep"></div>
+        <button type="button" class="tool-btn tool-btn-image" onclick="document.getElementById('editorImageInput').click()" title="Insérer une image">🖼️ Image</button>
+        <input type="file" id="editorImageInput" accept="image/*" multiple style="display:none" onchange="insererImages(this.files)">
+        <div class="tool-sep"></div>
+        <button type="button" class="tool-btn tool-btn-video" onclick="ouvrirModalYoutube()" title="Insérer une vidéo YouTube">▶ YouTube</button>
+      </div>
+      <div class="editor-content" id="fContenu" contenteditable="true"
+        data-placeholder="Rédigez le contenu du cours ici... Utilisez la barre d'outils pour mettre en forme et insérer des images.">
+      </div>
+    </div>
+
+    <div class="form-error" id="formErreur"></div>
+
+    <!-- Questionnaire -->
+    <div style="border-top:1px solid #334155;margin-top:1.5rem;padding-top:1.5rem">
+      <div class="quiz-header">
+        <div>
+          <div class="quiz-title">🧠 Questionnaire de validation</div>
+          <div style="font-size:.75rem;color:#64748b;margin-top:.2rem">Minimum 5 questions — les apprenants doivent le compléter pour valider le cours</div>
+        </div>
+        <span class="quiz-count" id="quizCount">0 question</span>
+      </div>
+      <div class="quiz-builder" id="quizBuilder"></div>
+      <button type="button" class="btn-add-question" onclick="ajouterQuestion()">+ Ajouter une question</button>
+      <div class="quiz-minimum-note" id="quizNote"></div>
+    </div>
+
+    <div style="display:flex;gap:.75rem;margin-top:1.5rem;align-items:center">
+      <button class="btn-submit" id="formSubmitBtn" onclick="soumettreFormulaire()">💾 Enregistrer</button>
+      <button class="btn-secondary" onclick="resetFormulaire()">✕ Annuler</button>
+    </div>
+  </div>
+
+  <!-- Mes cours -->
+  <div class="mes-cours-header">📚 Mes cours publiés</div>
+  <div class="form-card" style="padding:0">
+    <div id="mesCoursList" style="padding:.5rem 1rem">
+      <div class="empty-state">Chargement…</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div class="toast-c" id="toastC"></div>
+
+<script>
+var utilisateurActuel = null;
+var themeColors = {motion1:'#1e3a5f',motion2:'#1a3a2a',motion3:'#2d1f3d',motion4:'#3a2a1a',motion5:'#1a2d3a'};
+
+// imagesPendantes : images à uploader (nouvelles) — { file, previewUrl, id }
+// imagesExistantes : images déjà sur le serveur — { id, url, position, est_couverture }
+var imagesPendantes  = [];
+var imagesExistantes = [];
+var imagesSupprimer  = []; // ids à supprimer lors du PUT
+var idCouvertureExistante = null;
+var dragSrcIndex = null;
+var dragSrcType  = null; // 'new' | 'existing'
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+async function init() {
+  try {
+    var res  = await fetch('/api/moi');
+    var data = await res.json();
+    if (!data.connecte || (data.utilisateur.role !== 'admin' && data.utilisateur.role !== 'contributeur')) {
+      window.location.href = '/'; return;
+    }
+    utilisateurActuel = data.utilisateur;
+
+    var initiales = data.utilisateur.nom.split(' ').map(function(m){return m[0];}).join('').toUpperCase().slice(0,2);
+    var avatarBg  = data.utilisateur.role === 'admin'
+      ? 'linear-gradient(135deg,#f59e0b,#d97706)'
+      : 'linear-gradient(135deg,#0891b2,#0e7490)';
+    document.getElementById('navActions').innerHTML =
+      '<div class="nav-user" onclick="window.location.href=\'/\'">'
+      + '<div class="nav-avatar" style="background:' + avatarBg + '">' + initiales + '</div>'
+      + '<span class="nav-user-nom">' + data.utilisateur.nom.split(' ')[0] + '</span>'
+      + '</div>'
+      + (data.utilisateur.role === 'admin' ? '<a href="/admin" class="btn btn-ghost" style="text-decoration:none">🛡️ Admin</a>' : '');
+
+    var pill = document.getElementById('rolePill');
+    pill.style.display = '';
+    pill.className = data.utilisateur.role === 'admin' ? 'role-pill admin' : 'role-pill contributeur';
+    pill.textContent  = data.utilisateur.role === 'admin' ? '🛡️ Admin' : '✏️ Contributeur';
+
+    document.getElementById('fAuteur').value = data.utilisateur.nom;
+
+    initCatCheckboxes();
+    initDragDrop();
+    renderQuiz();
+    chargerMesCours();
+    fetch('/api/heartbeat', {method:'POST'});
+    setInterval(function(){ fetch('/api/heartbeat', {method:'POST'}); }, 30000);
+  } catch(e) { window.location.href = '/'; }
+}
+
+// ── Drag & drop sur la dropzone ───────────────────────────────────────────────
+function initDragDrop() {
+  var area = document.getElementById('dropArea');
+  area.addEventListener('dragover',  function(e){ e.preventDefault(); area.classList.add('drag-over'); });
+  area.addEventListener('dragleave', function(){ area.classList.remove('drag-over'); });
+  area.addEventListener('drop', function(e){
+    e.preventDefault(); area.classList.remove('drag-over');
+    ajouterFichiers(e.dataTransfer.files);
+  });
+}
+
+// ── Ajouter des fichiers ──────────────────────────────────────────────────────
+function ajouterFichiers(files) {
+  Array.from(files).forEach(function(file) {
+    if (!file.type.startsWith('image/')) return;
+    var id = 'new_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+    var url = URL.createObjectURL(file);
+    imagesPendantes.push({ id: id, file: file, previewUrl: url });
+  });
+  // reset input pour permettre de re-sélectionner les mêmes fichiers
+  document.getElementById('fImages').value = '';
+  renderGrid();
+}
+
+// ── Rendu de la grille ────────────────────────────────────────────────────────
+function renderGrid() {
+  var grid  = document.getElementById('imagesGrid');
+  var count = document.getElementById('imgCount');
+  var total = imagesExistantes.length + imagesPendantes.length;
+
+  if (total === 0) {
+    grid.innerHTML = '';
+    count.style.display = 'none';
+    return;
+  }
+
+  count.style.display = '';
+  count.textContent = total + ' image' + (total > 1 ? 's' : '') + ' · glissez pour réordonner';
+
+  var html = '';
+
+  // Images existantes (serveur)
+  imagesExistantes.forEach(function(img, i) {
+    var isCover = img.est_couverture || (imagesExistantes.length === 1 && imagesPendantes.length === 0)
+      || (i === 0 && !imagesExistantes.some(function(x){ return x.est_couverture; }) && imagesPendantes.length === 0);
+    html += '<div class="img-item' + (isCover ? ' couverture' : '') + '"'
+      + ' draggable="true"'
+      + ' data-type="existing" data-id="' + img.id + '" data-index="' + i + '"'
+      + ' ondragstart="onDragStart(event,\'existing\',' + i + ')"'
+      + ' ondragover="onDragOver(event)" ondragleave="onDragLeave(event)"'
+      + ' ondrop="onDrop(event,\'existing\',' + i + ')" ondragend="onDragEnd()">'
+      + '<img src="' + img.url + '" alt="image ' + (i+1) + '">'
+      + (isCover ? '<div class="cover-badge">Couverture</div>' : '')
+      + '<div class="img-item-overlay">'
+      + (!isCover ? '<button class="img-action" onclick="setCouverture(\'existing\',' + i + ')">⭐ Couverture</button>' : '')
+      + '<button class="img-action danger" onclick="supprimerImageExistante(' + i + ')">🗑️ Retirer</button>'
+      + '</div></div>';
+  });
+
+  // Images en attente (locales)
+  imagesPendantes.forEach(function(img, i) {
+    var isCover = imagesExistantes.length === 0 && i === 0;
+    html += '<div class="img-item' + (isCover ? ' couverture' : '') + '"'
+      + ' draggable="true"'
+      + ' data-type="new" data-index="' + i + '"'
+      + ' ondragstart="onDragStart(event,\'new\',' + i + ')"'
+      + ' ondragover="onDragOver(event)" ondragleave="onDragLeave(event)"'
+      + ' ondrop="onDrop(event,\'new\',' + i + ')" ondragend="onDragEnd()">'
+      + '<img src="' + img.previewUrl + '" alt="nouvelle image">'
+      + (isCover ? '<div class="cover-badge">Couverture</div>' : '')
+      + '<div class="img-item-overlay">'
+      + (!isCover ? '<button class="img-action" onclick="setCouverture(\'new\',' + i + ')">⭐ Couverture</button>' : '')
+      + '<button class="img-action danger" onclick="supprimerImagePendante(' + i + ')">🗑️ Retirer</button>'
+      + '</div></div>';
+  });
+
+  grid.innerHTML = html;
+}
+
+// ── Drag & drop entre items ───────────────────────────────────────────────────
+function onDragStart(e, type, index) {
+  dragSrcType  = type;
+  dragSrcIndex = index;
+  setTimeout(function(){ e.target.classList.add('drag-source'); }, 0);
+}
+function onDragOver(e) {
+  e.preventDefault();
+  e.currentTarget.classList.add('drag-over-target');
+}
+function onDragLeave(e) {
+  e.currentTarget.classList.remove('drag-over-target');
+}
+function onDragEnd() {
+  document.querySelectorAll('.img-item').forEach(function(el){
+    el.classList.remove('drag-source','drag-over-target');
+  });
+}
+function onDrop(e, targetType, targetIndex) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over-target');
+  if (dragSrcType === null) return;
+
+  // On ne supporte le réordonnancement qu'au sein du même groupe pour simplifier
+  if (dragSrcType === 'existing' && targetType === 'existing') {
+    var moved = imagesExistantes.splice(dragSrcIndex, 1)[0];
+    imagesExistantes.splice(targetIndex, 0, moved);
+  } else if (dragSrcType === 'new' && targetType === 'new') {
+    var moved = imagesPendantes.splice(dragSrcIndex, 1)[0];
+    imagesPendantes.splice(targetIndex, 0, moved);
+  }
+  dragSrcType = dragSrcIndex = null;
+  renderGrid();
+}
+
+// ── Actions images ────────────────────────────────────────────────────────────
+function setCouverture(type, index) {
+  if (type === 'existing') {
+    imagesExistantes.forEach(function(img, i){ img.est_couverture = (i === index) ? 1 : 0; });
+  } else {
+    // Déplacer cette image pendante en première position
+    var moved = imagesPendantes.splice(index, 1)[0];
+    imagesPendantes.unshift(moved);
+    imagesExistantes.forEach(function(img){ img.est_couverture = 0; });
+  }
+  renderGrid();
+}
+
+function supprimerImagePendante(index) {
+  URL.revokeObjectURL(imagesPendantes[index].previewUrl);
+  imagesPendantes.splice(index, 1);
+  renderGrid();
+}
+
+function supprimerImageExistante(index) {
+  var img = imagesExistantes[index];
+  imagesSupprimer.push(img.id);
+  imagesExistantes.splice(index, 1);
+  // Si c'était la couverture, passer à la première restante
+  if (img.est_couverture && imagesExistantes.length > 0) {
+    imagesExistantes[0].est_couverture = 1;
+  }
+  renderGrid();
+}
+
+// ── Charger mes cours ─────────────────────────────────────────────────────────
+async function chargerMesCours() {
+  try {
+    var res  = await fetch('/api/contributeur/mes-tutoriels');
+    var data = await res.json();
+    var list = document.getElementById('mesCoursList');
+    if (!data.succes || data.tutoriels.length === 0) {
+      list.innerHTML = '<div class="empty-state">Vous n\'avez pas encore publié de cours.</div>';
+      return;
+    }
+    list.innerHTML = data.tutoriels.map(function(t) {
+      var bg       = themeColors[t.theme_class] || '#1e293b';
+      var thumbSrc = t.images && t.images.length > 0 ? t.images[0].url : '';
+      var thumb    = thumbSrc
+        ? '<img src="' + thumbSrc + '" style="width:40px;height:40px;object-fit:cover;border-radius:8px;flex-shrink:0">'
+        : '<div class="tuto-thumb-sm" style="background:' + bg + '">' + t.emoji + '</div>';
+      return '<div class="tuto-row">'
+        + thumb
+        + '<div class="tuto-info">'
+        + '<div class="tuto-titre">' + t.titre + '</div>'
+        + '<div class="tuto-meta-sm">' + t.categorie + ' · ⏱ ' + t.duree_min + ' min'
+        + (t.images && t.images.length > 0 ? ' · 🖼️ ' + t.images.length + ' image' + (t.images.length > 1 ? 's' : '') : '') + '</div>'
+        + '</div>'
+        + '<div class="tuto-actions">'
+        + '<button class="btn-sm edit" onclick="editerCours(' + t.id + ')">✏️</button>'
+        + '<button class="btn-sm delete" onclick="supprimerCours(' + t.id + ', \'' + t.titre.replace(/'/g,"\\'").slice(0,30) + '\')">🗑️</button>'
+        + '</div></div>';
+    }).join('');
+  } catch(e) {
+    document.getElementById('mesCoursList').innerHTML = '<div class="empty-state">Erreur de chargement.</div>';
+  }
+}
+
+// ── Reset formulaire ──────────────────────────────────────────────────────────
+// ── Éditeur riche ─────────────────────────────────────────────────────────────
+var editorImageFiles = {}; // id -> File pour les images inline
+
+function formatDoc(cmd) {
+  document.getElementById('fContenu').focus();
+  document.execCommand(cmd, false, null);
+}
+
+function insererTitre(tag) {
+  document.getElementById('fContenu').focus();
+  document.execCommand('formatBlock', false, tag);
+}
+
+function insererImages(files) {
+  var editor = document.getElementById('fContenu');
+  editor.focus();
+  Array.from(files).forEach(function(file) {
+    if (!file.type.startsWith('image/')) return;
+    var id = 'edimg_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var img = document.createElement('img');
+      img.src = e.target.result;
+      img.dataset.pendingId = id;
+      img.style.cssText = 'max-width:100%;border-radius:8px;margin:.75rem 0;display:block;cursor:pointer;border:2px solid transparent;';
+      img.onclick = function() { this.style.borderColor = this.style.borderColor === 'rgb(8, 145, 178)' ? 'transparent' : 'rgb(8, 145, 178)'; };
+      var sel = window.getSelection();
+      if (sel && sel.rangeCount) {
+        var range = sel.getRangeAt(0);
+        range.collapse(false);
+        range.insertNode(img);
+        range.setStartAfter(img);
+        range.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(range);
+      } else {
+        editor.appendChild(img);
+      }
+      editorImageFiles[id] = file;
+    };
+    reader.readAsDataURL(file);
+  });
+  document.getElementById('editorImageInput').value = '';
+}
+
+async function uploadEditorImages(contenuHtml) {
+  var div = document.createElement('div');
+  div.innerHTML = contenuHtml;
+
+  // Normaliser les iframes YouTube en blocs miniature pour la sauvegarde
+  div.querySelectorAll('.yt-iframe-wrap').forEach(function(wrap) {
+    var vid = wrap.dataset.ytid;
+    if (!vid) return;
+    var thumb = 'https://img.youtube.com/vi/' + vid + '/hqdefault.jpg';
+    var a = document.createElement('a');
+    a.href = 'https://www.youtube.com/watch?v=' + vid;
+    a.target = '_blank';
+    a.className = 'yt-block';
+    a.dataset.ytid = vid;
+    a.contentEditable = 'false';
+    a.innerHTML = '<img src="' + thumb + '" alt="Vidéo YouTube"><div class="yt-play-btn"></div>';
+    wrap.replaceWith(a);
+  });
+
+  // Uploader les images inline en attente
+  var imgs = div.querySelectorAll('img[data-pending-id]');
+  for (var i = 0; i < imgs.length; i++) {
+    var img  = imgs[i];
+    var id   = img.dataset.pendingId;
+    var file = editorImageFiles[id];
+    if (!file) continue;
+    var fd = new FormData();
+    fd.append('image', file);
+    try {
+      var res  = await fetch('/api/upload-image', {method:'POST', body: fd});
+      var data = await res.json();
+      if (data.succes) { img.src = data.url; img.removeAttribute('data-pending-id'); delete editorImageFiles[id]; }
+    } catch(e) {}
+  }
+  return div.innerHTML;
+}
+
+// ── Catégories multi-sélection ────────────────────────────────────────────────
+function getCategories() {
+  var checked = [];
+  document.querySelectorAll('#fCategories .cat-check.checked').forEach(function(el) {
+    checked.push(el.querySelector('input').value);
+  });
+  return checked.join(',');
+}
+
+function setCategories(categorie) {
+  var vals = (categorie || '').split(',').map(function(c){ return c.trim(); });
+  document.querySelectorAll('#fCategories .cat-check').forEach(function(el) {
+    var val = el.querySelector('input').value;
+    if (vals.indexOf(val) !== -1) { el.classList.add('checked'); }
+    else { el.classList.remove('checked'); }
+  });
+}
+
+function resetCategories() {
+  document.querySelectorAll('#fCategories .cat-check').forEach(function(el){
+    el.classList.remove('checked');
+  });
+}
+
+function initCatCheckboxes() {
+  // Géré par délégation globale ci-dessous
+}
+
+// Délégation pour éviter le double-clic label/input
+document.addEventListener('click', function(e) {
+  if (e.target.tagName === 'INPUT') return;
+  var check = e.target.closest('.cat-check');
+  if (check && check.closest('#fCategories')) {
+    e.preventDefault();
+    check.classList.toggle('checked');
+  }
+});
+
+function resetFormulaire() {
+  document.getElementById('editTutoId').value  = '';
+  document.getElementById('fTitre').value      = '';
+  document.getElementById('fDuree').value      = '10';
+  document.getElementById('fEmoji').value      = '🎬';
+  document.getElementById('fContenu').innerHTML = '';
+  document.getElementById('fAccroche').value    = '';
+  document.getElementById('fImages').value     = '';
+  editorImageFiles = {};
+  resetCategories();
+  resetQuiz();
+  imagesPendantes  = [];
+  imagesExistantes = [];
+  imagesSupprimer  = [];
+  renderGrid();
+  document.getElementById('formTitle').textContent     = '➕ Nouveau cours';
+  document.getElementById('formSubtitle').textContent  = 'Partagez votre savoir avec la communauté TutoMotion';
+  document.getElementById('formSubmitBtn').textContent = '💾 Enregistrer';
+  document.getElementById('formErreur').textContent    = '';
+  if (utilisateurActuel) document.getElementById('fAuteur').value = utilisateurActuel.nom;
+}
+
+// ── Éditer un cours ───────────────────────────────────────────────────────────
+async function editerCours(tid) {
+  try {
+    var res  = await fetch('/api/tutoriels/' + tid);
+    var data = await res.json();
+    if (!data.succes) { toast(data.message, 'erreur'); return; }
+    var t = data.tutoriel;
+    document.getElementById('editTutoId').value   = t.id;
+    document.getElementById('fTitre').value       = t.titre;
+    document.getElementById('fCategorie') && (document.getElementById('fCategorie').value = t.categorie);
+    setCategories(t.categorie);
+    document.getElementById('fAuteur').value      = t.auteur;
+    document.getElementById('fDuree').value       = t.duree_min;
+    document.getElementById('fEmoji').value       = t.emoji;
+    document.getElementById('fContenu').innerHTML = t.contenu || '';
+    document.getElementById('fAccroche').value    = t.accroche || '';
+    editorImageFiles = {};
+    chargerQuiz(t.id);
+    imagesSupprimer  = [];
+    imagesExistantes = (t.images || []).map(function(img){ return Object.assign({}, img); });
+    renderGrid();
+
+    document.getElementById('formTitle').textContent     = '✏️ Modifier le cours';
+    document.getElementById('formSubtitle').textContent  = t.titre;
+    document.getElementById('formSubmitBtn').textContent = '💾 Enregistrer les modifications';
+    window.scrollTo({top:0, behavior:'smooth'});
+  } catch(e) { toast('Erreur de chargement.', 'erreur'); }
+}
+
+// ── Supprimer un cours ────────────────────────────────────────────────────────
+async function supprimerCours(tid, titre) {
+  if (!confirm('Supprimer "' + titre + '" ? Cette action est irréversible.')) return;
+  try {
+    var res  = await fetch('/api/contributeur/tutoriels/' + tid, {method:'DELETE'});
+    var data = await res.json();
+    if (data.succes) { toast(data.message, 'succes'); chargerMesCours(); }
+    else toast(data.message, 'erreur');
+  } catch(e) { toast('Erreur serveur.', 'erreur'); }
+}
+
+// ── Soumettre ─────────────────────────────────────────────────────────────────
+async function soumettreFormulaire() {
+  var titre     = document.getElementById('fTitre').value.trim();
+  var categorie = getCategories();
+  var auteur    = document.getElementById('fAuteur').value.trim();
+  var duree     = document.getElementById('fDuree').value;
+  var emoji     = document.getElementById('fEmoji').value.trim() || '🎬';
+  var editId    = document.getElementById('editTutoId').value;
+  var errEl     = document.getElementById('formErreur');
+  var btn       = document.getElementById('formSubmitBtn');
+
+  errEl.textContent = '';
+  if (!titre || !auteur) { errEl.textContent = 'Titre et auteur sont requis.'; return; }
+  if (!categorie) { errEl.textContent = 'Sélectionnez au moins une catégorie.'; return; }
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Enregistrement…';
+
+  try {
+    // Upload les images inline en attente et récupère le HTML mis à jour
+    var quizData = getQuizData();
+    if (quizData.length < 5) {
+      errEl.textContent = 'Le questionnaire doit comporter au moins 5 questions.';
+      btn.disabled = false;
+      btn.textContent = editId ? '💾 Enregistrer les modifications' : '💾 Enregistrer';
+      return;
+    }
+
+    // Vérifier que les QCM ont au moins 2 options
+    for (var qi = 0; qi < quizData.length; qi++) {
+      if (quizData[qi].options.split('||').filter(function(o){ return o.trim(); }).length < 2) {
+        errEl.textContent = 'La question ' + (qi+1) + ' doit avoir au moins 2 options.';
+        btn.disabled = false;
+        btn.textContent = editId ? '💾 Enregistrer les modifications' : '💾 Enregistrer';
+        return;
+      }
+      if (!quizData[qi].reponses_correctes) {
+        errEl.textContent = 'Indiquez la bonne réponse pour la question ' + (qi+1) + '.';
+        btn.disabled = false;
+        btn.textContent = editId ? '💾 Enregistrer les modifications' : '💾 Enregistrer';
+        return;
+      }
+    }
+    var contenu = await uploadEditorImages(document.getElementById('fContenu').innerHTML);
+
+    var formData = new FormData();
+    formData.append('titre',     titre);
+    formData.append('categorie', categorie);
+    formData.append('auteur',    auteur);
+    formData.append('duree_min', duree);
+    formData.append('emoji',     emoji);
+    formData.append('contenu',   contenu);
+    formData.append('accroche',  document.getElementById('fAccroche').value.trim());
+
+    imagesPendantes.forEach(function(img) {
+      formData.append('images[]', img.file);
+    });
+
+    var url    = editId ? '/api/contributeur/tutoriels/' + editId : '/api/contributeur/tutoriels';
+    var method = editId ? 'PUT' : 'POST';
+    var res    = await fetch(url, {method: method, body: formData});
+    var data   = await res.json();
+
+    if (!data.succes) { errEl.textContent = data.message; return; }
+
+    var tid = data.tutoriel.id;
+
+    for (var i = 0; i < imagesSupprimer.length; i++) {
+      await fetch('/api/contributeur/tutoriels/' + tid + '/images/' + imagesSupprimer[i], {method:'DELETE'});
+    }
+
+    var couv = imagesExistantes.find(function(img){ return img.est_couverture; });
+    if (couv) {
+      await fetch('/api/contributeur/tutoriels/' + tid + '/images/couverture', {
+        method: 'PUT', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({image_id: couv.id})
+      });
+    }
+
+    if (imagesExistantes.length > 1) {
+      await fetch('/api/contributeur/tutoriels/' + tid + '/images/ordre', {
+        method: 'PUT', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ordre: imagesExistantes.map(function(img){ return img.id; })})
+      });
+    }
+
+    toast(data.message, 'succes');
+
+    // Sauvegarder le questionnaire
+    await fetch('/api/tutoriels/' + tid + '/questionnaire', {
+      method: 'PUT',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({questions: quizData})
+    });
+
+    resetFormulaire();
+    chargerMesCours();
+
+  } catch(e) {
+    errEl.textContent = 'Erreur serveur.';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = editId ? '💾 Enregistrer les modifications' : '💾 Enregistrer';
+  }
+}
+
+// ── YouTube ───────────────────────────────────────────────────────────────────
+var ytSavedRange = null;
+
+function extraireYoutubeId(url) {
+  var m = url.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
+
+function ouvrirModalYoutube() {
+  // Sauvegarder la position du curseur
+  var sel = window.getSelection();
+  if (sel && sel.rangeCount) ytSavedRange = sel.getRangeAt(0).cloneRange();
+  document.getElementById('ytUrlInput').value = '';
+  document.getElementById('ytModalOverlay').style.display = 'flex';
+  setTimeout(function(){ document.getElementById('ytUrlInput').focus(); }, 50);
+}
+
+function fermerModalYoutube() {
+  document.getElementById('ytModalOverlay').style.display = 'none';
+}
+
+function confirmerYoutube() {
+  var url = document.getElementById('ytUrlInput').value.trim();
+  var vid = extraireYoutubeId(url);
+  if (!vid) {
+    document.getElementById('ytUrlInput').style.borderColor = '#ef4444';
+    document.getElementById('ytUrlInput').placeholder = 'URL YouTube invalide — réessayez';
+    return;
+  }
+  fermerModalYoutube();
+  insererBlocYoutube(vid);
+}
+
+function insererBlocYoutube(vid) {
+  var editor = document.getElementById('fContenu');
+  var thumb  = 'https://img.youtube.com/vi/' + vid + '/hqdefault.jpg';
+  var html   = '<a href="https://www.youtube.com/watch?v=' + vid + '" target="_blank" class="yt-block" data-ytid="' + vid + '" contenteditable="false">'
+    + '<img src="' + thumb + '" alt="Vidéo YouTube">'
+    + '<div class="yt-play-btn"></div>'
+    + '</a><p><br></p>';
+  editor.focus();
+  editor.insertAdjacentHTML('beforeend', html);
+  editor.scrollTop = editor.scrollHeight;
+  ytSavedRange = null;
+}
+
+// ── Lecture YouTube inline ────────────────────────────────────────────────────
+document.addEventListener('click', function(e) {
+  var block = e.target.closest('.yt-block');
+  if (!block) return;
+  e.preventDefault();
+  var vid = block.dataset.ytid;
+  if (!vid) return;
+  var wrap = document.createElement('div');
+  wrap.className = 'yt-iframe-wrap';
+  wrap.dataset.ytid = vid;
+  wrap.contentEditable = 'false';
+  wrap.innerHTML = '<iframe src="https://www.youtube.com/embed/' + vid + '?autoplay=1&rel=0" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
+  block.replaceWith(wrap);
+});
+
+// ── Questionnaire builder ─────────────────────────────────────────────────────
+var quizQuestions = []; // [{id, question, type, options:[]}]
+
+function ajouterQuestion(data) {
+  var q = data || { id: 'q_' + Date.now(), question: '', options: ['', ''], correctes: [], multiple: false };
+  quizQuestions.push(q);
+  renderQuiz();
+}
+
+function supprimerQuestion(idx) {
+  quizQuestions.splice(idx, 1);
+  renderQuiz();
+}
+
+function toggleMultiple(idx) {
+  quizQuestions[idx].multiple = !quizQuestions[idx].multiple;
+  quizQuestions[idx].correctes = []; // reset correct answers
+  renderQuiz();
+}
+
+function ajouterOption(idx) {
+  quizQuestions[idx].options.push('');
+  renderQuiz();
+}
+
+function supprimerOption(qIdx, oIdx) {
+  if (quizQuestions[qIdx].options.length <= 2) return;
+  // Mettre à jour les indices de bonnes réponses
+  quizQuestions[qIdx].correctes = quizQuestions[qIdx].correctes
+    .filter(function(c){ return c !== oIdx; })
+    .map(function(c){ return c > oIdx ? c - 1 : c; });
+  quizQuestions[qIdx].options.splice(oIdx, 1);
+  renderQuiz();
+}
+
+function toggleCorrect(qIdx, oIdx) {
+  var q = quizQuestions[qIdx];
+  if (q.multiple) {
+    var pos = q.correctes.indexOf(oIdx);
+    if (pos === -1) q.correctes.push(oIdx);
+    else q.correctes.splice(pos, 1);
+  } else {
+    q.correctes = [oIdx];
+  }
+  renderQuiz();
+}
+
+function renderQuiz() {
+  var builder = document.getElementById('quizBuilder');
+  var count   = document.getElementById('quizCount');
+  var note    = document.getElementById('quizNote');
+  if (!builder) return;
+
+  count.textContent = quizQuestions.length + ' question' + (quizQuestions.length > 1 ? 's' : '');
+  count.style.background = quizQuestions.length >= 5 ? 'rgba(34,197,94,.15)' : '#0f172a';
+  count.style.color      = quizQuestions.length >= 5 ? '#86efac' : '#64748b';
+  note.textContent = quizQuestions.length < 5 ? '⚠️ Encore ' + (5 - quizQuestions.length) + ' question(s) requise(s) pour pouvoir enregistrer.' : '';
+
+  builder.innerHTML = quizQuestions.map(function(q, i) {
+    var optionsHtml = '<div class="quiz-options-area">'
+      + '<div style="font-size:.7rem;color:#64748b;margin-bottom:.4rem">Options — cochez la/les bonne(s) réponse(s) ✅ :</div>'
+      + q.options.map(function(opt, oi) {
+        var isCorrect = q.correctes.indexOf(oi) !== -1;
+        return '<div class="quiz-option-row">'
+          + '<button type="button" class="quiz-correct-btn' + (isCorrect ? ' correct' : '') + '" onclick="toggleCorrect(' + i + ',' + oi + ')" title="Marquer comme correcte">'
+          + (isCorrect ? '✅' : '⬜') + '</button>'
+          + '<input class="quiz-option-input" type="text" placeholder="Option ' + (oi+1) + '" value="' + opt.replace(/"/g,'&quot;') + '"'
+          + ' onchange="quizQuestions[' + i + '].options[' + oi + ']=this.value">'
+          + '<button type="button" class="quiz-option-del" onclick="supprimerOption(' + i + ',' + oi + ')">✕</button>'
+          + '</div>';
+      }).join('')
+      + '<button type="button" class="btn-add-option" onclick="ajouterOption(' + i + ')">+ Ajouter une option</button>'
+      + '</div>';
+
+    var multipleLabel = q.multiple
+      ? '<span class="quiz-multiple-badge active">☑️ Réponses multiples</span>'
+      : '<span class="quiz-multiple-badge">Réponse unique</span>';
+
+    return '<div class="quiz-question-card">'
+      + '<button type="button" class="quiz-del-btn" onclick="supprimerQuestion(' + i + ')">🗑️</button>'
+      + '<div class="quiz-question-num">Question ' + (i+1) + '</div>'
+      + '<input class="quiz-question-input" type="text" placeholder="Énoncé de la question…" value="' + q.question.replace(/"/g,'&quot;') + '"'
+      + ' onchange="quizQuestions[' + i + '].question=this.value">'
+      + '<div class="quiz-type-row">'
+      + multipleLabel
+      + '<button type="button" class="quiz-type-btn" onclick="toggleMultiple(' + i + ')">'
+      + (q.multiple ? '→ Passer en réponse unique' : '→ Passer en réponses multiples')
+      + '</button>'
+      + '</div>'
+      + optionsHtml
+      + '</div>';
+  }).join('');
+}
+
+function getQuizData() {
+  return quizQuestions.map(function(q) {
+    return {
+      question:           q.question.trim(),
+      type:               'qcm',
+      options:            q.options.filter(function(o){ return o.trim(); }).join('||'),
+      reponses_correctes: q.correctes.join(','),
+      multiple:           q.multiple ? 1 : 0
+    };
+  }).filter(function(q){ return q.question; });
+}
+
+function resetQuiz() {
+  quizQuestions = [];
+  renderQuiz();
+}
+
+async function chargerQuiz(tid) {
+  try {
+    var res  = await fetch('/api/tutoriels/' + tid + '/questionnaire');
+    var data = await res.json();
+    quizQuestions = (data.questions || []).map(function(q) {
+      var opts = (q.options || '').split('||').filter(function(o){ return o; });
+      if (opts.length < 2) opts = ['', ''];
+      var correctes = (q.reponses_correctes || '').split(',')
+        .filter(function(c){ return c !== ''; })
+        .map(function(c){ return parseInt(c); });
+      return {
+        id:       q.id,
+        question: q.question,
+        options:  opts,
+        correctes: correctes,
+        multiple: q.multiple === 1
+      };
+    });
+    renderQuiz();
+  } catch(e) {}
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function toast(msg, type) {
+  var t = document.getElementById('toastC');
+  t.textContent = msg;
+  t.className = 'toast-c visible ' + (type || 'succes');
+  setTimeout(function(){ t.classList.remove('visible'); }, 3500);
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+
+<!-- Modal YouTube -->
+<div id="ytModalOverlay" class="yt-modal-overlay" style="display:none" onclick="fermerModalYoutube()">
+  <div class="yt-modal-box" onclick="event.stopPropagation()">
+    <div class="yt-modal-title">▶ Insérer une vidéo YouTube</div>
+    <input class="yt-modal-input" id="ytUrlInput" type="text" placeholder="https://www.youtube.com/watch?v=... ou youtu.be/..."
+      onkeydown="if(event.key==='Enter') confirmerYoutube()">
+    <div class="yt-modal-btns">
+      <button class="yt-modal-btn cancel" onclick="fermerModalYoutube()">Annuler</button>
+      <button class="yt-modal-btn confirm" onclick="confirmerYoutube()">Insérer</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
