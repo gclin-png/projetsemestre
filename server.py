@@ -135,7 +135,7 @@ def inscription():
             'id': utilisateur['id'], 'nom': utilisateur['nom'],
             'email': utilisateur['email'], 'telephone': utilisateur['telephone'],
             'role': utilisateur['role'], 'cree_le': utilisateur['cree_le'],
-            'avatar_url': utilisateur['avatar_url'] or '',
+            'avatar_url': dict(utilisateur).get('avatar_url') or '',
         }
     }), 201
 
@@ -167,7 +167,7 @@ def connexion():
             'id': utilisateur['id'], 'nom': utilisateur['nom'],
             'email': utilisateur['email'], 'telephone': utilisateur['telephone'],
             'role': utilisateur['role'], 'cree_le': utilisateur['cree_le'],
-            'avatar_url': utilisateur['avatar_url'] or '',
+            'avatar_url': dict(utilisateur).get('avatar_url') or '',
         }
     })
 
@@ -230,7 +230,7 @@ def moi():
             'id': utilisateur['id'], 'nom': utilisateur['nom'],
             'email': utilisateur['email'], 'telephone': utilisateur['telephone'],
             'role': utilisateur['role'], 'cree_le': utilisateur['cree_le'],
-            'avatar_url': utilisateur['avatar_url'] or '',
+            'avatar_url': dict(utilisateur).get('avatar_url') or '',
         },
         'historique': [dict(h) for h in historique]
     })
@@ -264,13 +264,12 @@ def modifier_avatar():
         return jsonify({'succes': False, 'message': 'Non connecté.'}), 401
     fichier = request.files.get('avatar')
     if not fichier or not allowed_file(fichier.filename):
-        return jsonify({'succes': False, 'message': 'Fichier invalide. Formats acceptés : png, jpg, jpeg, gif, webp.'}), 400
-    fname     = secrets.token_hex(8) + '_' + secure_filename(fichier.filename)
+        return jsonify({'succes': False, 'message': 'Fichier invalide.'}), 400
+    fname = secrets.token_hex(8) + '_' + secure_filename(fichier.filename)
     fichier.save(os.path.join(UPLOAD_DIR, fname))
     avatar_url = '/uploads/' + fname
     db = get_db()
-    db.execute("UPDATE utilisateurs SET avatar_url = ? WHERE id = ?",
-               (avatar_url, session['utilisateur_id']))
+    db.execute("UPDATE utilisateurs SET avatar_url = ? WHERE id = ?", (avatar_url, session['utilisateur_id']))
     db.commit()
     db.close()
     return jsonify({'succes': True, 'avatar_url': avatar_url})
@@ -292,10 +291,25 @@ def heartbeat():
 
 # ── API Tutoriels (publique) ──────────────────────────────────────────────────
 
+@app.route('/api/stats', methods=['GET'])
+def stats_publiques():
+    db = get_db()
+    nb_tutoriels      = db.execute("SELECT COUNT(*) FROM tutoriels").fetchone()[0]
+    nb_membres        = db.execute("SELECT COUNT(*) FROM utilisateurs").fetchone()[0]
+    nb_collaborateurs = db.execute("SELECT COUNT(*) FROM utilisateurs WHERE role IN ('contributeur','admin')").fetchone()[0]
+    db.close()
+    return jsonify({'tutoriels': nb_tutoriels, 'membres': nb_membres, 'collaborateurs': nb_collaborateurs})
+
+
 @app.route('/api/tutoriels', methods=['GET'])
 def get_tutoriels():
     db    = get_db()
-    tutos = db.execute("SELECT * FROM tutoriels ORDER BY cree_le DESC").fetchall()
+    tutos = db.execute("""
+        SELECT t.*, u.avatar_url AS createur_avatar
+        FROM tutoriels t
+        LEFT JOIN utilisateurs u ON u.id = t.createur_id
+        ORDER BY t.cree_le DESC
+    """).fetchall()
     db.close()
     return jsonify({'succes': True, 'tutoriels': [dict(t) for t in tutos]})
 

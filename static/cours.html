@@ -105,19 +105,19 @@
   .btn-gate-secondary:hover { border-color:#64748b; color:#94a3b8; }
 
   /* Questionnaire en bas du cours */
-  .quiz-section { margin-top:3rem; border-top:1px solid #1e293b; padding-top:2rem; }
-  .quiz-section-title { font-family:'Glacial Indifference',sans-serif; font-size:1.2rem; font-weight:700; color:#f8fafc; margin-bottom:.4rem; }
-  .quiz-section-sub { font-size:.85rem; color:#64748b; margin-bottom:2rem; }
-  .quiz-q { margin-bottom:1.75rem; }
-  .quiz-q-label { font-family:'Glacial Indifference',sans-serif; font-size:.92rem; font-weight:700; color:#e2e8f0; margin-bottom:.75rem; display:block; }
+  .quiz-section { margin-top:3rem; border-top:1px solid #cbd5e1; padding-top:2rem; }
+  .quiz-section-title { font-family:'Glacial Indifference',sans-serif; font-size:1.2rem; font-weight:700; color:#1e293b; margin-bottom:.4rem; }
+  .quiz-section-sub { font-size:.85rem; color:#475569; margin-bottom:2rem; }
+  .quiz-q { margin-bottom:1.75rem; background:#f8fafc; border-radius:10px; padding:1rem; }
+  .quiz-q-label { font-family:'Glacial Indifference',sans-serif; font-size:.92rem; font-weight:700; color:#1e293b; margin-bottom:.75rem; display:block; }
   .quiz-q-num { color:#3b82f6; margin-right:.4rem; }
   .quiz-textarea { width:100%; min-height:110px; padding:.75rem 1rem; background:#1e293b; border:1px solid #334155; border-radius:9px; color:#f1f5f9; font-size:.88rem; line-height:1.65; resize:vertical; font-family:'Glacial Indifference',sans-serif; box-sizing:border-box; outline:none; transition:border-color .15s; }
   .quiz-textarea:focus { border-color:#3b82f6; }
   .quiz-options { display:flex; flex-direction:column; gap:.5rem; }
-  .quiz-option-label { display:flex; align-items:center; gap:.75rem; background:#1e293b; border:1px solid #334155; border-radius:9px; padding:.65rem 1rem; cursor:pointer; transition:all .15s; font-size:.88rem; color:#e2e8f0; }
-  .quiz-option-label:hover { border-color:#3b82f6; color:#f8fafc; background:#263548; }
+  .quiz-option-label { display:flex; align-items:center; gap:.75rem; background:#f1f5f9; border:1px solid #cbd5e1; border-radius:9px; padding:.65rem 1rem; cursor:pointer; transition:all .15s; font-size:.88rem; color:#1e293b; }
+  .quiz-option-label:hover { border-color:#3b82f6; color:#1e293b; background:#e0e7ff; }
   .quiz-option-label input[type=radio] { display:none; }
-  .quiz-option-label.selected { background:rgba(59,130,246,.15); border-color:#3b82f6; color:#f8fafc; }
+  .quiz-option-label.selected { background:rgba(59,130,246,.12); border-color:#3b82f6; color:#1e293b; }
   .quiz-option-label .radio-dot { width:16px; height:16px; border-radius:50%; border:2px solid #334155; flex-shrink:0; transition:all .15s; display:flex; align-items:center; justify-content:center; }
   .quiz-option-label.selected .radio-dot { border-color:#3b82f6; background:#3b82f6; }
   .quiz-option-label.selected .radio-dot::after { content:''; width:6px; height:6px; background:#fff; border-radius:50%; }
@@ -182,9 +182,9 @@
 <nav>
   <div class="nav-inner">
     <a class="logo" href="/">
-      <div class="logo-icon">⚡</div>
-      Tuto<span>Lab</span>
+      <img src="/logo-tutomotion.png" alt="TutoMotion" style="height:32px;width:auto;display:block;object-fit:contain;">
     </a>
+    <div id="navLinks" style="display:flex;align-items:center;gap:2rem;flex:1;padding-left:2rem"></div>
     <div class="nav-actions" id="navActions"></div>
   </div>
 </nav>
@@ -259,13 +259,15 @@ async function chargerCours() {
     // Contenu
     var contenuEl = document.getElementById('coursContenu');
     var html = '';
-    if (t.image_url) {
-      html += '<img src="' + t.image_url + '" class="cours-image" alt="' + t.titre + '">';
-    }
 
     if (data.connecte) {
-      // Utilisateur connecté : contenu complet
-      html += '<div class="cours-content">' + (t.contenu || '') + '</div>';
+      // Toutes les images du cours (sauf couverture)
+      var imgs = (t.images || []).slice().sort(function(a,b){ return a.position - b.position; });
+      imgs.forEach(function(img) {
+        html += '<img src="' + img.url + '" alt="' + t.titre + '" style="width:100%;border-radius:10px;margin:1rem 0;display:block;">';
+      });
+      // Contenu texte si présent
+      if (t.contenu) html += '<div class="cours-content">' + t.contenu + '</div>';
     } else {
       // Non connecté : accroche + CTA
       if (t.accroche) {
@@ -304,17 +306,31 @@ async function chargerNav() {
     var res  = await fetch('/api/moi');
     var data = await res.json();
     var nav  = document.getElementById('navActions');
+    var links = document.getElementById('navLinks');
     if (data.connecte) {
-      var initiales = data.utilisateur.nom.split(' ').map(function(m){return m[0];}).join('').toUpperCase().slice(0,2);
-      nav.innerHTML = '<div class="nav-user" onclick="window.location.href=\'/\'">'
-        + '<div class="nav-avatar">' + initiales + '</div>'
-        + '<span class="nav-user-nom">' + data.utilisateur.nom.split(' ')[0] + '</span>'
-        + '</div>';
-      if (data.utilisateur.role === 'admin') {
-        nav.innerHTML += '<a href="/admin" class="btn btn-ghost" style="text-decoration:none">🛡️ Admin</a>';
+      var u = data.utilisateur;
+      var initiales = u.nom.split(' ').map(function(m){return m[0];}).join('').toUpperCase().slice(0,2);
+      var avatarContent = u.avatar_url
+        ? '<img src="' + u.avatar_url + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
+        : initiales;
+      var avatarBg = u.avatar_url ? '' : (u.role==='admin' ? 'background:linear-gradient(135deg,#f59e0b,#d97706)' : u.role==='contributeur' ? 'background:linear-gradient(135deg,#0891b2,#0e7490)' : '');
+      // Liens de navigation
+      var linksHtml = '<a href="/" style="text-decoration:none;font-size:.88rem;font-weight:600;color:var(--slate-500)">Accueil</a>';
+      linksHtml += '<a href="/cours?id=' + new URLSearchParams(window.location.search).get('id') + '" style="text-decoration:none;font-size:.88rem;font-weight:600;color:var(--slate)">Tutoriels</a>';
+      if (u.role === 'admin' || u.role === 'contributeur') {
+        linksHtml += '<a href="/creer-cours" style="text-decoration:none;font-size:.88rem;font-weight:600;color:var(--slate-500)">Créer un cours</a>';
       }
+      if (u.role === 'admin') {
+        linksHtml += '<a href="/admin" style="text-decoration:none;font-size:.88rem;font-weight:600;color:var(--slate-500)">Admin</a>';
+      }
+      if (links) links.innerHTML = linksHtml;
+      nav.innerHTML = '<div class="nav-user" onclick="window.location.href=\'/\'" style="cursor:pointer">'
+        + '<div class="nav-avatar" style="' + avatarBg + '">' + avatarContent + '</div>'
+        + '<span class="nav-user-nom">' + u.nom.split(' ')[0] + '</span>'
+        + '</div>';
     } else {
-      nav.innerHTML = '<a href="/" class="btn btn-ghost" style="text-decoration:none">Connexion</a>';
+      if (links) links.innerHTML = '<a href="/" style="text-decoration:none;font-size:.88rem;font-weight:600;color:var(--slate-500)">Accueil</a>';
+      nav.innerHTML = '<a href="/" class="btn btn-ghost" style="text-decoration:none" onclick="sessionStorage.setItem(\'openModal\',\'connexion\')">Connexion</a>';
     }
   } catch(e) {}
 }
@@ -460,7 +476,8 @@ function afficherSuccesDejaFait() {
   section.innerHTML = '<div class="quiz-success">'
     + '<div class="quiz-success-icon">✅</div>'
     + '<div class="quiz-success-title">Cours déjà complété !</div>'
-    + '<div class="quiz-success-sub">Ce cours est dans votre historique. Retrouvez votre progression sur votre profil.</div>'
+    + '<div class="quiz-success-sub">Ce cours est dans votre historique.</div>'
+    + '<button class="btn-quiz-submit" onclick="relancerQuizDepuisHistorique()" style="margin-top:1.5rem;background:linear-gradient(135deg,#334155,#1e293b);font-size:.88rem">Repasser le quiz</button>'
     + '</div>';
 }
 
@@ -471,6 +488,7 @@ function afficherSucces(score, correct, total) {
     + '<div class="quiz-success-icon">🎉</div>'
     + '<div class="quiz-success-title">Cours validé ! ' + score + '% de bonnes réponses</div>'
     + '<div class="quiz-success-sub">' + correct + ' / ' + total + ' questions correctes — Ce cours a été ajouté à votre historique.</div>'
+    + '<button class="btn-quiz-submit" onclick="relancerQuiz()" style="margin-top:1.5rem;background:linear-gradient(135deg,#334155,#1e293b);font-size:.88rem">Repasser le quiz</button>'
     + '</div>';
 }
 
@@ -491,6 +509,40 @@ function relancerQuiz() {
   quizReponses = {};
   scrollUnlocked = true;
   afficherQuiz();
+}
+
+async function relancerQuizDepuisHistorique() {
+  quizReponses = {};
+  var params = new URLSearchParams(window.location.search);
+  var id = params.get('id');
+  try {
+    var rC = await fetch('/api/tutoriels/' + id);
+    var dC = await rC.json();
+    if (dC.succes && dC.connecte) {
+      var el = document.getElementById('coursContenu');
+      if (el) {
+        var t = dC.tutoriel;
+        var html = '';
+        // Images du cours
+        var imgs = (t.images || []).slice().sort(function(a,b){ return a.position - b.position; });
+        imgs.forEach(function(img) {
+          html += '<img src="' + img.url + '" alt="' + t.titre + '" style="width:100%;border-radius:10px;margin:1rem 0;display:block;">';
+        });
+        if (t.contenu) html += '<div class="cours-content">' + t.contenu + '</div>';
+        el.innerHTML = html;
+      }
+    }
+  } catch(e) {}
+  try {
+    var res = await fetch('/api/tutoriels/' + id + '/questionnaire');
+    var data = await res.json();
+    if (data.succes && data.questions && data.questions.length > 0) {
+      quizQuestions = data.questions;
+      coursId = id;
+      afficherQuiz();
+      setTimeout(function(){ document.getElementById('quizSection').scrollIntoView({behavior:'smooth'}); }, 150);
+    }
+  } catch(e) {}
 }
 
 document.addEventListener('DOMContentLoaded', function() {

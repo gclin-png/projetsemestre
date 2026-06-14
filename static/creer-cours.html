@@ -5,11 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TutoMotion — Créer un cours</title>
 <link rel="stylesheet" href="styles.css">
+<link href="https://fonts.cdnfonts.com/css/glacial-indifference-2" rel="stylesheet">
 <style>
-  @font-face { font-family:'Glacial Indifference'; src:url('https://fonts.cdnfonts.com/s/17689/GlacialIndifference-Regular.woff') format('woff'); font-weight:400; }
-  @font-face { font-family:'Glacial Indifference'; src:url('https://fonts.cdnfonts.com/s/17689/GlacialIndifference-Bold.woff') format('woff'); font-weight:700; }
-
-  body { background:#0f172a; min-height:100vh; }
+body { background:#0f172a; min-height:100vh; }
 
   .page-wrapper {
     max-width:760px; margin:0 auto; padding:2rem 1.5rem 4rem;
@@ -320,8 +318,7 @@
 <nav>
   <div class="nav-inner">
     <a class="logo" href="/">
-      <div class="logo-icon">⚡</div>
-      Tuto<span>Motion</span>
+      <img src="/logo-tutomotion.png" alt="TutoMotion" style="height:36px;width:auto;display:block;">
     </a>
     <div class="nav-actions" id="navActions"></div>
   </div>
@@ -332,7 +329,7 @@
   <!-- Header -->
   <div class="page-header">
     <div class="page-header-top">
-      <div class="page-title" id="formTitle">➕ Nouveau cours</div>
+      <div class="page-title" id="formTitle"> Nouveau cours</div>
       <span class="role-pill" id="rolePill" style="display:none"></span>
     </div>
     <div class="page-subtitle" id="formSubtitle">Partagez votre savoir avec la communauté TutoMotion</div>
@@ -343,6 +340,19 @@
     <input type="hidden" id="editTutoId" value="">
 
     <div class="form-row">
+    <div class="form-group">
+      <label class="form-label">Miniature du cours <span style="color:#475569;font-weight:400">(image de couverture affichée sur la carte)</span></label>
+      <div class="upload-drop-area" id="dropArea" onclick="document.getElementById('fImages').click()" style="aspect-ratio:16/9;max-height:220px">
+        <input type="file" id="fImages" accept="image/*" multiple onchange="ajouterFichiers(this.files)">
+        <div class="upload-drop-hint">
+          <span></span>
+          Cliquez ou glissez une image ici
+          <div style="font-size:.72rem;margin-top:.3rem">PNG, JPG, WebP · max 10 Mo · format 16/9 recommandé</div>
+        </div>
+      </div>
+      <div class="images-grid" id="imagesGrid"></div>
+      <div class="img-count" id="imgCount" style="display:none"></div>
+    </div>
       <div class="form-group">
         <label class="form-label">Titre *</label>
         <input class="form-input" type="text" id="fTitre" placeholder="Ex : Introduction à TypeScript">
@@ -350,8 +360,8 @@
       <div class="form-group">
         <label class="form-label">Catégories * <span style="color:#475569;font-weight:400">(plusieurs possibles)</span></label>
         <div class="cat-checkboxes" id="fCategories">
-          <label class="cat-check"><input type="checkbox" value="Motion Design"> 🎬 Motion Design</label>
-          <label class="cat-check"><input type="checkbox" value="Montage Vidéo"> 🎞️ Montage Vidéo</label>
+          <label class="cat-check"><input type="checkbox" value="Motion Design">  Motion Design</label>
+          <label class="cat-check"><input type="checkbox" value="Montage Vidéo">  Montage Vidéo</label>
         </div>
       </div>
     </div>
@@ -368,24 +378,11 @@
         </div>
         <div class="form-group">
           <label class="form-label">Emoji</label>
-          <input class="form-input" type="text" id="fEmoji" value="🎬" maxlength="4">
+          <input class="form-input" type="text" id="fEmoji" value="" maxlength="4">
         </div>
       </div>
     </div>
 
-    <div class="form-group">
-      <label class="form-label">Images du cours <span style="color:#475569;font-weight:400">(glisser pour réordonner · première image = couverture)</span></label>
-      <div class="upload-drop-area" id="dropArea" onclick="document.getElementById('fImages').click()">
-        <input type="file" id="fImages" accept="image/*" multiple onchange="ajouterFichiers(this.files)">
-        <div class="upload-drop-hint">
-          <span>🖼️</span>
-          Cliquez ou glissez des images ici
-          <div style="font-size:.72rem;margin-top:.3rem">PNG, JPG, WebP · max 10 Mo · plusieurs fichiers acceptés</div>
-        </div>
-      </div>
-      <div class="images-grid" id="imagesGrid"></div>
-      <div class="img-count" id="imgCount" style="display:none"></div>
-    </div>
 
     <div class="form-group">
       <label class="form-label">Phrase d'accroche <span style="color:#475569;font-weight:400">(visible sans connexion — 1-2 phrases max)</span></label>
@@ -402,13 +399,13 @@
         <button type="button" class="tool-btn" onclick="insererTitre('h2')" title="Titre">H2</button>
         <button type="button" class="tool-btn" onclick="insererTitre('h3')" title="Sous-titre">H3</button>
         <div class="tool-sep"></div>
-        <button type="button" class="tool-btn" onclick="formatDoc('insertUnorderedList')" title="Liste">☰</button>
+        <button type="button" class="tool-btn" onclick="formatDoc('insertUnorderedList')" title="Liste"></button>
         <button type="button" class="tool-btn" onclick="formatDoc('insertOrderedList')" title="Liste numérotée">1.</button>
         <div class="tool-sep"></div>
-        <button type="button" class="tool-btn tool-btn-image" onclick="document.getElementById('editorImageInput').click()" title="Insérer une image">🖼️ Image</button>
+        <button type="button" class="tool-btn tool-btn-image" onclick="document.getElementById('editorImageInput').click()" title="Insérer une image"> Image</button>
         <input type="file" id="editorImageInput" accept="image/*" multiple style="display:none" onchange="insererImages(this.files)">
         <div class="tool-sep"></div>
-        <button type="button" class="tool-btn tool-btn-video" onclick="ouvrirModalYoutube()" title="Insérer une vidéo YouTube">▶ YouTube</button>
+        <button type="button" class="tool-btn tool-btn-video" onclick="ouvrirModalYoutube()" title="Insérer une vidéo YouTube"> YouTube</button>
       </div>
       <div class="editor-content" id="fContenu" contenteditable="true"
         data-placeholder="Rédigez le contenu du cours ici... Utilisez la barre d'outils pour mettre en forme et insérer des images.">
@@ -421,7 +418,7 @@
     <div style="border-top:1px solid #334155;margin-top:1.5rem;padding-top:1.5rem">
       <div class="quiz-header">
         <div>
-          <div class="quiz-title">🧠 Questionnaire de validation</div>
+          <div class="quiz-title"> Questionnaire de validation</div>
           <div style="font-size:.75rem;color:#64748b;margin-top:.2rem">Minimum 5 questions — les apprenants doivent le compléter pour valider le cours</div>
         </div>
         <span class="quiz-count" id="quizCount">0 question</span>
@@ -432,13 +429,13 @@
     </div>
 
     <div style="display:flex;gap:.75rem;margin-top:1.5rem;align-items:center">
-      <button class="btn-submit" id="formSubmitBtn" onclick="soumettreFormulaire()">💾 Enregistrer</button>
-      <button class="btn-secondary" onclick="resetFormulaire()">✕ Annuler</button>
+      <button class="btn-submit" id="formSubmitBtn" onclick="soumettreFormulaire()"> Enregistrer</button>
+      <button class="btn-secondary" onclick="resetFormulaire()"> Annuler</button>
     </div>
   </div>
 
   <!-- Mes cours -->
-  <div class="mes-cours-header">📚 Mes cours publiés</div>
+  <div class="mes-cours-header"> Mes cours publiés</div>
   <div class="form-card" style="padding:0">
     <div id="mesCoursList" style="padding:.5rem 1rem">
       <div class="empty-state">Chargement…</div>
@@ -463,7 +460,7 @@ var idCouvertureExistante = null;
 var dragSrcIndex = null;
 var dragSrcType  = null; // 'new' | 'existing'
 
-// ── Init ──────────────────────────────────────────────────────────────────────
+//  Init 
 async function init() {
   try {
     var res  = await fetch('/api/moi');
@@ -482,12 +479,12 @@ async function init() {
       + '<div class="nav-avatar" style="background:' + avatarBg + '">' + initiales + '</div>'
       + '<span class="nav-user-nom">' + data.utilisateur.nom.split(' ')[0] + '</span>'
       + '</div>'
-      + (data.utilisateur.role === 'admin' ? '<a href="/admin" class="btn btn-ghost" style="text-decoration:none">🛡️ Admin</a>' : '');
+      + (data.utilisateur.role === 'admin' ? '<a href="/admin" class="btn btn-ghost" style="text-decoration:none"> Admin</a>' : '');
 
     var pill = document.getElementById('rolePill');
     pill.style.display = '';
     pill.className = data.utilisateur.role === 'admin' ? 'role-pill admin' : 'role-pill contributeur';
-    pill.textContent  = data.utilisateur.role === 'admin' ? '🛡️ Admin' : '✏️ Contributeur';
+    pill.textContent  = data.utilisateur.role === 'admin' ? ' Admin' : ' Contributeur';
 
     document.getElementById('fAuteur').value = data.utilisateur.nom;
 
@@ -500,7 +497,7 @@ async function init() {
   } catch(e) { window.location.href = '/'; }
 }
 
-// ── Drag & drop sur la dropzone ───────────────────────────────────────────────
+//  Drag & drop sur la dropzone 
 function initDragDrop() {
   var area = document.getElementById('dropArea');
   area.addEventListener('dragover',  function(e){ e.preventDefault(); area.classList.add('drag-over'); });
@@ -511,7 +508,7 @@ function initDragDrop() {
   });
 }
 
-// ── Ajouter des fichiers ──────────────────────────────────────────────────────
+//  Ajouter des fichiers 
 function ajouterFichiers(files) {
   Array.from(files).forEach(function(file) {
     if (!file.type.startsWith('image/')) return;
@@ -524,7 +521,7 @@ function ajouterFichiers(files) {
   renderGrid();
 }
 
-// ── Rendu de la grille ────────────────────────────────────────────────────────
+//  Rendu de la grille 
 function renderGrid() {
   var grid  = document.getElementById('imagesGrid');
   var count = document.getElementById('imgCount');
@@ -554,8 +551,8 @@ function renderGrid() {
       + '<img src="' + img.url + '" alt="image ' + (i+1) + '">'
       + (isCover ? '<div class="cover-badge">Couverture</div>' : '')
       + '<div class="img-item-overlay">'
-      + (!isCover ? '<button class="img-action" onclick="setCouverture(\'existing\',' + i + ')">⭐ Couverture</button>' : '')
-      + '<button class="img-action danger" onclick="supprimerImageExistante(' + i + ')">🗑️ Retirer</button>'
+      + (!isCover ? '<button class="img-action" onclick="setCouverture(\'existing\',' + i + ')"> Couverture</button>' : '')
+      + '<button class="img-action danger" onclick="supprimerImageExistante(' + i + ')"> Retirer</button>'
       + '</div></div>';
   });
 
@@ -571,15 +568,15 @@ function renderGrid() {
       + '<img src="' + img.previewUrl + '" alt="nouvelle image">'
       + (isCover ? '<div class="cover-badge">Couverture</div>' : '')
       + '<div class="img-item-overlay">'
-      + (!isCover ? '<button class="img-action" onclick="setCouverture(\'new\',' + i + ')">⭐ Couverture</button>' : '')
-      + '<button class="img-action danger" onclick="supprimerImagePendante(' + i + ')">🗑️ Retirer</button>'
+      + (!isCover ? '<button class="img-action" onclick="setCouverture(\'new\',' + i + ')"> Couverture</button>' : '')
+      + '<button class="img-action danger" onclick="supprimerImagePendante(' + i + ')"> Retirer</button>'
       + '</div></div>';
   });
 
   grid.innerHTML = html;
 }
 
-// ── Drag & drop entre items ───────────────────────────────────────────────────
+//  Drag & drop entre items 
 function onDragStart(e, type, index) {
   dragSrcType  = type;
   dragSrcIndex = index;
@@ -614,7 +611,7 @@ function onDrop(e, targetType, targetIndex) {
   renderGrid();
 }
 
-// ── Actions images ────────────────────────────────────────────────────────────
+//  Actions images 
 function setCouverture(type, index) {
   if (type === 'existing') {
     imagesExistantes.forEach(function(img, i){ img.est_couverture = (i === index) ? 1 : 0; });
@@ -644,7 +641,7 @@ function supprimerImageExistante(index) {
   renderGrid();
 }
 
-// ── Charger mes cours ─────────────────────────────────────────────────────────
+//  Charger mes cours 
 async function chargerMesCours() {
   try {
     var res  = await fetch('/api/contributeur/mes-tutoriels');
@@ -665,11 +662,11 @@ async function chargerMesCours() {
         + '<div class="tuto-info">'
         + '<div class="tuto-titre">' + t.titre + '</div>'
         + '<div class="tuto-meta-sm">' + t.categorie + ' · ⏱ ' + t.duree_min + ' min'
-        + (t.images && t.images.length > 0 ? ' · 🖼️ ' + t.images.length + ' image' + (t.images.length > 1 ? 's' : '') : '') + '</div>'
+        + (t.images && t.images.length > 0 ? ' ·  ' + t.images.length + ' image' + (t.images.length > 1 ? 's' : '') : '') + '</div>'
         + '</div>'
         + '<div class="tuto-actions">'
-        + '<button class="btn-sm edit" onclick="editerCours(' + t.id + ')">✏️</button>'
-        + '<button class="btn-sm delete" onclick="supprimerCours(' + t.id + ', \'' + t.titre.replace(/'/g,"\\'").slice(0,30) + '\')">🗑️</button>'
+        + '<button class="btn-sm edit" onclick="editerCours(' + t.id + ')"></button>'
+        + '<button class="btn-sm delete" onclick="supprimerCours(' + t.id + ', \'' + t.titre.replace(/'/g,"\\'").slice(0,30) + '\')"></button>'
         + '</div></div>';
     }).join('');
   } catch(e) {
@@ -677,8 +674,8 @@ async function chargerMesCours() {
   }
 }
 
-// ── Reset formulaire ──────────────────────────────────────────────────────────
-// ── Éditeur riche ─────────────────────────────────────────────────────────────
+//  Reset formulaire 
+//  Éditeur riche 
 var editorImageFiles = {}; // id -> File pour les images inline
 
 function formatDoc(cmd) {
@@ -760,7 +757,7 @@ async function uploadEditorImages(contenuHtml) {
   return div.innerHTML;
 }
 
-// ── Catégories multi-sélection ────────────────────────────────────────────────
+//  Catégories multi-sélection 
 function getCategories() {
   var checked = [];
   document.querySelectorAll('#fCategories .cat-check.checked').forEach(function(el) {
@@ -802,7 +799,7 @@ function resetFormulaire() {
   document.getElementById('editTutoId').value  = '';
   document.getElementById('fTitre').value      = '';
   document.getElementById('fDuree').value      = '10';
-  document.getElementById('fEmoji').value      = '🎬';
+  document.getElementById('fEmoji').value      = '';
   document.getElementById('fContenu').innerHTML = '';
   document.getElementById('fAccroche').value    = '';
   document.getElementById('fImages').value     = '';
@@ -813,14 +810,14 @@ function resetFormulaire() {
   imagesExistantes = [];
   imagesSupprimer  = [];
   renderGrid();
-  document.getElementById('formTitle').textContent     = '➕ Nouveau cours';
+  document.getElementById('formTitle').textContent     = ' Nouveau cours';
   document.getElementById('formSubtitle').textContent  = 'Partagez votre savoir avec la communauté TutoMotion';
-  document.getElementById('formSubmitBtn').textContent = '💾 Enregistrer';
+  document.getElementById('formSubmitBtn').textContent = ' Enregistrer';
   document.getElementById('formErreur').textContent    = '';
   if (utilisateurActuel) document.getElementById('fAuteur').value = utilisateurActuel.nom;
 }
 
-// ── Éditer un cours ───────────────────────────────────────────────────────────
+//  Éditer un cours 
 async function editerCours(tid) {
   try {
     var res  = await fetch('/api/tutoriels/' + tid);
@@ -842,14 +839,14 @@ async function editerCours(tid) {
     imagesExistantes = (t.images || []).map(function(img){ return Object.assign({}, img); });
     renderGrid();
 
-    document.getElementById('formTitle').textContent     = '✏️ Modifier le cours';
+    document.getElementById('formTitle').textContent     = ' Modifier le cours';
     document.getElementById('formSubtitle').textContent  = t.titre;
-    document.getElementById('formSubmitBtn').textContent = '💾 Enregistrer les modifications';
+    document.getElementById('formSubmitBtn').textContent = ' Enregistrer les modifications';
     window.scrollTo({top:0, behavior:'smooth'});
   } catch(e) { toast('Erreur de chargement.', 'erreur'); }
 }
 
-// ── Supprimer un cours ────────────────────────────────────────────────────────
+//  Supprimer un cours 
 async function supprimerCours(tid, titre) {
   if (!confirm('Supprimer "' + titre + '" ? Cette action est irréversible.')) return;
   try {
@@ -860,13 +857,13 @@ async function supprimerCours(tid, titre) {
   } catch(e) { toast('Erreur serveur.', 'erreur'); }
 }
 
-// ── Soumettre ─────────────────────────────────────────────────────────────────
+//  Soumettre 
 async function soumettreFormulaire() {
   var titre     = document.getElementById('fTitre').value.trim();
   var categorie = getCategories();
   var auteur    = document.getElementById('fAuteur').value.trim();
   var duree     = document.getElementById('fDuree').value;
-  var emoji     = document.getElementById('fEmoji').value.trim() || '🎬';
+  var emoji     = document.getElementById('fEmoji').value.trim() || '';
   var editId    = document.getElementById('editTutoId').value;
   var errEl     = document.getElementById('formErreur');
   var btn       = document.getElementById('formSubmitBtn');
@@ -884,7 +881,7 @@ async function soumettreFormulaire() {
     if (quizData.length < 5) {
       errEl.textContent = 'Le questionnaire doit comporter au moins 5 questions.';
       btn.disabled = false;
-      btn.textContent = editId ? '💾 Enregistrer les modifications' : '💾 Enregistrer';
+      btn.textContent = editId ? ' Enregistrer les modifications' : ' Enregistrer';
       return;
     }
 
@@ -893,13 +890,13 @@ async function soumettreFormulaire() {
       if (quizData[qi].options.split('||').filter(function(o){ return o.trim(); }).length < 2) {
         errEl.textContent = 'La question ' + (qi+1) + ' doit avoir au moins 2 options.';
         btn.disabled = false;
-        btn.textContent = editId ? '💾 Enregistrer les modifications' : '💾 Enregistrer';
+        btn.textContent = editId ? ' Enregistrer les modifications' : ' Enregistrer';
         return;
       }
       if (!quizData[qi].reponses_correctes) {
         errEl.textContent = 'Indiquez la bonne réponse pour la question ' + (qi+1) + '.';
         btn.disabled = false;
-        btn.textContent = editId ? '💾 Enregistrer les modifications' : '💾 Enregistrer';
+        btn.textContent = editId ? ' Enregistrer les modifications' : ' Enregistrer';
         return;
       }
     }
@@ -962,11 +959,11 @@ async function soumettreFormulaire() {
     errEl.textContent = 'Erreur serveur.';
   } finally {
     btn.disabled = false;
-    btn.textContent = editId ? '💾 Enregistrer les modifications' : '💾 Enregistrer';
+    btn.textContent = editId ? ' Enregistrer les modifications' : ' Enregistrer';
   }
 }
 
-// ── YouTube ───────────────────────────────────────────────────────────────────
+//  YouTube 
 var ytSavedRange = null;
 
 function extraireYoutubeId(url) {
@@ -1012,7 +1009,7 @@ function insererBlocYoutube(vid) {
   ytSavedRange = null;
 }
 
-// ── Lecture YouTube inline ────────────────────────────────────────────────────
+//  Lecture YouTube inline 
 document.addEventListener('click', function(e) {
   var block = e.target.closest('.yt-block');
   if (!block) return;
@@ -1027,7 +1024,7 @@ document.addEventListener('click', function(e) {
   block.replaceWith(wrap);
 });
 
-// ── Questionnaire builder ─────────────────────────────────────────────────────
+//  Questionnaire builder 
 var quizQuestions = []; // [{id, question, type, options:[]}]
 
 function ajouterQuestion(data) {
@@ -1083,30 +1080,30 @@ function renderQuiz() {
   count.textContent = quizQuestions.length + ' question' + (quizQuestions.length > 1 ? 's' : '');
   count.style.background = quizQuestions.length >= 5 ? 'rgba(34,197,94,.15)' : '#0f172a';
   count.style.color      = quizQuestions.length >= 5 ? '#86efac' : '#64748b';
-  note.textContent = quizQuestions.length < 5 ? '⚠️ Encore ' + (5 - quizQuestions.length) + ' question(s) requise(s) pour pouvoir enregistrer.' : '';
+  note.textContent = quizQuestions.length < 5 ? ' Encore ' + (5 - quizQuestions.length) + ' question(s) requise(s) pour pouvoir enregistrer.' : '';
 
   builder.innerHTML = quizQuestions.map(function(q, i) {
     var optionsHtml = '<div class="quiz-options-area">'
-      + '<div style="font-size:.7rem;color:#64748b;margin-bottom:.4rem">Options — cochez la/les bonne(s) réponse(s) ✅ :</div>'
+      + '<div style="font-size:.7rem;color:#64748b;margin-bottom:.4rem">Options — cochez la/les bonne(s) réponse(s)  :</div>'
       + q.options.map(function(opt, oi) {
         var isCorrect = q.correctes.indexOf(oi) !== -1;
         return '<div class="quiz-option-row">'
           + '<button type="button" class="quiz-correct-btn' + (isCorrect ? ' correct' : '') + '" onclick="toggleCorrect(' + i + ',' + oi + ')" title="Marquer comme correcte">'
-          + (isCorrect ? '✅' : '⬜') + '</button>'
+          + (isCorrect ? '' : '') + '</button>'
           + '<input class="quiz-option-input" type="text" placeholder="Option ' + (oi+1) + '" value="' + opt.replace(/"/g,'&quot;') + '"'
           + ' onchange="quizQuestions[' + i + '].options[' + oi + ']=this.value">'
-          + '<button type="button" class="quiz-option-del" onclick="supprimerOption(' + i + ',' + oi + ')">✕</button>'
+          + '<button type="button" class="quiz-option-del" onclick="supprimerOption(' + i + ',' + oi + ')"></button>'
           + '</div>';
       }).join('')
       + '<button type="button" class="btn-add-option" onclick="ajouterOption(' + i + ')">+ Ajouter une option</button>'
       + '</div>';
 
     var multipleLabel = q.multiple
-      ? '<span class="quiz-multiple-badge active">☑️ Réponses multiples</span>'
+      ? '<span class="quiz-multiple-badge active"> Réponses multiples</span>'
       : '<span class="quiz-multiple-badge">Réponse unique</span>';
 
     return '<div class="quiz-question-card">'
-      + '<button type="button" class="quiz-del-btn" onclick="supprimerQuestion(' + i + ')">🗑️</button>'
+      + '<button type="button" class="quiz-del-btn" onclick="supprimerQuestion(' + i + ')"></button>'
       + '<div class="quiz-question-num">Question ' + (i+1) + '</div>'
       + '<input class="quiz-question-input" type="text" placeholder="Énoncé de la question…" value="' + q.question.replace(/"/g,'&quot;') + '"'
       + ' onchange="quizQuestions[' + i + '].question=this.value">'
@@ -1160,7 +1157,7 @@ async function chargerQuiz(tid) {
   } catch(e) {}
 }
 
-// ── Toast ─────────────────────────────────────────────────────────────────────
+//  Toast 
 function toast(msg, type) {
   var t = document.getElementById('toastC');
   t.textContent = msg;
@@ -1174,7 +1171,7 @@ document.addEventListener('DOMContentLoaded', init);
 <!-- Modal YouTube -->
 <div id="ytModalOverlay" class="yt-modal-overlay" style="display:none" onclick="fermerModalYoutube()">
   <div class="yt-modal-box" onclick="event.stopPropagation()">
-    <div class="yt-modal-title">▶ Insérer une vidéo YouTube</div>
+    <div class="yt-modal-title"> Insérer une vidéo YouTube</div>
     <input class="yt-modal-input" id="ytUrlInput" type="text" placeholder="https://www.youtube.com/watch?v=... ou youtu.be/..."
       onkeydown="if(event.key==='Enter') confirmerYoutube()">
     <div class="yt-modal-btns">

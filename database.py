@@ -28,12 +28,6 @@ def init_db():
         )
     ''')
 
-    # Migration : ajouter avatar_url si absente
-    try:
-        cursor.execute("ALTER TABLE utilisateurs ADD COLUMN avatar_url TEXT DEFAULT ''")
-    except Exception:
-        pass
-
     # ── Table tutoriels ─────────────────────────────────────────────────
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS tutoriels (
@@ -49,6 +43,12 @@ def init_db():
             cree_le     DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     ''')
+
+    # Migration avatar_url
+    try:
+        cursor.execute("ALTER TABLE utilisateurs ADD COLUMN avatar_url TEXT DEFAULT ''")
+    except Exception:
+        pass
 
     # Migrations : ajouter les colonnes si elles n'existent pas encore
     for col, definition in [

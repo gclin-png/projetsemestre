@@ -5,25 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TutoMotion — Plateforme de Partage de Tutoriels</title>
 <link rel="stylesheet" href="styles.css" />
-<!-- Glacial Indifference via CDN -->
+<link href="https://fonts.cdnfonts.com/css/glacial-indifference-2" rel="stylesheet">
 <style>
-  @font-face {
-    font-family: 'Glacial Indifference';
-    src: url('https://fonts.cdnfonts.com/s/17689/GlacialIndifference-Regular.woff') format('woff');
-    font-weight: 400; font-style: normal;
-  }
-  @font-face {
-    font-family: 'Glacial Indifference';
-    src: url('https://fonts.cdnfonts.com/s/17689/GlacialIndifference-Bold.woff') format('woff');
-    font-weight: 700; font-style: normal;
-  }
-  @font-face {
-    font-family: 'Glacial Indifference';
-    src: url('https://fonts.cdnfonts.com/s/17689/GlacialIndifference-Italic.woff') format('woff');
-    font-weight: 400; font-style: italic;
-  }
-
-  /* Override nav width */
+/* Override nav width */
   .nav-inner { max-width: 1600px !important; padding: 0 0.75rem; height: 56px !important; }
   .nav-tabs { gap: 0.1rem !important; flex-wrap: nowrap !important; overflow: visible !important; }
   .nav-tab { padding: 0.35rem 0.45rem !important; font-size: 0.72rem !important; white-space: nowrap !important; }
@@ -46,7 +30,6 @@
   .contact-upload { border:2px dashed var(--cream); border-radius:10px; padding:1rem; text-align:center; cursor:pointer; transition:border-color .2s; background:var(--whitebg); font-size:.85rem; color:var(--slate-500); }
   .contact-upload:hover { border-color:var(--pink); color:var(--slate-700); }
 </style>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 
 </head>
@@ -56,15 +39,13 @@
 <nav>
   <div class="nav-inner">
     <a class="logo" href="#" onclick="showSection('accueil')">
-      <div class="logo-icon">⚡</div>
-      Tuto<span>Motion</span>
+      <img src="/logo-tutomotion.png" alt="TutoMotion" style="height:36px;width:auto;display:block;">
     </a>
     <div class="nav-tabs">
-      <button class="nav-tab active" onclick="showSection('accueil',this)">🏠 Accueil</button>
-      <button class="nav-tab" onclick="showSection('tutoriels',this)">🎬 Tutoriels</button>
-      <button class="nav-tab" onclick="showSection('contact', this)">✉️ Contact</button>
-      <button class="nav-tab" id="navTabNouveauCours" style="display:none" onclick="window.location.href='/creer-cours'">➕ Créer un cours</button>
-      <button class="nav-tab" id="navTabAdmin" style="display:none" onclick="window.location.href='/admin'">🛡️ Admin</button>
+      <button class="nav-tab active" onclick="showSection('accueil',this)"> Accueil</button>
+      <button class="nav-tab" onclick="showSection('tutoriels',this)"> Tutoriels</button>
+      <button class="nav-tab" id="navTabNouveauCours" style="display:none" onclick="window.location.href='/creer-cours'"> Créer un cours</button>
+      <button class="nav-tab" id="navTabAdmin" style="display:none" onclick="window.location.href='/admin'"> Admin</button>
     </div>
     <div class="nav-actions" id="navActions">
       <!-- Rempli dynamiquement selon l'état de connexion -->
@@ -74,11 +55,10 @@
 
 <!-- MOBILE NAV -->
 <div class="mobile-nav">
-  <button class="nav-tab active" onclick="showSection('accueil',this)">🏠 Accueil</button>
-  <button class="nav-tab" onclick="showSection('tutoriels',this)">🎬 Tutos</button>
-  <button class="nav-tab" onclick="showSection('contact', this)">✉️ Contact</button>
-  <button class="nav-tab" id="mobileTabNouveauCours" style="display:none" onclick="window.location.href='/creer-cours'">➕ Créer</button>
-  <button class="nav-tab" id="mobileTabAdmin" style="display:none" onclick="window.location.href='/admin'">🛡️ Admin</button>
+  <button class="nav-tab active" onclick="showSection('accueil',this)"> Accueil</button>
+  <button class="nav-tab" onclick="showSection('tutoriels',this)"> Tutos</button>
+  <button class="nav-tab" id="mobileTabNouveauCours" style="display:none" onclick="window.location.href='/creer-cours'"> Créer</button>
+  <button class="nav-tab" id="mobileTabAdmin" style="display:none" onclick="window.location.href='/admin'"> Admin</button>
 </div>
 
 <!-- ==================== ACCUEIL ==================== -->
@@ -86,7 +66,26 @@
   <div class="container">
 
     <div class="hero">
-      <div class="hero-badge">🎬 Motion Design · 🎞️ Montage Vidéo</div>
+      <!-- Groupe losanges centré -->
+      <div style="position:absolute;right:-60px;top:50%;transform:translateY(-50%);width:420px;height:420px;pointer-events:none;user-select:none">
+        <!-- Grand losange blanc -->
+        <svg style="position:absolute;top:0;left:0;opacity:0.07" width="420" height="420" viewBox="0 0 420 420" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="210,10 410,210 210,410 10,210" fill="white"/>
+        </svg>
+        <!-- Losange contour rose (280px centré dans 420px → offset 70px) -->
+        <svg style="position:absolute;top:70px;left:70px;opacity:0.15" width="280" height="280" viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="140,8 272,140 140,272 8,140" fill="none" stroke="#FB9EC6" stroke-width="3"/>
+        </svg>
+        <!-- Petit losange rose plein (100px centré dans 420px → offset 160px) -->
+        <svg style="position:absolute;top:160px;left:160px;opacity:0.28" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="50,4 96,50 50,96 4,50" fill="#FB9EC6"/>
+        </svg>
+        <!-- Ligne timeline centrée verticalement -->
+        <svg style="position:absolute;top:209px;left:0;opacity:0.12" width="420" height="4" xmlns="http://www.w3.org/2000/svg">
+          <line x1="0" y1="2" x2="420" y2="2" stroke="white" stroke-width="1.5" stroke-dasharray="6 4"/>
+        </svg>
+      </div>
+      <div class="hero-badge"> Motion Design ·  Montage Vidéo</div>
       <h1>Maîtrisez le Motion Design,<br><span>tutoriel après tutoriel.</span></h1>
       <p>Découvrez des tutoriels After Effects, Premiere Pro, Figma et bien plus — créés par des étudiants, pour des étudiants en création visuelle.</p>
       <div class="hero-actions">
@@ -94,22 +93,43 @@
       </div>
     </div>
 
-    <div class="stats-row" style="grid-template-columns:1fr;max-width:300px;margin:0 auto 2rem">
-      <div class="stat-card"><div class="stat-num" id="statTutoriels">—</div><div class="stat-label">Tutoriels</div></div>
+    <!-- ── Section présentation ── -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;margin:3rem 0 3rem;padding:2.5rem 0;border-top:1px solid var(--slate-100);border-bottom:1px solid var(--slate-100)">
+      <div>
+        <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--pink);margin-bottom:.75rem">À propos</div>
+        <div style="font-size:1.6rem;font-weight:800;color:var(--slate);line-height:1.25;margin-bottom:1rem">TutoMotion, c'est quoi ?</div>
+        <p style="font-size:.95rem;color:var(--slate-500);line-height:1.75;margin-bottom:1rem">TutoMotion est une plateforme de partage de tutoriels spécialisée en Motion Design et Montage Vidéo, créée par des étudiants de la Normandie Web School.</p>
+        <p style="font-size:.95rem;color:var(--slate-500);line-height:1.75">Vous y trouverez des tutoriels After Effects, Premiere Pro et Figma — accessibles gratuitement après inscription — pour progresser à votre rythme dans la création visuelle.</p>
+      </div>
+      <div style="position:relative;padding-top:56.25%;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-lg)">
+        <iframe
+          src="https://www.youtube.com/embed/QPJwfkinmpY"
+          title="Présentation TutoMotion"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+          style="position:absolute;top:0;left:0;width:100%;height:100%;border-radius:var(--radius-lg)">
+        </iframe>
+      </div>
     </div>
 
-    <div class="h2">🎬 Derniers tutoriels</div>
+    <div class="stats-row" style="grid-template-columns:repeat(3,1fr);max-width:700px;margin:0 auto 2rem">
+      <div class="stat-card"><div class="stat-num" id="statTutoriels">—</div><div class="stat-label">Tutoriels</div></div>
+      <div class="stat-card"><div class="stat-num" id="statMembres">—</div><div class="stat-label">Membres inscrits</div></div>
+      <div class="stat-card"><div class="stat-num" id="statCollaborateurs">—</div><div class="stat-label">Collaborateurs</div></div>
+    </div>
+
+    <div class="h2"> Derniers tutoriels</div>
 
     <div class="tuto-filters">
       <span class="filter-label">Filtrer :</span>
       <button class="filter-btn active" onclick="filterTutos('all', this)">Tous</button>
-      <button class="filter-btn" onclick="filterTutos('Motion Design', this)">🎬 Motion Design</button>
-      <button class="filter-btn" onclick="filterTutos('Montage Vidéo', this)">🎞️ Montage Vidéo</button>
+      <button class="filter-btn" onclick="filterTutos('Motion Design', this)"> Motion Design</button>
+      <button class="filter-btn" onclick="filterTutos('Montage Vidéo', this)"> Montage Vidéo</button>
     </div>
 
     <div class="tuto-grid" id="tutoGrid">
       <div class="tuto-card" data-category="Motion Design">
-        <div class="tuto-thumb motion1">🎬</div>
         <div class="tuto-body">
           <div class="tuto-cat">Motion Design</div>
           <div class="tuto-title">Apprendre les bases d'After Effect</div>
@@ -120,7 +140,6 @@
         </div>
       </div>
       <div class="tuto-card" data-category="Motion Design">
-        <div class="tuto-thumb motion2">✨</div>
         <div class="tuto-body">
           <div class="tuto-cat">Motion Design</div>
           <div class="tuto-title">Comment faire une introduction de vidéo en Motion Design</div>
@@ -131,7 +150,6 @@
         </div>
       </div>
       <div class="tuto-card" data-category="Motion Design">
-        <div class="tuto-thumb motion3">🔤</div>
         <div class="tuto-body">
           <div class="tuto-cat">Motion Design</div>
           <div class="tuto-title">Comment faire des animations de textes avec After Effect</div>
@@ -142,7 +160,6 @@
         </div>
       </div>
       <div class="tuto-card" data-category="Motion Design">
-        <div class="tuto-thumb motion4">🎞️</div>
         <div class="tuto-body">
           <div class="tuto-cat">Motion Design</div>
           <div class="tuto-title">Comment intégrer du Motion Design dans vos montages vidéos</div>
@@ -153,7 +170,6 @@
         </div>
       </div>
       <div class="tuto-card" data-category="Motion Design">
-        <div class="tuto-thumb motion5">📷</div>
         <div class="tuto-body">
           <div class="tuto-cat">Motion Design</div>
           <div class="tuto-title">Comment utiliser une caméra 3D sur After Effect</div>
@@ -172,7 +188,6 @@
 <div id="tutoriels" class="section">
   <div class="container">
     <div class="section-header">
-      <div class="section-icon" style="background:var(--pink)">🎬</div>
       <div>
         <div class="section-title">Tous les tutoriels</div>
         <div class="section-subtitle">Recherchez et filtrez parmi tous les cours disponibles</div>
@@ -186,19 +201,19 @@
           style="width:100%;padding:.75rem 1rem .75rem 2.75rem;border:2px solid var(--yellow);border-radius:12px;background:var(--cream);font-family:inherit;font-size:.92rem;color:var(--slate);outline:none;box-sizing:border-box;transition:border-color .2s"
           onfocus="this.style.borderColor='var(--pink)'"
           onblur="this.style.borderColor='var(--yellow)'">
-        <span style="position:absolute;left:.85rem;top:50%;transform:translateY(-50%);font-size:1rem;pointer-events:none">🔍</span>
+        <span style="position:absolute;left:.85rem;top:50%;transform:translateY(-50%);font-size:1rem;pointer-events:none"></span>
       </div>
     </div>
 
     <div class="tuto-filters" style="margin-bottom:1.5rem">
       <span class="filter-label">Filtrer :</span>
       <button class="filter-btn active" onclick="filtrerTutorielsPage('all', this)">Tous</button>
-      <button class="filter-btn" onclick="filtrerTutorielsPage('Motion Design', this)">🎬 Motion Design</button>
-      <button class="filter-btn" onclick="filtrerTutorielsPage('Montage Vidéo', this)">🎞️ Montage Vidéo</button>
+      <button class="filter-btn" onclick="filtrerTutorielsPage('Motion Design', this)"> Motion Design</button>
+      <button class="filter-btn" onclick="filtrerTutorielsPage('Montage Vidéo', this)"> Montage Vidéo</button>
     </div>
 
     <div id="tutoGridPage" style="display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem;align-items:start"></div>
-    <div id="searchEmpty" style="display:none;text-align:center;padding:3rem 0;color:var(--slate-400)">😕 Aucun tutoriel trouvé.</div>
+    <div id="searchEmpty" style="display:none;text-align:center;padding:3rem 0;color:var(--slate-400)"> Aucun tutoriel trouvé.</div>
   </div>
 </div>
 
@@ -206,7 +221,7 @@
 <div id="personas" class="section">
   <div class="container">
     <div class="section-header">
-      <div class="section-icon blue">👤</div>
+      <div class="section-icon blue"></div>
       <div>
         <div class="section-title">Étape 2 — Personas utilisateurs</div>
         <div class="section-subtitle">Deux profils types représentant les utilisateurs cibles de la plateforme TutoMotion</div>
@@ -216,28 +231,28 @@
     <div class="grid-2">
       <!-- Persona 1 -->
       <div class="persona-card apprenant">
-        <div class="persona-avatar blue">🎓</div>
+        <div class="persona-avatar blue"></div>
         <div class="persona-name">Lucas Bertin</div>
         <div class="persona-role">L'Apprenant · 20 ans · Étudiant en Design Graphique</div>
 
         <div class="persona-row">
-          <div class="persona-label">📍 Contexte</div>
+          <div class="persona-label"> Contexte</div>
           <div class="persona-value">En 2ème année à l'école de design de Rouen. Passe 3h/jour sur son ordi, principalement sur YouTube et Pinterest pour apprendre.</div>
         </div>
         <div class="persona-row">
-          <div class="persona-label">🎯 Besoins</div>
+          <div class="persona-label"> Besoins</div>
           <div class="persona-value">Trouver des ressources rapides et fiables pour monter en compétence sur des logiciels spécifiques (Figma, Adobe Suite).</div>
         </div>
         <div class="persona-row">
-          <div class="persona-label">😤 Frustrations</div>
+          <div class="persona-label"> Frustrations</div>
           <div class="persona-value">Tutoriels trop longs ou mal structurés. Impossible de reprendre là où il s'est arrêté. Contenu non indexé = introuvable.</div>
         </div>
         <div class="persona-row">
-          <div class="persona-label">✅ Objectifs sur le site</div>
+          <div class="persona-label"> Objectifs sur le site</div>
           <div class="persona-value">Suivre sa progression, retrouver facilement les tutoriels consultés, noter et commenter les contenus.</div>
         </div>
         <div class="persona-row">
-          <div class="persona-label">📱 Équipements</div>
+          <div class="persona-label"> Équipements</div>
           <div class="persona-value">MacBook Air, iPhone 13, bonne connexion en résidence étudiante.</div>
         </div>
         <div class="persona-tags">
@@ -249,28 +264,28 @@
 
       <!-- Persona 2 -->
       <div class="persona-card contributeur">
-        <div class="persona-avatar amber">💼</div>
+        <div class="persona-avatar amber"></div>
         <div class="persona-name">Léa Martin</div>
         <div class="persona-role">La Contributrice · 24 ans · Alternante Dev Web</div>
 
         <div class="persona-row">
-          <div class="persona-label">📍 Contexte</div>
+          <div class="persona-label"> Contexte</div>
           <div class="persona-value">En alternance dans une agence web normande. Développe en React/Node.js et souhaite valoriser ses apprentissages du semestre.</div>
         </div>
         <div class="persona-row">
-          <div class="persona-label">🎯 Besoins</div>
+          <div class="persona-label"> Besoins</div>
           <div class="persona-value">Centraliser ses créations pour constituer un portfolio en ligne. Avoir une interface d'admin simple pour gérer ses contenus.</div>
         </div>
         <div class="persona-row">
-          <div class="persona-label">😤 Frustrations</div>
+          <div class="persona-label"> Frustrations</div>
           <div class="persona-value">Les plateformes où publier est complexe ou demande trop de configuration. Elle veut écrire, pas configurer.</div>
         </div>
         <div class="persona-row">
-          <div class="persona-label">✅ Objectifs sur le site</div>
+          <div class="persona-label"> Objectifs sur le site</div>
           <div class="persona-value">Ajouter, modifier ou supprimer du contenu simplement via une interface sécurisée. Voir les statistiques de ses tutoriels.</div>
         </div>
         <div class="persona-row">
-          <div class="persona-label">📱 Équipements</div>
+          <div class="persona-label"> Équipements</div>
           <div class="persona-value">PC Windows + second écran, Firefox Developer Edition, connexion fibre en agence.</div>
         </div>
         <div class="persona-tags">
@@ -288,7 +303,7 @@
 <div id="parcours" class="section">
   <div class="container">
     <div class="section-header">
-      <div class="section-icon blue">🗺️</div>
+      <div class="section-icon blue"></div>
       <div>
         <div class="section-title">Parcours utilisateur</div>
         <div class="section-subtitle">"S'inscrire et suivre un tutoriel" — Le chemin complet de l'arrivée à l'engagement</div>
@@ -301,61 +316,61 @@
         <div class="timeline-item">
           <div class="timeline-dot" style="background:var(--blue)"></div>
           <div class="timeline-time">ÉTAPE 1</div>
-          <div class="timeline-title">🏠 Arrivée sur la page d'accueil publique</div>
-          <div class="timeline-desc">L'utilisateur découvre TutoMotion via Google, un lien Instagram ou une recommandation. Il voit les tutoriels en aperçu, sans être connecté.</div>
+          <div class="timeline-title"> Arrivée sur la page d'accueil</div>
+          <div class="timeline-desc">L'utilisateur découvre TutoMotion via Google, un lien ou une recommandation. Il voit le Hero, les statistiques (tutoriels, membres, collaborateurs) et les derniers tutoriels en aperçu — sans être connecté.</div>
           <div class="timeline-tips">
-            <div class="timeline-tip">🔑 <span>Point clé UI : le Hero est visible immédiatement, le CTA "Explorer" est au-dessus de la ligne de flottaison.</span></div>
+            <div class="timeline-tip"> <span>Point clé UI : les CTA "Découvrir les tutoriels" et "S'inscrire gratuitement" sont visibles immédiatement au-dessus de la ligne de flottaison.</span></div>
           </div>
         </div>
 
         <div class="timeline-item">
           <div class="timeline-dot" style="background:#7C3AED"></div>
           <div class="timeline-time">ÉTAPE 2</div>
-          <div class="timeline-title">🔎 Découverte et navigation</div>
-          <div class="timeline-desc">Il parcourt la grille de tutoriels, filtre par catégorie (Design, Dev, Marketing) ou utilise la barre de recherche.</div>
+          <div class="timeline-title"> Navigation dans les tutoriels</div>
+          <div class="timeline-desc">L'utilisateur parcourt la grille de tutoriels, filtre par catégorie (Motion Design, Montage Vidéo) ou utilise la barre de recherche. Chaque carte affiche le titre, la durée, la catégorie et l'auteur.</div>
           <div class="timeline-tips">
-            <div class="timeline-tip">🔑 <span>Point clé UI : les cartes tutoriel affichent le titre, la durée et l'auteur. Un badge "🔒 Connexion requise" apparaît sur le contenu complet.</span></div>
+            <div class="timeline-tip"> <span>Point clé UI : le contenu complet est réservé aux connectés. Un message d'invitation à la connexion s'affiche au clic sur un tutoriel.</span></div>
           </div>
         </div>
 
         <div class="timeline-item">
           <div class="timeline-dot" style="background:var(--amber)"></div>
           <div class="timeline-time">ÉTAPE 3</div>
-          <div class="timeline-title">🚪 Déclencheur d'inscription</div>
-          <div class="timeline-desc">En cliquant sur un tutoriel, une modale ou une section invite l'utilisateur à s'inscrire ou se connecter pour accéder au contenu complet.</div>
+          <div class="timeline-title"> Inscription ou connexion</div>
+          <div class="timeline-desc">En cliquant sur un tutoriel, une modale invite l'utilisateur à se connecter ou créer un compte. Le formulaire demande : nom, email, mot de passe (8 caractères min) et téléphone (optionnel).</div>
           <div class="timeline-tips">
-            <div class="timeline-tip">🔑 <span>Point clé UX : ne pas bloquer l'accès brutalement — montrer le début du tutoriel, puis afficher le "gate" d'inscription.</span></div>
+            <div class="timeline-tip"> <span>Point clé UX : feedback d'erreur immédiat, mot de passe hashé (PBKDF2-SHA256, 260 000 itérations + sel aléatoire).</span></div>
+            <div class="timeline-tip"> <span>Sécurité : sessions Flask côté serveur, données conformes RGPD, aucune donnée sensible stockée en clair.</span></div>
           </div>
         </div>
 
         <div class="timeline-item">
           <div class="timeline-dot" style="background:var(--green)"></div>
           <div class="timeline-time">ÉTAPE 4</div>
-          <div class="timeline-title">✍️ Formulaire d'inscription</div>
-          <div class="timeline-desc">L'utilisateur remplit le formulaire : Prénom, Email, Mot de passe. Validation côté client (JS) puis côté serveur. Email de confirmation.</div>
+          <div class="timeline-title"> Accès au tutoriel complet</div>
+          <div class="timeline-desc">Une fois connecté, l'utilisateur accède au contenu complet : texte, images, et quiz QCM. Son historique est mis à jour automatiquement avec le statut "en cours". La nav affiche son avatar et son prénom.</div>
           <div class="timeline-tips">
-            <div class="timeline-tip">🔑 <span>Point clé UX : formulaire court (3 champs max), feedback d'erreur immédiat, bouton CTA clair "Créer mon compte".</span></div>
-            <div class="timeline-tip">🔒 <span>Sécurité : hashage du mot de passe (bcrypt), protection CSRF, RGPD (case opt-in newsletter).</span></div>
+            <div class="timeline-tip"> <span>Point clé UI : un toast de bienvenue confirme la connexion. L'avatar affiche la photo de profil ou les initiales si aucune photo n'est définie.</span></div>
+          </div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-dot" style="background:var(--pink)"></div>
+          <div class="timeline-time">ÉTAPE 5</div>
+          <div class="timeline-title"> Quiz de validation</div>
+          <div class="timeline-desc">À la fin du tutoriel, l'utilisateur répond à un quiz QCM. Un score minimum de 75% est requis pour valider le tutoriel. Les réponses sont enregistrées et le statut passe à "terminé" dans l'historique.</div>
+          <div class="timeline-tips">
+            <div class="timeline-tip"> <span>Point clé UX : le score est affiché immédiatement. En cas d'échec, l'utilisateur peut relire le contenu et retenter le quiz.</span></div>
           </div>
         </div>
 
         <div class="timeline-item">
           <div class="timeline-dot" style="background:var(--blue)"></div>
-          <div class="timeline-time">ÉTAPE 5</div>
-          <div class="timeline-title">✅ Connexion & Accès complet</div>
-          <div class="timeline-desc">Une fois connecté, il accède au tutoriel complet. Le tutoriel s'ajoute automatiquement à son historique dans son tableau de bord.</div>
-          <div class="timeline-tips">
-            <div class="timeline-tip">🔑 <span>Point clé UI : le header affiche maintenant son avatar, un bouton "Mon tableau de bord" et une notification de bienvenue.</span></div>
-          </div>
-        </div>
-
-        <div class="timeline-item">
-          <div class="timeline-dot green" style="background:var(--green)"></div>
           <div class="timeline-time">ÉTAPE 6</div>
-          <div class="timeline-title">💡 Engagement & Rétention</div>
-          <div class="timeline-desc">Il peut laisser un commentaire, noter le tutoriel (⭐), l'ajouter à ses favoris, et voir les tutoriels similaires recommandés.</div>
+          <div class="timeline-title"> Gestion du profil</div>
+          <div class="timeline-desc">Depuis "Mon compte", l'utilisateur peut modifier son nom et téléphone, changer sa photo de profil, consulter l'historique de ses tutoriels complétés, et se déconnecter ou supprimer son compte.</div>
           <div class="timeline-tips">
-            <div class="timeline-tip">📈 <span>KPI à suivre : taux de conversion visite → inscription, taux d'engagement (commentaires, notes), tutoriels par session.</span></div>
+            <div class="timeline-tip"> <span>Point clé UI : l'historique affiche le nombre de tutoriels complétés, le temps total cumulé et les catégories explorées.</span></div>
           </div>
         </div>
 
@@ -364,12 +379,11 @@
 
   </div>
 </div>
-
 <!-- ==================== ZONING ==================== -->
 <div id="zoning" class="section">
   <div class="container">
     <div class="section-header">
-      <div class="section-icon blue">📐</div>
+      <div class="section-icon blue"></div>
       <div>
         <div class="section-title">Zoning — Page d'accueil</div>
         <div class="section-subtitle">Structure des blocs de la page principale, avant le design final</div>
@@ -425,9 +439,9 @@
             <div class="zone-label">CONTENU</div>
             <div class="zone-content">
               <div class="mock-grid">
-                <div class="mock-card"><div class="mock-card-img">💻</div><div class="mock-card-title">API REST Node.js</div><div class="mock-card-meta">⏱ 45min · Léa M.</div></div>
-                <div class="mock-card"><div class="mock-card-img">🎨</div><div class="mock-card-title">Figma avancé</div><div class="mock-card-meta">⏱ 30min · Alice P.</div></div>
-                <div class="mock-card"><div class="mock-card-img">🔍</div><div class="mock-card-title">Audit SEO</div><div class="mock-card-meta">⏱ 20min · Tom R.</div></div>
+                <div class="mock-card"><div class="mock-card-img"></div><div class="mock-card-title">API REST Node.js</div><div class="mock-card-meta">⏱ 45min · Léa M.</div></div>
+                <div class="mock-card"><div class="mock-card-img"></div><div class="mock-card-title">Figma avancé</div><div class="mock-card-meta">⏱ 30min · Alice P.</div></div>
+                <div class="mock-card"><div class="mock-card-img"></div><div class="mock-card-title">Audit SEO</div><div class="mock-card-meta">⏱ 20min · Tom R.</div></div>
               </div>
             </div>
           </div>
@@ -445,27 +459,27 @@
         <div class="h2" style="margin-bottom:1rem">Détail des zones</div>
         <div style="display:flex;flex-direction:column;gap:1rem">
           <div class="card">
-            <div class="card-title">📌 Header — Navigation principale</div>
+            <div class="card-title"> Header — Navigation principale</div>
             <p style="font-size:.85rem;color:var(--slate-500)">Logo à gauche · Barre de recherche au centre · Boutons "Connexion / Inscription" à droite. Sticky en haut de page, fond semi-transparent.</p>
           </div>
           <div class="card">
-            <div class="card-title">🦸 Hero Section — Accroche</div>
+            <div class="card-title"> Hero Section — Accroche</div>
             <p style="font-size:.85rem;color:var(--slate-500)">Titre principal H1, sous-titre descriptif, bouton CTA primaire et secondaire. Fond sombre dégradé pour contraste et impact visuel fort.</p>
           </div>
           <div class="card">
-            <div class="card-title">🏷️ Filtres / Catégories</div>
+            <div class="card-title"> Filtres / Catégories</div>
             <p style="font-size:.85rem;color:var(--slate-500)">Barre horizontale de filtres pills. Tri par catégorie : Design, Dev, Marketing, UX/UI, SEO. Filtre actif mis en surbrillance (bleu).</p>
           </div>
           <div class="card">
-            <div class="card-title">📚 Grille de tutoriels</div>
-            <p style="font-size:.85rem;color:var(--slate-500)">Grille 3 colonnes de cartes. Chaque carte : miniature, catégorie, titre, durée, auteur. Badge 🔒 pour contenu réservé aux connectés.</p>
+            <div class="card-title"> Grille de tutoriels</div>
+            <p style="font-size:.85rem;color:var(--slate-500)">Grille 3 colonnes de cartes. Chaque carte : miniature, catégorie, titre, durée, auteur. Badge  pour contenu réservé aux connectés.</p>
           </div>
           <div class="card">
-            <div class="card-title">⚙️ Éléments Admin (si connecté)</div>
-            <p style="font-size:.85rem;color:var(--slate-500)">Bouton "➕ Ajouter un tutoriel" en haut de la grille. Icônes ✏️ Modifier / 🗑️ Supprimer sur chaque carte pour les admins.</p>
+            <div class="card-title"> Éléments Admin (si connecté)</div>
+            <p style="font-size:.85rem;color:var(--slate-500)">Bouton " Ajouter un tutoriel" en haut de la grille. Icônes  Modifier /  Supprimer sur chaque carte pour les admins.</p>
           </div>
           <div class="card">
-            <div class="card-title">🔗 Footer</div>
+            <div class="card-title"> Footer</div>
             <p style="font-size:.85rem;color:var(--slate-500)">Mention légale pédagogique obligatoire, liens réseaux sociaux, RGPD. Fond sombre pour délimiter visuellement la page.</p>
           </div>
         </div>
@@ -479,7 +493,7 @@
 <div id="social" class="section">
   <div class="container">
     <div class="section-header">
-      <div class="section-icon" style="background:linear-gradient(135deg,#833AB4,#FD1D1D,#FCB045)">📱</div>
+      <div class="section-icon" style="background:linear-gradient(135deg,#833AB4,#FD1D1D,#FCB045)"></div>
       <div>
         <div class="section-title">Étape 3 — Stratégie Social Media</div>
         <div class="section-subtitle">Réseau choisi, calendrier éditorial des 30 publications et formats réalisés</div>
@@ -488,20 +502,20 @@
 
     <!-- Choix du réseau -->
     <div class="network-choice">
-      <div class="network-icon">📸</div>
+      <div class="network-icon"></div>
       <div>
         <div class="network-title">Instagram — Le choix retenu</div>
         <div class="network-args">
-          <div class="network-arg">✅ Pertinence visuelle : idéal pour valoriser les chartes graphiques via Reels et Carrousels</div>
-          <div class="network-arg">✅ Cible parfaite : correspond au profil étudiant 18-25 ans (Personas Lucas & Léa)</div>
-          <div class="network-arg">✅ Interactivité : Stories, sondages, questions → feedback direct de la communauté</div>
-          <div class="network-arg">✅ 4 formats natifs : Image, Reel, Carrousel, Story — 4 livrables couverts</div>
+          <div class="network-arg"> Pertinence visuelle : idéal pour valoriser les chartes graphiques via Reels et Carrousels</div>
+          <div class="network-arg"> Cible parfaite : correspond au profil étudiant 18-25 ans (Personas Lucas & Léa)</div>
+          <div class="network-arg"> Interactivité : Stories, sondages, questions → feedback direct de la communauté</div>
+          <div class="network-arg"> 4 formats natifs : Image, Reel, Carrousel, Story — 4 livrables couverts</div>
         </div>
       </div>
     </div>
 
     <!-- Calendrier éditorial -->
-    <div class="h2">📅 Calendrier éditorial — 30 publications</div>
+    <div class="h2"> Calendrier éditorial — 30 publications</div>
     <div style="overflow-x:auto;border-radius:var(--radius-lg);box-shadow:var(--shadow)">
       <table class="calendar-table">
         <thead>
@@ -524,7 +538,7 @@
 <div id="seo" class="section">
   <div class="container">
     <div class="section-header">
-      <div class="section-icon green">🔍</div>
+      <div class="section-icon green"></div>
       <div>
         <div class="section-title">Audit SEO — TutoMotion.fr</div>
         <div class="section-subtitle">Structure complète de l'audit de référencement naturel à mener sur la plateforme</div>
@@ -540,7 +554,7 @@
 <div id="publications" class="section">
   <div class="container">
     <div class="section-header">
-      <div class="section-icon amber">🖼️</div>
+      <div class="section-icon amber"></div>
       <div>
         <div class="section-title">Les 4 Publications Réalisées</div>
         <div class="section-subtitle">4 formats Instagram distincts constituant les livrables visuels du projet</div>
@@ -551,10 +565,10 @@
       <!-- Publication Longue -->
       <div class="pub-preview">
         <div class="pub-visual long-post">
-          <div style="position:absolute;top:1rem;left:1rem;font-size:.65rem;opacity:.5;font-family:var(--mono)">POST LONG</div>
+          <div style="position:absolute;top:1rem;left:1rem;font-size:.65rem;opacity:.5;font-family:'Glacial Indifference',sans-serif">POST LONG</div>
           <div style="width:100%">
             <div style="font-size:.65rem;opacity:.6;margin-bottom:.5rem;letter-spacing:.1em">TUTOLAB.FR · GENÈSE DU PROJET</div>
-            <div class="mock-post-title">Comment TutoMotion est né d'une frustration étudiante 💡</div>
+            <div class="mock-post-title">Comment TutoMotion est né d'une frustration étudiante </div>
             <div class="mock-post-body">Il y a 6 mois, on cherchait des ressources pour notre cours de dev web. Entre YouTube sans structure et forums illisibles, on a décidé de créer notre propre espace...</div>
             <div class="mock-post-tag">#TutoMotion #NWS2025 #ApprendreLeDev #WebSchool</div>
           </div>
@@ -569,12 +583,12 @@
       <!-- Flash Info -->
       <div class="pub-preview">
         <div class="pub-visual flash">
-          <div style="position:absolute;top:1rem;left:1rem;font-size:.65rem;opacity:.5;font-family:var(--mono)">FLASH INFO</div>
+          <div style="position:absolute;top:1rem;left:1rem;font-size:.65rem;opacity:.5;font-family:'Glacial Indifference',sans-serif">FLASH INFO</div>
           <div style="text-align:center">
-            <div style="font-size:2.5rem;margin-bottom:.5rem">🚀</div>
+            <div style="font-size:2.5rem;margin-bottom:.5rem"></div>
             <div style="font-size:1.1rem;font-weight:800;line-height:1.3;margin-bottom:.5rem">TutoMotion est en ligne !</div>
             <div style="font-size:.75rem;opacity:.8;margin-bottom:1rem">Des tutoriels web créés par des étudiants,<br>pour des étudiants.</div>
-            <div style="background:rgba(255,255,255,.2);border-radius:8px;padding:.4rem .8rem;font-size:.7rem;font-weight:700">🔗 Lien en bio → tutomotion.fr</div>
+            <div style="background:rgba(255,255,255,.2);border-radius:8px;padding:.4rem .8rem;font-size:.7rem;font-weight:700"> Lien en bio → tutomotion.fr</div>
           </div>
         </div>
         <div class="pub-body">
@@ -587,14 +601,14 @@
       <!-- Reel -->
       <div class="pub-preview">
         <div class="pub-visual reel" style="flex-direction:column;gap:.75rem">
-          <div style="position:absolute;top:1rem;left:1rem;font-size:.65rem;opacity:.5;font-family:var(--mono)">REEL · 30s</div>
-          <div style="font-size:2rem">🎬</div>
+          <div style="position:absolute;top:1rem;left:1rem;font-size:.65rem;opacity:.5;font-family:'Glacial Indifference',sans-serif">REEL · 30s</div>
+          <div style="font-size:2rem"></div>
           <div style="font-weight:800;font-size:1rem;text-align:center">Découvrez l'interface<br>TutoMotion en 30 sec</div>
           <div style="background:rgba(0,0,0,.2);border-radius:8px;padding:.5rem 1rem;font-size:.72rem;text-align:center">
-            ▶ 00:00 — Page d'accueil<br>
-            ▶ 00:08 — Navigation tutoriels<br>
-            ▶ 00:15 — Inscription<br>
-            ▶ 00:22 — Tableau de bord
+             00:00 — Page d'accueil<br>
+             00:08 — Navigation tutoriels<br>
+             00:15 — Inscription<br>
+             00:22 — Tableau de bord
           </div>
         </div>
         <div class="pub-body">
@@ -607,7 +621,7 @@
       <!-- Infographie -->
       <div class="pub-preview">
         <div class="pub-visual infographie">
-          <div style="position:absolute;top:1rem;left:1rem;font-size:.65rem;opacity:.5;font-family:var(--mono)">INFOGRAPHIE</div>
+          <div style="position:absolute;top:1rem;left:1rem;font-size:.65rem;opacity:.5;font-family:'Glacial Indifference',sans-serif">INFOGRAPHIE</div>
           <div style="width:100%">
             <div style="font-size:.65rem;font-weight:700;letter-spacing:.1em;margin-bottom:.5rem;opacity:.7">CHARTE GRAPHIQUE TUTOLAB</div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-bottom:.75rem">
@@ -616,7 +630,7 @@
               <div style="background:#1E293B;border-radius:6px;padding:.4rem;font-size:.65rem;font-weight:700">#1E293B<br>Ardoise</div>
               <div style="background:rgba(255,255,255,.2);border-radius:6px;padding:.4rem;font-size:.65rem;font-weight:700">#F8FAFC<br>Fond clair</div>
             </div>
-            <div style="font-size:.68rem;opacity:.75">Typo : Plus Jakarta Sans · JetBrains Mono</div>
+            <div style="font-size:.68rem;opacity:.75">Typo : Glacial Indifference</div>
           </div>
         </div>
         <div class="pub-body">
@@ -631,65 +645,10 @@
 </div>
 
 <!-- ==================== COMPTE ==================== -->
-<!-- ==================== CONTACT ==================== -->
-<div id="contact" class="section">
-  <div class="section-header">
-    <div class="section-title">✉️ Nous contacter</div>
-    <div class="section-subtitle">Une question, une suggestion ? On vous répond sous 48h.</div>
-  </div>
-  <div style="max-width:600px;margin:0 auto">
-    <div class="admin-card" style="background:#fff;border:2px solid var(--cream)">
-
-      <div class="compte-field">
-        <label class="compte-label">Nom *</label>
-        <div class="compte-input-wrap">
-          <input class="compte-input" type="text" id="contactNom" placeholder="Votre nom">
-          <span class="compte-input-icon">👤</span>
-        </div>
-      </div>
-
-      <div class="compte-field">
-        <label class="compte-label">Adresse e-mail *</label>
-        <div class="compte-input-wrap">
-          <input class="compte-input" type="email" id="contactEmail" placeholder="votre@email.fr">
-          <span class="compte-input-icon">✉️</span>
-        </div>
-      </div>
-
-      <div class="compte-field">
-        <label class="compte-label">Sujet *</label>
-        <div class="compte-input-wrap">
-          <input class="compte-input" type="text" id="contactSujet" placeholder="Ex : Question sur un tutoriel">
-          <span class="compte-input-icon">📌</span>
-        </div>
-      </div>
-
-      <div class="compte-field">
-        <label class="compte-label">Message *</label>
-        <textarea class="compte-input" id="contactMessage" rows="5" placeholder="Votre message…" style="resize:vertical;min-height:120px;padding-right:1rem"></textarea>
-      </div>
-
-      <div class="compte-field">
-        <label class="compte-label">Image (optionnel)</label>
-        <div class="contact-upload" id="contactUploadZone" onclick="document.getElementById('contactImage').click()">
-          <input type="file" id="contactImage" accept="image/*" style="display:none" onchange="previewContactImage(this)">
-          <div id="contactUploadHint">🖼️ Cliquez pour joindre une image <span style="font-size:.75rem;color:var(--slate-400)">(PNG, JPG, WebP)</span></div>
-          <img id="contactImagePreview" style="display:none;max-width:100%;border-radius:8px;margin-top:.5rem">
-        </div>
-      </div>
-
-      <div id="contactErreur" style="color:#e74c3c;font-size:.82rem;margin-bottom:.5rem"></div>
-      <div id="contactSucces" style="display:none;background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:.85rem 1rem;color:#16a34a;font-size:.88rem;margin-bottom:.75rem"></div>
-
-      <button class="btn btn-primary" id="contactBtn" onclick="envoyerContact()" style="width:100%">Envoyer le message →</button>
-    </div>
-  </div>
-</div>
-
 <div id="compte" class="section">
   <div class="container">
     <div class="section-header">
-      <div class="section-icon blue">👤</div>
+      <div class="section-icon blue"></div>
       <div>
         <div class="section-title">Mon Compte</div>
         <div class="section-subtitle">Gérez vos informations personnelles et consultez votre progression</div>
@@ -703,11 +662,11 @@
         <div class="card compte-profil-card">
           <div class="compte-avatar-wrap">
             <div class="compte-avatar" id="compteAvatar">?</div>
-            <button class="compte-avatar-edit" title="Changer la photo" onclick="document.getElementById('avatarInput').click()">✏️</button>
+            <button class="compte-avatar-edit" title="Changer la photo" onclick="document.getElementById('avatarInput').click()"></button>
             <input type="file" id="avatarInput" accept="image/png,image/jpeg,image/gif,image/webp" style="display:none" onchange="uploadAvatar(this)">
           </div>
           <div class="compte-name" id="compteNom">—</div>
-          <div class="compte-role-badge" id="compteBadgeRole">🎓 Apprenant</div>
+          <div class="compte-role-badge" id="compteBadgeRole"> Apprenant</div>
           <div class="compte-member-since" id="compteMembre">Membre</div>
         </div>
 
@@ -730,9 +689,9 @@
 
         <!-- Bouton désinscription -->
         <div class="card" style="border-left:4px solid #e74c3c;padding:1rem 1.25rem">
-          <div class="card-title" style="color:#c0392b;font-size:.85rem">⚠️ Zone de danger</div>
+          <div class="card-title" style="color:#c0392b;font-size:.85rem"> Zone de danger</div>
           <p style="font-size:.78rem;color:var(--slate-500);margin-bottom:.75rem">La suppression de votre compte est définitive et irréversible.</p>
-          <button class="btn btn-danger" style="width:100%" onclick="ouvrirModal('modalDesinscription')">🗑️ Supprimer mon compte</button>
+          <button class="btn btn-danger" style="width:100%" onclick="ouvrirModal('modalDesinscription')"> Supprimer mon compte</button>
         </div>
       </div>
 
@@ -741,14 +700,14 @@
 
         <!-- Informations personnelles -->
         <div class="card" style="margin-bottom:1.5rem">
-          <div class="card-title">✏️ Informations personnelles</div>
+          <div class="card-title"> Informations personnelles</div>
           <div class="compte-form">
 
             <div class="compte-field">
               <label class="compte-label">Nom complet</label>
               <div class="compte-input-wrap">
                 <input class="compte-input" type="text" id="profilNom" placeholder="Votre nom" autocomplete="name">
-                <span class="compte-input-icon">👤</span>
+                <span class="compte-input-icon"></span>
               </div>
             </div>
 
@@ -756,7 +715,7 @@
               <label class="compte-label">Adresse e-mail</label>
               <div class="compte-input-wrap">
                 <input class="compte-input" type="email" id="profilEmail" placeholder="votre@email.fr" autocomplete="email">
-                <span class="compte-input-icon">✉️</span>
+                <span class="compte-input-icon"></span>
               </div>
             </div>
 
@@ -764,13 +723,13 @@
               <label class="compte-label">Numéro de téléphone</label>
               <div class="compte-input-wrap">
                 <input class="compte-input" type="tel" id="profilTel" placeholder="+33 6 ..." autocomplete="tel">
-                <span class="compte-input-icon">📞</span>
+                <span class="compte-input-icon"></span>
               </div>
             </div>
 
             <div class="modal-error" id="profilErreur" style="margin-bottom:.25rem"></div>
             <div class="compte-form-actions">
-              <button class="btn btn-primary" id="profilSaveBtn" onclick="enregistrerProfil()">💾 Enregistrer les modifications</button>
+              <button class="btn btn-primary" id="profilSaveBtn" onclick="enregistrerProfil()"> Enregistrer les modifications</button>
               <button class="btn btn-ghost" onclick="verifierSession()">Annuler</button>
             </div>
           </div>
@@ -778,7 +737,7 @@
 
         <!-- Historique des tutoriels -->
         <div class="card">
-          <div class="card-title">📚 Historique des tutoriels</div>
+          <div class="card-title"> Historique des tutoriels</div>
           <div class="historique-list" id="historiqueList">
             <div class="historique-vide">Connectez-vous pour voir votre historique.</div>
           </div>
@@ -792,9 +751,9 @@
 
 
 <script>
-// ══════════════════════════════════════════════════════════════════
+// 
 //  CHARGEMENT TUTORIELS DEPUIS L'API
-// ══════════════════════════════════════════════════════════════════
+// 
 function ouvrirCours(id) {
   window.location.href = '/cours?id=' + id;
 }
@@ -814,30 +773,38 @@ async function chargerTutorielsAccueil() {
     var statC = document.getElementById('statCategories');
     if (statT) statT.textContent = data.tutoriels.length;
     if (statC) statC.textContent = cats.size;
+    fetch('/api/stats').then(function(r){return r.json();}).then(function(s){
+      var el=document.getElementById('statMembres'); if(el) el.textContent=s.membres||0;
+      var el2=document.getElementById('statCollaborateurs'); if(el2) el2.textContent=s.collaborateurs||0;
+    }).catch(function(){});
 
     var grid = document.getElementById('tutoGrid');
     if (!grid) return;
     grid.innerHTML = data.tutoriels.map(function(t) {
-      var initiale = t.auteur ? t.auteur[0] : '?';
       var couleurs = ['var(--pink)','var(--blue)','var(--green)','var(--amber)'];
       var couleur  = couleurs[t.id % couleurs.length];
-      var catPrimaire = (t.categorie || '').split(',')[0].trim();
+      var initiale = t.auteur ? t.auteur[0] : '?';
+      var avatarAuteur = t.createur_avatar
+        ? '<img src="' + t.createur_avatar + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
+        : initiale;
+      var avatarAuteurStyle = t.createur_avatar ? 'background:none' : 'background:' + couleur;
+      var cats = (t.categorie || '').split(',').map(function(c){ return c.trim(); }).filter(Boolean);
+      var catHtml = cats.map(function(c){ return '<span class="tuto-cat-badge">' + c + '</span>'; }).join('');
       return '<div class="tuto-card" data-category="' + t.categorie + '" onclick="ouvrirCours(' + t.id + ')" style="cursor:pointer">'
-        + '<div class="tuto-thumb ' + t.theme_class + '">' + t.emoji + '</div>'
         + '<div class="tuto-body">'
-        + '<div class="tuto-cat">' + catPrimaire + '</div>'
+        + '<div class="tuto-cats">' + catHtml + '</div>'
         + '<div class="tuto-title">' + t.titre + '</div>'
         + '<div class="tuto-meta">'
-        + '<div class="tuto-author"><div class="tuto-avatar" style="background:' + couleur + '">' + initiale + '</div> <em>' + t.auteur + '</em></div>'
+        + '<div class="tuto-author"><div class="tuto-avatar" style="' + avatarAuteurStyle + '">' + avatarAuteur + '</div> <em>' + t.auteur + '</em></div>'
         + '<span class="tuto-duration">⏱ ' + t.duree_min + ' min</span>'
         + '</div></div></div>';
     }).join('');
   } catch(e) {}
 }
 
-// ══════════════════════════════════════════════════════════════════
+// 
 //  PAGE TUTORIELS
-// ══════════════════════════════════════════════════════════════════
+// 
 var tousLesTutoriels = [];
 var filtreCatPage = 'all';
 
@@ -871,14 +838,19 @@ function afficherTutorielsPage() {
   if (empty) empty.style.display = 'none';
   grid.innerHTML = filtres.map(function(t) {
     var couleur = couleurs[t.id % couleurs.length];
-    var catPrimaire = (t.categorie || '').split(',')[0].trim();
+    var initiale = t.auteur ? t.auteur[0] : '?';
+    var avatarAuteur = t.createur_avatar
+      ? '<img src="' + t.createur_avatar + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
+      : initiale;
+    var avatarAuteurStyle = t.createur_avatar ? 'background:none' : 'background:' + couleur;
+    var cats = (t.categorie || '').split(',').map(function(c){ return c.trim(); }).filter(Boolean);
+    var catHtml = cats.map(function(c){ return '<span class="tuto-cat-badge">' + c + '</span>'; }).join('');
     return '<div class="tuto-card" onclick="ouvrirCours(' + t.id + ')" style="cursor:pointer;width:100%;box-sizing:border-box">'
-      + '<div class="tuto-thumb ' + t.theme_class + '">' + t.emoji + '</div>'
       + '<div class="tuto-body">'
-      + '<div class="tuto-cat">' + catPrimaire + '</div>'
+      + '<div class="tuto-cats">' + catHtml + '</div>'
       + '<div class="tuto-title">' + t.titre + '</div>'
       + '<div class="tuto-meta">'
-      + '<div class="tuto-author"><div class="tuto-avatar" style="background:' + couleur + '">' + (t.auteur ? t.auteur[0] : '?') + '</div> <em>' + t.auteur + '</em></div>'
+      + '<div class="tuto-author"><div class="tuto-avatar" style="' + avatarAuteurStyle + '">' + avatarAuteur + '</div> <em>' + t.auteur + '</em></div>'
       + '<span class="tuto-duration">⏱ ' + t.duree_min + ' min</span>'
       + '</div></div></div>';
   }).join('');
@@ -931,7 +903,7 @@ const calendar = [
   {s:'S1', theme:'Teasing mystère : "Quelque chose arrive…"', format:'visuel', obj:'Notoriété'},
   {s:'S1', theme:'Présentation de l\'équipe projet NWS', format:'texte', obj:'Confiance'},
   {s:'S1', theme:'Story : sondage "Tu apprends comment ?"', format:'story', obj:'Engagement'},
-  {s:'S1', theme:'Reveal : TutoMotion est en ligne ! 🚀', format:'visuel', obj:'Notoriété'},
+  {s:'S1', theme:'Reveal : TutoMotion est en ligne ! ', format:'visuel', obj:'Notoriété'},
   {s:'S1', theme:'Carrousel : Les 3 niveaux d\'accès expliqués', format:'carrousel', obj:'Pédagogie'},
   {s:'S1', theme:'Reel : Visite guidée du site en 30s', format:'reel', obj:'Découverte'},
   {s:'S1', theme:'Story : "Vous êtes combien à coder depuis 0 ?"', format:'story', obj:'Engagement'},
@@ -963,15 +935,15 @@ const calendar = [
   {s:'S4', theme:'Carrousel : Comment s\'inscrire en 3 étapes', format:'carrousel', obj:'Conversion'},
   {s:'S4', theme:'Reel : Timelapse création du site complet', format:'reel', obj:'Authenticité'},
   {s:'S4', theme:'Post long : Bilan du projet & compétences', format:'texte', obj:'Clôture'},
-  {s:'S4', theme:'Story : "Merci + on continue 🙏"', format:'story', obj:'Fidélisation'},
+  {s:'S4', theme:'Story : "Merci + on continue "', format:'story', obj:'Fidélisation'},
 ];
 
 const formatBadges = {
-  reel: '<span class="format-badge f-reel">🎬 Reel</span>',
-  carrousel: '<span class="format-badge f-carrousel">📊 Carrousel</span>',
-  visuel: '<span class="format-badge f-visuel">🖼️ Visuel</span>',
-  texte: '<span class="format-badge f-texte">✍️ Texte</span>',
-  story: '<span class="format-badge f-story">💫 Story</span>',
+  reel: '<span class="format-badge f-reel"> Reel</span>',
+  carrousel: '<span class="format-badge f-carrousel"> Carrousel</span>',
+  visuel: '<span class="format-badge f-visuel"> Visuel</span>',
+  texte: '<span class="format-badge f-texte"> Texte</span>',
+  story: '<span class="format-badge f-story"> Story</span>',
 };
 
 const tbody = document.getElementById('calendarBody');
@@ -990,47 +962,47 @@ calendar.forEach((p, i) => {
 // ===== AUDIT SEO DATA =====
 const auditSections = [
   {
-    icon:'⚡', title:'Audit Technique', sub:'Performance, accessibilité et infrastructure',
+    icon:'', title:'Audit Technique', sub:'Performance, accessibilité et infrastructure',
     color:'var(--blue-light)', items:[
-      {i:'📱', txt:'Responsive Design : test sur mobile, tablette, desktop (Chrome DevTools)', p:'p-high'},
-      {i:'🔒', txt:'HTTPS : certificat SSL valide sur tutomotion.fr', p:'p-high'},
-      {i:'⚡', txt:'Vitesse de chargement : Lighthouse score > 85 (PageSpeed Insights)', p:'p-high'},
-      {i:'🗜️', txt:'Compression des images (WebP), minification CSS/JS', p:'p-med'},
-      {i:'♿', txt:'Accessibilité : contraste WCAG AA, attributs alt sur images', p:'p-med'},
-      {i:'🔗', txt:'Vérification des liens cassés (404)', p:'p-med'},
-      {i:'🗺️', txt:'Sitemap XML généré et soumis à Google Search Console', p:'p-low'},
+      {i:'', txt:'Responsive Design : test sur mobile, tablette, desktop (Chrome DevTools)', p:'p-high'},
+      {i:'', txt:'HTTPS : certificat SSL valide sur tutomotion.fr', p:'p-high'},
+      {i:'', txt:'Vitesse de chargement : Lighthouse score > 85 (PageSpeed Insights)', p:'p-high'},
+      {i:'', txt:'Compression des images (WebP), minification CSS/JS', p:'p-med'},
+      {i:'', txt:'Accessibilité : contraste WCAG AA, attributs alt sur images', p:'p-med'},
+      {i:'', txt:'Vérification des liens cassés (404)', p:'p-med'},
+      {i:'', txt:'Sitemap XML généré et soumis à Google Search Console', p:'p-low'},
     ]
   },
   {
-    icon:'🏷️', title:'SEO On-Page', sub:'Optimisation des balises et du contenu',
+    icon:'', title:'SEO On-Page', sub:'Optimisation des balises et du contenu',
     color:'var(--green-light)', items:[
-      {i:'📝', txt:'Balises Title uniques et optimisées (50-60 caractères) sur chaque page', p:'p-high'},
-      {i:'📄', txt:'Meta descriptions rédigées (150-160 car.) avec mots-clés et CTA', p:'p-high'},
-      {i:'🔤', txt:'Structure H1 > H2 > H3 cohérente sur chaque page de tutoriel', p:'p-high'},
-      {i:'🔑', txt:'Mots-clés ciblés : "tutoriels web school", "apprendre développement web", "ressources design étudiant"', p:'p-med'},
-      {i:'🔗', txt:'Maillage interne : liens entre tutoriels de même catégorie', p:'p-med'},
-      {i:'📸', txt:'Attributs alt descriptifs sur toutes les images', p:'p-med'},
-      {i:'🌐', txt:'URLs courtes, lisibles et incluant le mot-clé (ex: /tutoriels/css-grid)', p:'p-low'},
+      {i:'', txt:'Balises Title uniques et optimisées (50-60 caractères) sur chaque page', p:'p-high'},
+      {i:'', txt:'Meta descriptions rédigées (150-160 car.) avec mots-clés et CTA', p:'p-high'},
+      {i:'', txt:'Structure H1 > H2 > H3 cohérente sur chaque page de tutoriel', p:'p-high'},
+      {i:'', txt:'Mots-clés ciblés : "tutoriels web school", "apprendre développement web", "ressources design étudiant"', p:'p-med'},
+      {i:'', txt:'Maillage interne : liens entre tutoriels de même catégorie', p:'p-med'},
+      {i:'', txt:'Attributs alt descriptifs sur toutes les images', p:'p-med'},
+      {i:'', txt:'URLs courtes, lisibles et incluant le mot-clé (ex: /tutoriels/css-grid)', p:'p-low'},
     ]
   },
   {
-    icon:'📊', title:'Contenu & Stratégie', sub:'Qualité et pertinence du contenu éditorial',
+    icon:'', title:'Contenu & Stratégie', sub:'Qualité et pertinence du contenu éditorial',
     color:'var(--amber-light)', items:[
-      {i:'📚', txt:'Contenu original, structuré avec intro / corps / conclusion sur chaque tuto', p:'p-high'},
-      {i:'🏷️', txt:'Système de tags cohérent (CSS, JavaScript, Figma, SEO…)', p:'p-med'},
-      {i:'🔍', txt:'Recherche de mots-clés longue traîne : "comment apprendre React gratuitement"', p:'p-med'},
-      {i:'🔄', txt:'Fréquence de publication : minimum 2 nouveaux tutoriels / semaine au lancement', p:'p-med'},
-      {i:'💬', txt:'Commentaires indexables et de qualité (éviter le spam)', p:'p-low'},
-      {i:'📈', txt:'Suivi des positions via Google Search Console (0→100 premiers jours)', p:'p-low'},
+      {i:'', txt:'Contenu original, structuré avec intro / corps / conclusion sur chaque tuto', p:'p-high'},
+      {i:'', txt:'Système de tags cohérent (CSS, JavaScript, Figma, SEO…)', p:'p-med'},
+      {i:'', txt:'Recherche de mots-clés longue traîne : "comment apprendre React gratuitement"', p:'p-med'},
+      {i:'', txt:'Fréquence de publication : minimum 2 nouveaux tutoriels / semaine au lancement', p:'p-med'},
+      {i:'', txt:'Commentaires indexables et de qualité (éviter le spam)', p:'p-low'},
+      {i:'', txt:'Suivi des positions via Google Search Console (0→100 premiers jours)', p:'p-low'},
     ]
   },
   {
-    icon:'🏆', title:'Étude de Cas — Benchmark', sub:'Analyse concurrentielle : OpenClassrooms vs Grafikart',
+    icon:'', title:'Étude de Cas — Benchmark', sub:'Analyse concurrentielle : OpenClassrooms vs Grafikart',
     color:'var(--slate-100)', items:[
-      {i:'🧭', txt:'OpenClassrooms : navigation par parcours / métiers vs TutoMotion : navigation libre par tags', p:'p-med'},
-      {i:'🔍', txt:'OpenClassrooms se positionne sur "formation développeur web" — TutoMotion vise "tuto rapide dev web"', p:'p-med'},
-      {i:'📱', txt:'Grafikart : présence Instagram faible (1 post/semaine) — opportunité à saisir pour TutoMotion', p:'p-low'},
-      {i:'⭐', txt:'Différenciateur TutoMotion : contenu 100% étudiant, court, sans abonnement payant', p:'p-med'},
+      {i:'', txt:'OpenClassrooms : navigation par parcours / métiers vs TutoMotion : navigation libre par tags', p:'p-med'},
+      {i:'', txt:'OpenClassrooms se positionne sur "formation développeur web" — TutoMotion vise "tuto rapide dev web"', p:'p-med'},
+      {i:'', txt:'Grafikart : présence Instagram faible (1 post/semaine) — opportunité à saisir pour TutoMotion', p:'p-low'},
+      {i:'', txt:'Différenciateur TutoMotion : contenu 100% étudiant, court, sans abonnement payant', p:'p-med'},
     ]
   }
 ];
@@ -1051,7 +1023,7 @@ auditSections.forEach(sec => {
           <li class="audit-item">
             <span class="audit-item-icon">${it.i}</span>
             <span class="audit-item-text">${it.txt}</span>
-            <span class="audit-priority ${it.p}">${it.p === 'p-high' ? '🔴 Prioritaire' : it.p === 'p-med' ? '🟡 Important' : '🟢 Optionnel'}</span>
+            <span class="audit-priority ${it.p}">${it.p === 'p-high' ? ' Prioritaire' : it.p === 'p-med' ? ' Important' : ' Optionnel'}</span>
           </li>
         `).join('')}
       </ul>
@@ -1064,8 +1036,8 @@ auditSections.forEach(sec => {
 <!-- ==================== MODAL CONNEXION ==================== -->
 <div class="modal-overlay" id="modalConnexion" onclick="fermerModal('modalConnexion')">
   <div class="modal-box" onclick="event.stopPropagation()">
-    <button class="modal-close" onclick="fermerModal('modalConnexion')">✕</button>
-    <div class="modal-icon">⚡</div>
+    <button class="modal-close" onclick="fermerModal('modalConnexion')"></button>
+    <div class="modal-icon"></div>
     <div class="modal-title">Connexion à TutoMotion</div>
     <div class="modal-subtitle">Bon retour parmi nous !</div>
 
@@ -1074,14 +1046,14 @@ auditSections.forEach(sec => {
         <label class="compte-label">Adresse e-mail</label>
         <div class="compte-input-wrap">
           <input class="compte-input" type="email" id="loginEmail" placeholder="votre@email.fr" autocomplete="email">
-          <span class="compte-input-icon">✉️</span>
+          <span class="compte-input-icon"></span>
         </div>
       </div>
       <div class="compte-field">
         <label class="compte-label">Mot de passe</label>
         <div class="compte-input-wrap">
           <input class="compte-input" type="password" id="loginMdp" placeholder="••••••••" autocomplete="current-password">
-          <span class="compte-input-icon">🔒</span>
+          <span class="compte-input-icon"></span>
         </div>
       </div>
       <div class="modal-error" id="loginErreur"></div>
@@ -1100,8 +1072,8 @@ auditSections.forEach(sec => {
 <!-- ==================== MODAL INSCRIPTION ==================== -->
 <div class="modal-overlay" id="modalInscription" onclick="fermerModal('modalInscription')">
   <div class="modal-box" onclick="event.stopPropagation()">
-    <button class="modal-close" onclick="fermerModal('modalInscription')">✕</button>
-    <div class="modal-icon">🎓</div>
+    <button class="modal-close" onclick="fermerModal('modalInscription')"></button>
+    <div class="modal-icon"></div>
     <div class="modal-title">Créer un compte</div>
     <div class="modal-subtitle">Rejoignez la communauté TutoMotion</div>
 
@@ -1110,28 +1082,28 @@ auditSections.forEach(sec => {
         <label class="compte-label">Nom complet</label>
         <div class="compte-input-wrap">
           <input class="compte-input" type="text" id="inscriptionNom" placeholder="Prénom Nom" autocomplete="name">
-          <span class="compte-input-icon">👤</span>
+          <span class="compte-input-icon"></span>
         </div>
       </div>
       <div class="compte-field">
         <label class="compte-label">Adresse e-mail</label>
         <div class="compte-input-wrap">
           <input class="compte-input" type="email" id="inscriptionEmail" placeholder="votre@email.fr" autocomplete="email">
-          <span class="compte-input-icon">✉️</span>
+          <span class="compte-input-icon"></span>
         </div>
       </div>
       <div class="compte-field">
         <label class="compte-label">Téléphone <span style="font-weight:400;opacity:.6">(optionnel)</span></label>
         <div class="compte-input-wrap">
           <input class="compte-input" type="tel" id="inscriptionTel" placeholder="+33 6 ..." autocomplete="tel">
-          <span class="compte-input-icon">📞</span>
+          <span class="compte-input-icon"></span>
         </div>
       </div>
       <div class="compte-field">
         <label class="compte-label">Mot de passe <span style="font-weight:400;opacity:.6">(8 caractères min.)</span></label>
         <div class="compte-input-wrap">
           <input class="compte-input" type="password" id="inscriptionMdp" placeholder="••••••••" autocomplete="new-password">
-          <span class="compte-input-icon">🔒</span>
+          <span class="compte-input-icon"></span>
         </div>
       </div>
       <div class="modal-error" id="inscriptionErreur"></div>
@@ -1150,14 +1122,14 @@ auditSections.forEach(sec => {
 <!-- ==================== MODAL CONFIRMATION DÉSINSCRIPTION ==================== -->
 <div class="modal-overlay" id="modalDesinscription" onclick="fermerModal('modalDesinscription')">
   <div class="modal-box modal-box--danger" onclick="event.stopPropagation()">
-    <button class="modal-close" onclick="fermerModal('modalDesinscription')">✕</button>
-    <div class="modal-icon">⚠️</div>
+    <button class="modal-close" onclick="fermerModal('modalDesinscription')"></button>
+    <div class="modal-icon"></div>
     <div class="modal-title">Supprimer mon compte</div>
     <div class="modal-subtitle" style="color:#c0392b">Cette action est <strong>irréversible</strong>. Toutes vos données seront effacées définitivement.</div>
     <div class="modal-error" id="desinscriptionErreur"></div>
     <div style="display:flex;gap:.75rem;margin-top:1.5rem;justify-content:center">
       <button class="btn btn-ghost" onclick="fermerModal('modalDesinscription')">Annuler</button>
-      <button class="btn btn-danger" onclick="seDesinscrire()">🗑️ Oui, supprimer mon compte</button>
+      <button class="btn btn-danger" onclick="seDesinscrire()"> Oui, supprimer mon compte</button>
     </div>
   </div>
 </div>
@@ -1166,14 +1138,14 @@ auditSections.forEach(sec => {
 <div class="toast" id="toast"></div>
 
 <script>
-// ══════════════════════════════════════════════════════════════════
+// 
 //  ÉTAT GLOBAL
-// ══════════════════════════════════════════════════════════════════
+// 
 let utilisateurActuel = null;
 
-// ══════════════════════════════════════════════════════════════════
+// 
 //  INIT : vérifier la session au chargement
-// ══════════════════════════════════════════════════════════════════
+// 
 document.addEventListener('DOMContentLoaded', async () => {
   await verifierSession();
   await chargerTutorielsAccueil();
@@ -1198,9 +1170,9 @@ async function verifierSession() {
   }
 }
 
-// ══════════════════════════════════════════════════════════════════
+// 
 //  UI selon état connecté / déconnecté
-// ══════════════════════════════════════════════════════════════════
+// 
 function mettreAJourUI(connecte, user = null, historique = []) {
   const navActions = document.getElementById('navActions');
 
@@ -1212,12 +1184,12 @@ function mettreAJourUI(connecte, user = null, historique = []) {
         ? 'linear-gradient(135deg,#0891b2,#0e7490)'
         : '';
     const avatarContent = user.avatar_url
-      ? `<img src="${user.avatar_url}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+      ? `<img src="${user.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
       : initiales;
-    const avatarStyle = user.avatar_url ? '' : (avatarBg ? 'background:' + avatarBg : '');
+    const avatarStyleNav = user.avatar_url ? '' : (avatarBg ? 'background:' + avatarBg : '');
     navActions.innerHTML = `
       <div class="nav-user" onclick="showSection('compte', document.querySelector('.nav-tab:last-child'))">
-        <div class="nav-avatar" style="${avatarStyle}">${avatarContent}</div>
+        <div class="nav-avatar" style="${avatarStyleNav}">${avatarContent}</div>
         <span class="nav-user-nom">${user.nom.split(' ')[0]}</span>
       </div>
       <button class="btn btn-ghost" onclick="seDeconnecter()">Déconnexion</button>
@@ -1254,18 +1226,16 @@ function mettreAJourUI(connecte, user = null, historique = []) {
 }
 
 function remplirPageCompte(user, historique) {
-  // Avatar : photo ou initiales
+  // Initiales avatar
   const initiales = user.nom.split(' ').map(m => m[0]).join('').toUpperCase().slice(0,2);
   const avatarEl  = document.getElementById('compteAvatar');
   if (avatarEl) {
     if (user.avatar_url) {
-      avatarEl.innerHTML = `<img src="${user.avatar_url}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+      avatarEl.innerHTML = '<img src="' + user.avatar_url + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
       avatarEl.style.background = 'none';
-      avatarEl.style.padding = '0';
     } else {
       avatarEl.textContent = initiales;
       avatarEl.style.background = '';
-      avatarEl.style.padding = '';
     }
   }
 
@@ -1275,13 +1245,13 @@ function remplirPageCompte(user, historique) {
   const badgeEl = document.getElementById('compteBadgeRole');
   if (badgeEl) {
     if (user.role === 'admin') {
-      badgeEl.textContent = '🛡️ Administrateur';
+      badgeEl.textContent = ' Administrateur';
       badgeEl.style.cssText = 'background:linear-gradient(135deg,#f59e0b,#d97706)!important;color:#fff!important';
     } else if (user.role === 'contributeur') {
-      badgeEl.textContent = '✏️ Contributeur';
+      badgeEl.textContent = ' Contributeur';
       badgeEl.style.cssText = 'background:linear-gradient(135deg,#0891b2,#0e7490)!important;color:#fff!important';
     } else {
-      badgeEl.textContent = '🎓 Apprenant';
+      badgeEl.textContent = ' Apprenant';
       badgeEl.style.cssText = '';
     }
   }
@@ -1330,8 +1300,8 @@ function remplirPageCompte(user, historique) {
       const renderItem = (h) => {
         const estTermine = h.statut === 'termine';
         const statut     = estTermine
-          ? '<div class="historique-badge">✅ Complété</div>'
-          : '<div class="historique-badge en-cours">▶️ En cours</div>';
+          ? '<div class="historique-badge"> Complété</div>'
+          : '<div class="historique-badge en-cours"> En cours</div>';
         const dateStr = new Date(estTermine && h.termine_le ? h.termine_le : h.commence_le)
           .toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
         const cat = (h.categorie || '').split(',')[0].trim();
@@ -1341,7 +1311,7 @@ function remplirPageCompte(user, historique) {
             <div class="historique-title">${h.titre}</div>
             <div class="historique-meta">
               <span class="tuto-cat" style="font-size:.7rem">${cat}</span>
-              <span class="historique-date">🗓 ${dateStr}</span>
+              <span class="historique-date"> ${dateStr}</span>
               <span class="tuto-duration" style="font-size:.72rem">⏱ ${h.duree_min} min</span>
             </div>
           </div>
@@ -1351,12 +1321,12 @@ function remplirPageCompte(user, historique) {
 
       let html = '';
       if (termines.length > 0) {
-        html += `<div style="font-family:'Glacial Indifference',sans-serif;font-size:.72rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.6rem">✅ Cours complétés (${termines.length})</div>`;
+        html += `<div style="font-family:'Glacial Indifference',sans-serif;font-size:.72rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.6rem"> Cours complétés (${termines.length})</div>`;
         html += termines.map(renderItem).join('');
       }
       if (enCours.length > 0) {
         if (termines.length > 0) html += '<div style="height:.75rem"></div>';
-        html += `<div style="font-family:'Glacial Indifference',sans-serif;font-size:.72rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.6rem">▶️ En cours (${enCours.length})</div>`;
+        html += `<div style="font-family:'Glacial Indifference',sans-serif;font-size:.72rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.6rem"> En cours (${enCours.length})</div>`;
         html += enCours.map(renderItem).join('');
       }
       listeEl.innerHTML = html;
@@ -1366,11 +1336,7 @@ function remplirPageCompte(user, historique) {
 
 function reinitialiserPageCompte() {
   const avatarEl = document.getElementById('compteAvatar');
-  if (avatarEl) {
-    avatarEl.textContent = '?';
-    avatarEl.style.background = '';
-    avatarEl.style.padding = '';
-  }
+  if (avatarEl) avatarEl.textContent = '?';
   const nomEl = document.getElementById('compteNom');
   if (nomEl) nomEl.textContent = '—';
   const listeEl = document.getElementById('historiqueList');
@@ -1380,13 +1346,13 @@ function reinitialiserPageCompte() {
     if (el) el.value = '';
   });
   const badgeEl = document.getElementById('compteBadgeRole');
-  if (badgeEl) { badgeEl.textContent = '🎓 Apprenant'; badgeEl.style.cssText = ''; }
+  if (badgeEl) { badgeEl.textContent = ' Apprenant'; badgeEl.style.cssText = ''; }
 }
 
-// ══════════════════════════════════════════════════════════════════
+// 
 //  MODALES
-// ══════════════════════════════════════════════════════════════════
-// ── Contact ───────────────────────────────────────────────────────────────────
+// 
+//  Contact 
 function previewContactImage(input) {
   if (!input.files || !input.files[0]) return;
   var reader = new FileReader();
@@ -1394,7 +1360,7 @@ function previewContactImage(input) {
     var preview = document.getElementById('contactImagePreview');
     preview.src = e.target.result;
     preview.style.display = 'block';
-    document.getElementById('contactUploadHint').textContent = '✅ ' + input.files[0].name;
+    document.getElementById('contactUploadHint').textContent = ' ' + input.files[0].name;
   };
   reader.readAsDataURL(input.files[0]);
 }
@@ -1429,7 +1395,7 @@ async function envoyerContact() {
     var data = await res.json();
 
     if (data.succes) {
-      succEl.textContent = '✅ ' + data.message;
+      succEl.textContent = ' ' + data.message;
       succEl.style.display = 'block';
       document.getElementById('contactNom').value     = '';
       document.getElementById('contactEmail').value   = '';
@@ -1437,7 +1403,7 @@ async function envoyerContact() {
       document.getElementById('contactMessage').value = '';
       document.getElementById('contactImage').value   = '';
       document.getElementById('contactImagePreview').style.display = 'none';
-      document.getElementById('contactUploadHint').textContent = '🖼️ Cliquez pour joindre une image';
+      document.getElementById('contactUploadHint').textContent = ' Cliquez pour joindre une image';
     } else {
       errEl.textContent = data.message;
     }
@@ -1449,11 +1415,11 @@ async function envoyerContact() {
   }
 }
 
-// ── Modals légaux ─────────────────────────────────────────────────────────────
+//  Modals légaux 
 var legalContents = {
-  mentions: `<div class="modal-icon">📄</div><div class="modal-title">Mentions légales</div><div style="font-size:.85rem;color:var(--slate-500);line-height:1.75;margin-top:1rem"><p><strong style="color:var(--slate-700)">Éditeur du site</strong><br>Projet pédagogique réalisé dans le cadre de la formation Normandie Web School (NWS), promotion 2024–2025, sans objectifs commerciaux.</p><p><strong style="color:var(--slate-700)">Hébergement</strong><br>Site hébergé localement dans un cadre strictement scolaire. Aucune mise en production commerciale n'est prévue.</p><p><strong style="color:var(--slate-700)">Propriété intellectuelle</strong><br>Les contenus publiés sur TutoMotion sont créés par les étudiants de la promotion. Toute reproduction sans autorisation est interdite.</p><p><strong style="color:var(--slate-700)">Responsabilité</strong><br>Les tutoriels sont fournis à titre éducatif. L'équipe décline toute responsabilité quant à l'utilisation qui en est faite.</p></div>`,
-  rgpd: `<div class="modal-icon">🔒</div><div class="modal-title">Politique de confidentialité</div><div style="font-size:.85rem;color:var(--slate-500);line-height:1.75;margin-top:1rem"><p><strong style="color:var(--slate-700)">Données collectées</strong><br>TutoMotion collecte uniquement : nom, adresse e-mail, et mot de passe (hashé). Aucune donnée bancaire ou sensible n'est collectée.</p><p><strong style="color:var(--slate-700)">Finalité</strong><br>Les données sont utilisées exclusivement pour la gestion de votre compte et le suivi de progression.</p><p><strong style="color:var(--slate-700)">Durée de conservation</strong><br>Les données sont conservées pour la durée de vie du compte. Vous pouvez demander la suppression depuis votre profil.</p><p><strong style="color:var(--slate-700)">Vos droits (RGPD)</strong><br>Conformément au RGPD (UE 2016/679), vous disposez d'un droit d'accès, de rectification, d'effacement et de portabilité. Exercez-les depuis les paramètres de votre profil.</p><p><strong style="color:var(--slate-700)">Partage</strong><br>Aucune donnée n'est vendue ni transmise à des tiers.</p></div>`,
-  cookies: `<div class="modal-icon">🍪</div><div class="modal-title">Gestion des cookies</div><div style="font-size:.85rem;color:var(--slate-500);line-height:1.75;margin-top:1rem"><p><strong style="color:var(--slate-700)">Cookies utilisés</strong><br>TutoMotion utilise uniquement des cookies strictement nécessaires :</p><p>• <strong style="color:var(--slate-700)">Cookie de session</strong> — maintient votre connexion. Supprimé à la fermeture du navigateur (sauf option "Se souvenir de moi").</p><p>• <strong style="color:var(--slate-700)">localStorage</strong> — utilisé uniquement si vous activez "Se souvenir de moi".</p><p><strong style="color:var(--slate-700)">Cookies tiers</strong><br>Aucun cookie publicitaire ou de tracking n'est utilisé.</p><p><strong style="color:var(--slate-700)">Désactivation</strong><br>Vous pouvez désactiver les cookies depuis votre navigateur, mais cela empêchera la connexion au site.</p></div>`
+  mentions: `<div class="modal-icon"></div><div class="modal-title">Mentions légales</div><div style="font-size:.85rem;color:var(--slate-500);line-height:1.75;margin-top:1rem"><p><strong style="color:var(--slate-700)">Éditeur du site</strong><br>Projet pédagogique réalisé dans le cadre de la formation Normandie Web School (NWS), promotion 2024–2025, sans objectifs commerciaux.</p><p><strong style="color:var(--slate-700)">Hébergement</strong><br>Site hébergé localement dans un cadre strictement scolaire. Aucune mise en production commerciale n'est prévue.</p><p><strong style="color:var(--slate-700)">Propriété intellectuelle</strong><br>Les contenus publiés sur TutoMotion sont créés par les étudiants de la promotion. Toute reproduction sans autorisation est interdite.</p><p><strong style="color:var(--slate-700)">Responsabilité</strong><br>Les tutoriels sont fournis à titre éducatif. L'équipe décline toute responsabilité quant à l'utilisation qui en est faite.</p></div>`,
+  rgpd: `<div class="modal-icon"></div><div class="modal-title">Politique de confidentialité</div><div style="font-size:.85rem;color:var(--slate-500);line-height:1.75;margin-top:1rem"><p><strong style="color:var(--slate-700)">Données collectées</strong><br>TutoMotion collecte uniquement : nom, adresse e-mail, et mot de passe (hashé). Aucune donnée bancaire ou sensible n'est collectée.</p><p><strong style="color:var(--slate-700)">Finalité</strong><br>Les données sont utilisées exclusivement pour la gestion de votre compte et le suivi de progression.</p><p><strong style="color:var(--slate-700)">Durée de conservation</strong><br>Les données sont conservées pour la durée de vie du compte. Vous pouvez demander la suppression depuis votre profil.</p><p><strong style="color:var(--slate-700)">Vos droits (RGPD)</strong><br>Conformément au RGPD (UE 2016/679), vous disposez d'un droit d'accès, de rectification, d'effacement et de portabilité. Exercez-les depuis les paramètres de votre profil.</p><p><strong style="color:var(--slate-700)">Partage</strong><br>Aucune donnée n'est vendue ni transmise à des tiers.</p></div>`,
+  cookies: `<div class="modal-icon"></div><div class="modal-title">Gestion des cookies</div><div style="font-size:.85rem;color:var(--slate-500);line-height:1.75;margin-top:1rem"><p><strong style="color:var(--slate-700)">Cookies utilisés</strong><br>TutoMotion utilise uniquement des cookies strictement nécessaires :</p><p>• <strong style="color:var(--slate-700)">Cookie de session</strong> — maintient votre connexion. Supprimé à la fermeture du navigateur (sauf option "Se souvenir de moi").</p><p>• <strong style="color:var(--slate-700)">localStorage</strong> — utilisé uniquement si vous activez "Se souvenir de moi".</p><p><strong style="color:var(--slate-700)">Cookies tiers</strong><br>Aucun cookie publicitaire ou de tracking n'est utilisé.</p><p><strong style="color:var(--slate-700)">Désactivation</strong><br>Vous pouvez désactiver les cookies depuis votre navigateur, mais cela empêchera la connexion au site.</p></div>`
 };
 
 function ouvrirModalLegal(type) {
@@ -1486,9 +1452,9 @@ document.addEventListener('keydown', e => {
   if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') seConnecter(); });
 });
 
-// ══════════════════════════════════════════════════════════════════
+// 
 //  TOAST
-// ══════════════════════════════════════════════════════════════════
+// 
 function afficherToast(message, type = 'succes') {
   const toast = document.getElementById('toast');
   toast.textContent = message;
@@ -1496,9 +1462,9 @@ function afficherToast(message, type = 'succes') {
   setTimeout(() => toast.classList.remove('toast--visible'), 3500);
 }
 
-// ══════════════════════════════════════════════════════════════════
+// 
 //  ACTIONS AUTH
-// ══════════════════════════════════════════════════════════════════
+// 
 async function seConnecter() {
   const email = document.getElementById('loginEmail').value.trim();
   const mdp   = document.getElementById('loginMdp').value;
@@ -1602,30 +1568,18 @@ async function seDesinscrire() {
 async function uploadAvatar(input) {
   const file = input.files[0];
   if (!file) return;
-  if (file.size > 10 * 1024 * 1024) {
-    afficherToast('Image trop lourde (max 10 Mo).', 'erreur');
-    return;
-  }
+  if (file.size > 10*1024*1024) { afficherToast('Image trop lourde (max 10 Mo).','erreur'); return; }
   const avatarEl = document.getElementById('compteAvatar');
   avatarEl.innerHTML = '<span style="font-size:.8rem;color:#999">⏳</span>';
-
   const fd = new FormData();
   fd.append('avatar', file);
   try {
-    const res  = await fetch('/api/profil/avatar', { method: 'POST', body: fd });
+    const res = await fetch('/api/profil/avatar', {method:'POST', body:fd});
     const data = await res.json();
-    if (data.succes) {
-      await verifierSession();
-      afficherToast('Photo de profil mise à jour !', 'succes');
-    } else {
-      afficherToast(data.message || 'Erreur upload.', 'erreur');
-      await verifierSession();
-    }
-  } catch (e) {
-    afficherToast('Erreur serveur.', 'erreur');
-    await verifierSession();
-  }
-  input.value = '';
+    if (data.succes) { await verifierSession(); afficherToast('Photo mise à jour !','succes'); }
+    else { afficherToast(data.message||'Erreur.','erreur'); await verifierSession(); }
+  } catch(e) { afficherToast('Erreur serveur.','erreur'); await verifierSession(); }
+  input.value='';
 }
 
 async function enregistrerProfil() {
@@ -1637,7 +1591,7 @@ async function enregistrerProfil() {
 
   errEl.textContent = '';
   btn.disabled = true;
-  btn.textContent = '💾 Enregistrement…';
+  btn.textContent = ' Enregistrement…';
 
   try {
     const res  = await fetch('/api/profil', {
@@ -1656,14 +1610,69 @@ async function enregistrerProfil() {
     errEl.textContent = 'Erreur serveur.';
   } finally {
     btn.disabled = false;
-    btn.textContent = '💾 Enregistrer les modifications';
+    btn.textContent = ' Enregistrer les modifications';
   }
 }
 
 </script>
 
 <!-- ==================== FOOTER ==================== -->
-<footer style="background:#1a1a2e;border-top:1px solid #2e2e45;padding:2.5rem 1.5rem 2rem;margin-top:3rem">
+<!-- ==================== CONTACT ==================== -->
+<div id="contact" style="display:block;background:linear-gradient(135deg,#1a1a2e 0%,#2e2e45 100%);margin-left:calc(-50vw + 50%);margin-right:calc(-50vw + 50%);margin-bottom:0;padding:4rem 1.5rem">
+  <div style="text-align:center;margin-bottom:2.5rem">
+    <div style="font-size:2rem;font-weight:800;color:#f8fafc;margin-bottom:.6rem;letter-spacing:.01em">Nous contacter</div>
+    <div style="font-size:1rem;color:rgba(255,255,255,0.6);max-width:420px;margin:0 auto;line-height:1.6">Une question, une suggestion ?<br>On vous répond sous 48h.</div>
+  </div>
+  <div style="max-width:560px;margin:0 auto">
+    <div class="admin-card" style="background:transparent;border:none;box-shadow:none;padding:0">
+
+      <div class="compte-field">
+        <label class="compte-label" style="color:rgba(255,255,255,0.75)">Nom *</label>
+        <div class="compte-input-wrap">
+          <input class="compte-input" type="text" id="contactNom" placeholder="Votre nom" style="background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.15);color:#f8fafc">
+          <span class="compte-input-icon"></span>
+        </div>
+      </div>
+
+      <div class="compte-field">
+        <label class="compte-label" style="color:rgba(255,255,255,0.75)">Adresse e-mail *</label>
+        <div class="compte-input-wrap">
+          <input class="compte-input" type="email" id="contactEmail" placeholder="votre@email.fr" style="background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.15);color:#f8fafc">
+          <span class="compte-input-icon"></span>
+        </div>
+      </div>
+
+      <div class="compte-field">
+        <label class="compte-label" style="color:rgba(255,255,255,0.75)">Sujet *</label>
+        <div class="compte-input-wrap">
+          <input class="compte-input" type="text" id="contactSujet" placeholder="Ex : Question sur un tutoriel" style="background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.15);color:#f8fafc">
+          <span class="compte-input-icon"></span>
+        </div>
+      </div>
+
+      <div class="compte-field">
+        <label class="compte-label" style="color:rgba(255,255,255,0.75)">Message *</label>
+        <textarea class="compte-input" id="contactMessage" rows="5" placeholder="Votre message…" style="resize:vertical;min-height:120px;padding-right:1rem;background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.15);color:#f8fafc"></textarea>
+      </div>
+
+      <div class="compte-field">
+        <label class="compte-label" style="color:rgba(255,255,255,0.75)">Image (optionnel)</label>
+        <div class="contact-upload" id="contactUploadZone" onclick="document.getElementById('contactImage').click()" style="border-color:rgba(255,255,255,0.2);color:rgba(255,255,255,0.5)">
+          <input type="file" id="contactImage" accept="image/*" style="display:none" onchange="previewContactImage(this)">
+          <div id="contactUploadHint">Cliquez pour joindre une image <span style="font-size:.75rem;color:rgba(255,255,255,0.4)">(PNG, JPG, WebP)</span></div>
+          <img id="contactImagePreview" style="display:none;max-width:100%;border-radius:8px;margin-top:.5rem">
+        </div>
+      </div>
+
+      <div id="contactErreur" style="color:#fca5a5;font-size:.82rem;margin-bottom:.5rem"></div>
+      <div id="contactSucces" style="display:none;background:rgba(22,163,74,0.2);border:1px solid rgba(134,239,172,0.4);border-radius:8px;padding:.85rem 1rem;color:#86efac;font-size:.88rem;margin-bottom:.75rem"></div>
+
+      <button class="btn btn-primary" id="contactBtn" onclick="envoyerContact()" style="width:100%;background:var(--pink);color:white;border:none">Envoyer le message →</button>
+    </div>
+  </div>
+</div>
+
+<footer style="background:#1a1a2e;padding:2.5rem 1.5rem 2rem;margin-top:0">
   <div style="max-width:1100px;margin:0 auto">
 
     <!-- Ligne principale -->
@@ -1671,8 +1680,8 @@ async function enregistrerProfil() {
 
       <!-- Logo + baseline -->
       <div>
-        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.2rem;font-weight:800;color:#f8fafc;margin-bottom:.4rem">
-          ⚡ Tuto<span style="color:var(--pink)">Motion</span>
+        <div style="font-family:'Glacial Indifference',sans-serif;font-size:1.2rem;font-weight:800;color:#f8fafc;margin-bottom:.4rem">
+          <img src="/logo-tutomotion-white.png" alt="TutoMotion" style="height:38px;width:auto;">
         </div>
         <div style="font-size:.8rem;color:var(--slate-500);max-width:260px;line-height:1.5">
           Plateforme de tutoriels en Motion Design, Montage Vidéo, Design Graphique et UX.
@@ -1683,8 +1692,8 @@ async function enregistrerProfil() {
       <div>
         <div style="font-size:.72rem;font-weight:700;color:var(--slate-500);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem">Catégories</div>
         <div style="display:flex;flex-direction:column;gap:.4rem;font-size:.82rem;color:var(--slate-500)">
-          <span>🎬 Motion Design</span>
-          <span>🎞️ Montage Vidéo</span>
+          <span> Motion Design</span>
+          <span> Montage Vidéo</span>
         </div>
       </div>
 
@@ -1692,9 +1701,9 @@ async function enregistrerProfil() {
       <div>
         <div style="font-size:.72rem;font-weight:700;color:var(--slate-500);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem">Informations légales</div>
         <div style="display:flex;flex-direction:column;gap:.4rem;font-size:.82rem;color:var(--slate-500)">
-          <span style="cursor:pointer" onclick="ouvrirModalLegal('mentions')">📄 Mentions légales</span>
-          <span style="cursor:pointer" onclick="ouvrirModalLegal('rgpd')">🔒 Politique de confidentialité</span>
-          <span style="cursor:pointer" onclick="ouvrirModalLegal('cookies')">🍪 Gestion des cookies</span>
+          <span style="cursor:pointer" onclick="ouvrirModalLegal('mentions')"> Mentions légales</span>
+          <span style="cursor:pointer" onclick="ouvrirModalLegal('rgpd')"> Politique de confidentialité</span>
+          <span style="cursor:pointer" onclick="ouvrirModalLegal('cookies')"> Gestion des cookies</span>
         </div>
       </div>
 
@@ -1703,10 +1712,10 @@ async function enregistrerProfil() {
     <!-- Séparateur -->
     <div style="border-top:1px solid #2e2e45;padding-top:1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem">
       <div style="font-size:.75rem;color:var(--slate-500)">
-        🎓 <strong style="color:var(--slate-400)">Travail pédagogique sans objectifs commerciaux</strong> — Normandie Web School · Promotion 2024–2025
+         <strong style="color:var(--slate-400)">Travail pédagogique sans objectifs commerciaux</strong> — Normandie Web School · Promotion 2025–2026
       </div>
       <div style="font-size:.72rem;color:#475569">
-        © 2025 TutoMotion · Tous droits réservés
+        © 2026 TutoMotion · Tous droits réservés
       </div>
     </div>
 
@@ -1716,7 +1725,7 @@ async function enregistrerProfil() {
 <!-- Modal légal -->
 <div class="modal-overlay" id="modalLegal" onclick="fermerModal('modalLegal')">
   <div class="modal-box" onclick="event.stopPropagation()" style="max-width:560px;max-height:80vh;overflow-y:auto">
-    <button class="modal-close" onclick="fermerModal('modalLegal')">✕</button>
+    <button class="modal-close" onclick="fermerModal('modalLegal')"></button>
     <div id="modalLegalContent"></div>
   </div>
 </div>
